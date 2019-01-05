@@ -1,0 +1,29 @@
+<section class="mat-title mat-typography">
+    <h2 class="mat-h2">Guard</h2>
+</section>
+<mat-card>
+<div class="example-container">
+    <form class="example-container" [formGroup]="guardForm">
+    <mat-form-field>
+      <input matInput placeholder="Name" formControlName="name" required>
+    </mat-form-field>
+    <mat-form-field>
+        <select matNativeControl placeholder="Country Code" formControlName="countryCode" required>
+          <option value="+65">Singapore</option>
+          <option value="+60">Malaysia</option>
+          <option value="+86">China</option>
+          <option value="+853">Hong Kong</option>
+          <option value="+1">USA</option>
+          <option value="+44">United Kingdom</option>
+        </select>
+      </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Mobile No." formControlName="mobileNo" required>
+      </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Email" formControlName="email">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!guardForm.valid">Add</button>
+    </form>
+</div>
+</mat-card>

@@ -3,7 +3,17 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebase: {
+    apiKey: "AIzaSyABRqzd6DghdCP182ZtZfiKUBDMJ9Ismvc",
+    authDomain: "iot-door-sensor.firebaseapp.com",
+    databaseURL: "https://iot-door-sensor.firebaseio.com",
+    projectId: "iot-door-sensor",
+    storageBucket: "iot-door-sensor.appspot.com",
+    messagingSenderId: "456975313157"
+  },
+  apiUrl: "http://localhost:3000/api/",
+  uploadUrl: "http://localhost:3000/api/upload"
 };
 
 /*
