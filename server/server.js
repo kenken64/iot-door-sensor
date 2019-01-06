@@ -24,9 +24,7 @@ const settings = {/* your settings... */ timestampsInSnapshots: true};
 db.settings(settings);
 
 var doorCollection = db.collection('door');
-
-var closedDoors = [];
-var openDoors = [];
+var notificationCol = db.collection('notification');
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -86,6 +84,16 @@ function pollVirtualPort2(value, doc){
                         alreadySentBefore = true;
                         alreadySentBeforeCnt = 1;    
                         console.log("Battery is runnig low...");
+                        let notifyRef = notificationCol.doc(`Email/battery_low/${doc.data().email}`);
+                        notifyRef.set({
+                            transportType: "Email",
+                            type: "battery_low",
+                            fromEmail: fromEmail,
+                            toEmail: doc.data().email,
+                            subject: `${value.name} device battery running low`,
+                            emailContent: `<p>Device battery is running low (${parseInt(JSON.parse(data))}%). ${additionalMessage}</p>`,
+                            sentTimestamp: new Date(),
+                        });
                     }
                 }
             }
@@ -135,6 +143,27 @@ async function pollVirtualPort1(value , doc){
                                     db.collection("door").doc(doc.id).update({status: "Open"});
                                 });
                             })
+
+                        let notifyRef = notificationCol.doc(`Email/door_open/${doc.data().email}`);
+                        notifyRef.set({
+                            transportType: "Email",
+                            type: "door_open",
+                            fromEmail: fromEmail,
+                            toEmail: doc.data().email,
+                            subject: `${value.name} is OPEN`,
+                            emailContent: `<p>${value.name} is OPEN</p>`,
+                            sentTimestamp: new Date(),
+                        });
+
+                        notifyRef = notificationCol.doc(`SMS/door_open/${doc.data().mobileNo}`);
+                        notifyRef.set({
+                            transportType: "Sms",
+                            type: "door_open",
+                            fromPhone: process.env.TWILIO_NUMBER,
+                            toPhone: doc.data().mobileNo,
+                            message: `ALERT ! ${value.name} is open please follow up with an inspection`,
+                            sentTimestamp: new Date(),
+                        });
                     });
                         
                 }else{
@@ -153,6 +182,17 @@ async function pollVirtualPort1(value , doc){
                                 db.collection("door").doc(doc.id).update({status: "Closed"});
                             });
                         })
+
+                        let notifyRef = notificationCol.doc(`Email/door_closed/${doc.data().email}`);
+                        notifyRef.set({
+                            transportType: "Email",
+                            type: "door_closed",
+                            fromEmail: fromEmail,
+                            toEmail: doc.data().email,
+                            subject: `${value.name} is CLOSED`,
+                            emailContent: `<p>${value.name} is CLOSED</p>`,
+                            sentTimestamp: new Date(),
+                    });
                 }
             }
         });
@@ -199,4 +239,10 @@ setInterval(()=>{
             });
         });
     });
-}, 3000);
+}, parseInt(process.env.INTERVAL));
+
+
+
+setInterval(()=>{
+    console.log("Send email and sms");
+}, 4000);

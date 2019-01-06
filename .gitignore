@@ -44,3 +44,4 @@ Thumbs.db
 server/node_modules
 server/.env
 server/package-lock.json
+server/iot-door-sensor.json
