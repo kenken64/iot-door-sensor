@@ -58,6 +58,11 @@ export class GuardComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+
+  add($event){
+
+  }
+  
   getValue($event){
     console.log(">>>" + $event.email);
     console.log(this.selectedGuard.indexOf($event));

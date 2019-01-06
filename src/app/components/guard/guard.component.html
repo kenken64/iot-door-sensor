@@ -5,7 +5,7 @@
       </mat-button-toggle-group>
 </mat-action-list>
 
-<mat-selection-list #guardz (selectionChange)="onSelection($event, guardz.selectedOptions)">
+<mat-selection-list #guardz (selectionChange)="onSelection($event)">
   <mat-list-option *ngFor="let c of guards" [value]="c" (click)="getValue(c)">
       <img matListAvatar src="https://www.cobdoglaps.sa.edu.au/wp-content/uploads/2017/11/placeholder-profile-sq.jpg" alt="...">
       <h4 mat-line>{{c.name}}</h4>

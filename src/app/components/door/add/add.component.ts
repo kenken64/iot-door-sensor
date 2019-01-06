@@ -30,7 +30,9 @@ export class AddDoorComponent implements OnInit {
     }
     this.svc.saveDoor(d).subscribe((result)=>{
       console.log("snack time !" + result);
-      let snackBarRef = this.snackBar.open('Door Added');
+      let snackBarRef = this.snackBar.open('Door Added', 'Done', {
+        duration: 3000
+      });
     });
   }
 }

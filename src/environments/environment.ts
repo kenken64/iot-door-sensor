@@ -11,9 +11,7 @@ export const environment = {
     projectId: "iot-door-sensor",
     storageBucket: "iot-door-sensor.appspot.com",
     messagingSenderId: "456975313157"
-  },
-  apiUrl: "http://localhost:3000/api/",
-  uploadUrl: "http://localhost:3000/api/upload"
+  }
 };
 
 /*
