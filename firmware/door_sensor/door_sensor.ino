@@ -13,7 +13,7 @@ char auth[] = "f7e4f6e265354cbca4cdaa3420a63aea";
 char ssid[] = "kenken64";
 char pass[] = "7730112910100";
 
-const int doorSensor = 14;
+const int doorSensor = 12;
 const int greenLED = 2;
 // Time to sleep (in seconds):
 const int sleepTimeS = 10;
