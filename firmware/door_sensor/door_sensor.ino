@@ -6,19 +6,19 @@
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "f7e4f6e265354cbca4cdaa3420a63aea";
+char auth[] = "b40605f4f5d5484bbe7b9a3cb78f1976";
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-char ssid[] = "kenken64";
-char pass[] = "7730112910100";
+char ssid[] = "kenneth-N550RC-RC1";
+char pass[] = "fY5amFe9";
 
 const int doorSensor = 12;
 const int greenLED = 2;
 // Time to sleep (in seconds):
 const int sleepTimeS = 10;
 
-WidgetLED led1(V1);
+//WidgetLED led1(V3);
 BlynkTimer timer;
 ESPBattery battery = ESPBattery();
 
@@ -44,14 +44,16 @@ void doorSensorWidget()
     Serial.print("Percentage: ");
     Serial.println(battery.getPercentage());
     analogWrite(greenLED,1023);
-    led1.on();
+    //led1.on();
+    Blynk.virtualWrite(V1, state);
     Blynk.virtualWrite(V2, battery.getPercentage());
     delay(30);
   }else {
     Serial.println("Door Closed");
-    led1.off();
+    //led1.off();
     Serial.print("Percentage: ");
     Serial.println(battery.getPercentage());
+    Blynk.virtualWrite(V1, state);
     Blynk.virtualWrite(V2, battery.getPercentage());
     ESP.deepSleep(10e6);
   }
