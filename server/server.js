@@ -34,6 +34,11 @@ var transporter = nodemailer.createTransport({
   }
 });
 
+var sendOk = (process.env.NOTIFICATION_ENABLE =="true");
+var openTimeStamp =  new Date();
+var closedTimeStamp =  new Date();
+var batteryTimeStamp =  new Date();
+
 function sendEmail(fromEmail, toEmail, subject, htmlcontent) {
   const mailOptions = {
     from: fromEmail, // sender address
@@ -84,32 +89,35 @@ async function pollVirtualPort2(value, doc) {
             }
 
             if (!alreadySentBefore && alreadySentBeforeCnt != 1) {
-              sendEmail(
-                fromEmail,
-                doc.data().email,
-                `${value.name} device battery running low`,
-                `<p>Device battery is running low (${parseInt(
-                  JSON.parse(data)
-                )}%). ${additionalMessage}</p>`
-              );
-
-              alreadySentBefore = true;
-              alreadySentBeforeCnt = 1;
-              console.log("Battery is runnig low...");
-              let notifyRef = notificationCol.doc(
-                `Email/battery_low/${doc.data().email}`
-              );
-              notifyRef.set({
-                transportType: "Email",
-                type: "battery_low",
-                fromEmail: fromEmail,
-                toEmail: doc.data().email,
-                subject: `${value.name} device battery running low`,
-                emailContent: `<p>Device battery is running low (${parseInt(
-                  JSON.parse(data)
-                )}%). ${additionalMessage}</p>`,
-                sentTimestamp: new Date()
-              });
+              
+              if(sendOk) {
+                sendEmail(
+                  fromEmail,
+                  doc.data().email,
+                  `${value.name} device battery running low`,
+                  `<p>Device battery is running low (${parseInt(
+                    JSON.parse(data)
+                  )}%). ${additionalMessage}</p>`
+                );
+  
+                alreadySentBefore = true;
+                alreadySentBeforeCnt = 1;
+                console.log("Battery is runnig low...");
+                let notifyRef = notificationCol.doc(
+                  `Email/battery_low/${doc.data().email}`
+                );
+                notifyRef.push({
+                  transportType: "Email",
+                  type: "battery_low",
+                  fromEmail: fromEmail,
+                  toEmail: doc.data().email,
+                  subject: `${value.name} device battery running low`,
+                  emailContent: `<p>Device battery is running low (${parseInt(
+                    JSON.parse(data)
+                  )}%). ${additionalMessage}</p>`,
+                  sentTimestamp: new Date()
+                });
+              }
             }
           }
         }
@@ -136,10 +144,14 @@ async function pollVirtualPort1(value, doc) {
           if (data === "Invalid token.") return;
           console.log("pollVirtualPort1 : > " + JSON.parse(data));
           console.log("pollVirtualPort1 : > " + JSON.parse(data));
+          
           if (parseInt(JSON.parse(data)) == 1) {
             console.log(doc.data().mobileNo);
             console.log(process.env.TWILIO_NUMBER);
-            client.messages
+            let diffDoorOpentime = (openTimeStamp - (new Date()));
+            console.log("diffDoorOpentime> " + diffDoorOpentime); 
+            if(sendOk) {
+              client.messages
               .create({
                 body: `ALERT ! ${
                   value.name
@@ -187,51 +199,55 @@ async function pollVirtualPort1(value, doc) {
                 notifyRef = notificationCol.doc(
                   `SMS/door_open/${doc.data().mobileNo}`
                 );
-                notifyRef.set({
+                notifyRef.push({
                   transportType: "Sms",
                   type: "door_open",
                   fromPhone: process.env.TWILIO_NUMBER,
                   toPhone: doc.data().mobileNo,
                   message: `ALERT ! ${
                     value.name
-                  } is open please follow up with an inspection`,
+                  } is open. Respective guard please follow up with an inspection.`,
                   sentTimestamp: new Date()
                 });
               });
+            } 
+            
           } else {
-            sendEmail(
-              fromEmail,
-              doc.data().email,
-              `${value.name} is CLOSED`,
-              `<p>${value.name} is CLOSED</p>`
-            );
-
-            console.log(`SEND EMAIL DOOR CLOSED!  ${value.name}`);
-            db.collection("door")
-              .where("sensor_auth", "==", value.sensor_auth)
-              .get()
-              .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                  console.log(doc.id, " => ", doc.data());
-                  // Build doc ref from doc.id
-                  db.collection("door")
-                    .doc(doc.id)
-                    .update({ status: "Closed" });
+            if(sendOk) {
+              sendEmail(
+                fromEmail,
+                doc.data().email,
+                `${value.name} is CLOSED`,
+                `<p>${value.name} is CLOSED</p>`
+              );
+  
+              console.log(`SEND EMAIL DOOR CLOSED!  ${value.name}`);
+              db.collection("door")
+                .where("sensor_auth", "==", value.sensor_auth)
+                .get()
+                .then(function(querySnapshot) {
+                  querySnapshot.forEach(function(doc) {
+                    console.log(doc.id, " => ", doc.data());
+                    // Build doc ref from doc.id
+                    db.collection("door")
+                      .doc(doc.id)
+                      .update({ status: "Closed" });
+                  });
                 });
+  
+              let notifyRef = notificationCol.doc(
+                `Email/door_closed/${doc.data().email}`
+              );
+              notifyRef.push({
+                transportType: "Email",
+                type: "door_closed",
+                fromEmail: fromEmail,
+                toEmail: doc.data().email,
+                subject: `${value.name} is CLOSED`,
+                emailContent: `<p>${value.name} is CLOSED</p>`,
+                sentTimestamp: new Date()
               });
-
-            let notifyRef = notificationCol.doc(
-              `Email/door_closed/${doc.data().email}`
-            );
-            notifyRef.set({
-              transportType: "Email",
-              type: "door_closed",
-              fromEmail: fromEmail,
-              toEmail: doc.data().email,
-              subject: `${value.name} is CLOSED`,
-              emailContent: `<p>${value.name} is CLOSED</p>`,
-              sentTimestamp: new Date()
-            });
+            }
           }
         }
       });
