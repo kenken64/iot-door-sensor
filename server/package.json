@@ -12,6 +12,7 @@
   "dependencies": {
     "dotenv": "^6.2.0",
     "firebase-admin": "^6.4.0",
+    "lodash": "^4.17.11",
     "nodemailer": "^5.0.0",
     "twilio": "^3.26.1"
   }

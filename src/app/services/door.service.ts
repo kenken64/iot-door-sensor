@@ -1,52 +1,47 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Door } from '../model/door';
+
 @Injectable({
   providedIn: 'root'
 })
 export class DoorService {
 
-  private doorCollection: AngularFirestoreCollection<Door>;
-  doors: Observable<Door[]>;
-  private doorDoc: AngularFirestoreDocument<Door>;
-  door: Observable<Door>;
+  doorsRef: AngularFireList<Door> = null;
+  doors: Observable<any[]>;
+  //private doorDoc: AngularFirestoreDocument<Door>;
+  door$: Observable<Door>;
+  private dbPath = '/door';
   
-  constructor(private db: AngularFirestore) { 
-    this.doorCollection = db
-           .collection<Door>('door', ref => ref.orderBy('name', 'asc'));
+  constructor(private db: AngularFireDatabase) { 
+    this.doorsRef = db.list(this.dbPath);
   }
   
   saveDoor(door) {
-    return of(this.doorCollection.add(door));
+    return of(this.doorsRef.push(door));
   }
   
-  getAllDoor(): Observable<Door[]>{
-    this.doors = this.doorCollection.snapshotChanges()
-    .pipe(
-      map(actions => actions.map(a => {
-        const data = a.payload.doc.data() as Door;
-        const id = a.payload.doc.id;
-        return { id, ...data };
-      }))
-    );
-  
-    return this.doors;
+  getAllDoor(): AngularFireList<Door>{
+    return this.doorsRef;
   }
 
   getDoor(id): Observable<Door>{
-    const path = `door/${id}`;
-    this.doorDoc = this.db.doc<Door>(path);
-    this.door = this.doorDoc.valueChanges();
-    return this.door;
+    const path = `/door/${id}`;
+    this.door$ = this.db.object<Door>(path).valueChanges();
+    console.log(this.door$);
+    return this.door$;
+  }
+
+  getDoorBySensorAuth(sensorAuth): AngularFireList<Door>{
+    this.doorsRef = this.db.list('/door', ref => ref.orderByChild('sensor_auth').equalTo(sensorAuth))
+    return this.doorsRef;
   }
 
   updateDoor(doorId, guards) {
     const path = `/${doorId}`; 
-    this.db.collection<Door>('door').doc(path).update({
-        guards: guards
-    });
+    const itemRef = this.db.object(`door/${path}`);
+    itemRef.update({ guards: guards});
   }
 
 }

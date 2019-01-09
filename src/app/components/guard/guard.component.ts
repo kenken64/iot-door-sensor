@@ -6,13 +6,13 @@ import {
   QueryList
 } from "@angular/core";
 import { GuardService } from "../../services/guard.service";
-import { Guard, GuardId } from "../../model/guard";
+import { Guard } from "../../model/guard";
 import { DoorService } from "../../services/door.service";
-import { Door } from "../../model/door";
 import { MatSnackBar } from "@angular/material";
 import { ActivatedRoute, Router } from "@angular/router";
 import * as _ from "lodash";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: "app-guard",
@@ -20,7 +20,7 @@ import { COMMA, ENTER } from "@angular/cdk/keycodes";
   styleUrls: ["./guard.component.css"]
 })
 export class GuardComponent implements OnInit {
-  guards: GuardId[] = [];
+  guards: any;
   @ViewChild("guardz")
   guardz: QueryList<ElementRef>;
   selectedGuard: Guard[] = [];
@@ -42,24 +42,40 @@ export class GuardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.roomId = this.activatedRoute.snapshot.params.id;
-    console.log(this.roomId);
+    this.roomId = this.activatedRoute.snapshot.params.key;
+    console.log("roomId" + this.roomId);
     this.doorSvc.getDoor(this.roomId).subscribe(result => {
-      console.log(">>> " + JSON.stringify(result));
+      console.log(">>> result " + JSON.stringify(result));
       console.log(">>> ID ??? " + this.roomId);
       this.doorName = result.name;
       this.doorId = this.roomId;
-      result.guards.forEach(value => {
-        console.log(value);
-        this.guardSvc.getGuard(value).subscribe(guardVal => {
-          console.log(guardVal);
-          this.selectedGuard.push(guardVal);
+      if (typeof(result.guards) !== 'undefined'){
+        result.guards.forEach(value => {
+          console.log(value);
+          this.guardSvc.getGuard(value).subscribe(guardVal => {
+            console.log(guardVal);
+            this.selectedGuard.push(guardVal);
+          });
         });
-      });
+      }
+      
     });
-    this.guardSvc.getAllGuard().subscribe(result => {
-      console.log(result);
-      this.guards = result;
+    
+    this.guardSvc.getAllGuard().snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+      )
+    ).subscribe(guards => {
+      this.guards = guards;
+      this.guards.sort((n1 , n2)=>{
+        if (n1.name > n2.name) {
+            return 1;
+        }
+        if (n1.name < n2.name) {
+            return -1;
+        }
+        return 0;
+      });
     });
   }
 
@@ -73,6 +89,7 @@ export class GuardComponent implements OnInit {
     console.log(">>>" + $event.email);
     console.log(this.selectedGuard.indexOf($event));
     let guard = this.selectedGuard.find(x => x.email == $event.email);
+    console.log("???" + guard);
     console.log("???" + JSON.stringify(guard));
     if (typeof guard === "undefined") {
       this.selectedGuard.push($event);
@@ -94,8 +111,8 @@ export class GuardComponent implements OnInit {
       if (typeof guard === "undefined") {
         console.log("guard is undefined");
       }
-      console.log("GUARD ID > ?" + guard.id);
-      updateGuards.push(guard.id);
+      console.log("GUARD ID > ?" + guard.key);
+      updateGuards.push(guard.key);
     });
     console.log(updateGuards);
     console.log(this.doorId);

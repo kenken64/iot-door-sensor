@@ -36,7 +36,7 @@ export class AddGuardComponent implements OnInit {
     let guardValue: Guard = {
       email: email,
       name: name,
-      mobileNo: `+${countryCode}${mobileNo}`,
+      mobileNo: `${countryCode}${mobileNo}`,
     }
     //first hash to the server side
     if(this.guardForm.valid){

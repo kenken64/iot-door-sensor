@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DoorService } from '../../services/door.service';
-import { Door } from '../../model/door';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatIconRegistry} from '@angular/material';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-door',
@@ -10,7 +10,8 @@ import {MatIconRegistry} from '@angular/material';
   styleUrls: ['./door.component.css']
 })
 export class DoorComponent implements OnInit {
-  doors: Door[] = [];
+  doors: any;
+
   constructor(private doorSvc: DoorService,
     iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) 
   { 
@@ -24,9 +25,18 @@ export class DoorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.doorSvc.getAllDoor().subscribe((result)=>{
-      console.log(result);
-      result.sort((n1 , n2)=>{
+    this.getDoorList();
+  }
+
+  getDoorList() {
+    // Use snapshotChanges().map() to store the key
+    this.doorSvc.getAllDoor().snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+      )
+    ).subscribe(doors => {
+      this.doors = doors;
+      this.doors.sort((n1 , n2)=>{
         if (n1.name > n2.name) {
             return 1;
         }
@@ -35,7 +45,6 @@ export class DoorComponent implements OnInit {
         }
         return 0;
       });
-      this.doors = result;
     });
   }
 

@@ -3,6 +3,7 @@ const http = require("http");
 const twilio = require("twilio");
 const nodemailer = require("nodemailer");
 const admin = require("firebase-admin");
+const _ = require('lodash');
 var accountSid = process.env.TWILIO_SSID;
 var authToken = process.env.TWILIO_AUTH_TOKEN;
 
@@ -19,12 +20,8 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DB_URL
 });
 
-var db = admin.firestore();
-const settings = { /* your settings... */ timestampsInSnapshots: true };
-db.settings(settings);
-
-var doorCollection = db.collection("door");
-var notificationCol = db.collection("notification");
+var db = admin.database();
+var doorRef = db.ref("door");
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -35,9 +32,6 @@ var transporter = nodemailer.createTransport({
 });
 
 var sendOk = (process.env.NOTIFICATION_ENABLE =="true");
-var openTimeStamp =  new Date();
-var closedTimeStamp =  new Date();
-var batteryTimeStamp =  new Date();
 
 function sendEmail(fromEmail, toEmail, subject, htmlcontent) {
   const mailOptions = {
@@ -53,9 +47,9 @@ function sendEmail(fromEmail, toEmail, subject, htmlcontent) {
   });
 }
 
-async function pollVirtualPort2(value, doc) {
+async function pollVirtualPort2(value) {
   await http
-    .get(`http://blynk-cloud.com/${value.sensor_auth}/get/V2`, resp => {
+    .get(`http://blynk-cloud.com/${value.data.sensor_auth}/get/V2`, resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -70,55 +64,21 @@ async function pollVirtualPort2(value, doc) {
           console.log(
             "pollVirtualPort2 : battery level > " + JSON.parse(data) + "%"
           );
-          if (
-            parseInt(JSON.parse(data)) != 50 ||
-            parseInt(JSON.parse(data)) != 20 ||
-            parseInt(JSON.parse(data)) != 2
-          ) {
-            alreadySentBefore = false;
-            alreadySentBeforeCnt = 0;
-          }
+          
           if (
             parseInt(JSON.parse(data)) == 50 ||
             parseInt(JSON.parse(data)) == 20 ||
             parseInt(JSON.parse(data)) == 2
           ) {
-            let additionalMessage = "";
+            let additionalMessage = null;
             if (parseInt(JSON.parse(data)) == 2) {
               additionalMessage = "Device probably went offline";
             }
-
-            if (!alreadySentBefore && alreadySentBeforeCnt != 1) {
-              
-              if(sendOk) {
-                sendEmail(
-                  fromEmail,
-                  doc.data().email,
-                  `${value.name} device battery running low`,
-                  `<p>Device battery is running low (${parseInt(
-                    JSON.parse(data)
-                  )}%). ${additionalMessage}</p>`
-                );
-  
-                alreadySentBefore = true;
-                alreadySentBeforeCnt = 1;
-                console.log("Battery is runnig low...");
-                let notifyRef = notificationCol.doc(
-                  `Email/battery_low/${doc.data().email}`
-                );
-                notifyRef.push({
-                  transportType: "Email",
-                  type: "battery_low",
-                  fromEmail: fromEmail,
-                  toEmail: doc.data().email,
-                  subject: `${value.name} device battery running low`,
-                  emailContent: `<p>Device battery is running low (${parseInt(
-                    JSON.parse(data)
-                  )}%). ${additionalMessage}</p>`,
-                  sentTimestamp: new Date()
-                });
-              }
-            }
+            var updRef = doorRef.child(value.key);
+            updRef.update({
+              battery: parseInt(JSON.parse(data)),
+              additionalMessage: additionalMessage
+            });
           }
         }
       });
@@ -128,9 +88,9 @@ async function pollVirtualPort2(value, doc) {
     });
 }
 
-async function pollVirtualPort1(value, doc) {
+async function pollVirtualPort1(value) {
   await http
-    .get(`http://blynk-cloud.com/${value.sensor_auth}/get/V1`, resp => {
+    .get(`http://blynk-cloud.com/${value.data.sensor_auth}/get/V1`, resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -140,115 +100,21 @@ async function pollVirtualPort1(value, doc) {
 
       // The whole response has been received. Print out the result.
       resp.on("end", () => {
+        console.log("pollVirtualPort1 : > " + data);
+        console.log("pollVirtualPort1 : > " + value.data.sensor_auth);
         if (typeof data !== "undefined") {
           if (data === "Invalid token.") return;
           console.log("pollVirtualPort1 : > " + JSON.parse(data));
-          console.log("pollVirtualPort1 : > " + JSON.parse(data));
-          
+          var updRef = doorRef.child(value.key);
           if (parseInt(JSON.parse(data)) == 1) {
-            console.log(doc.data().mobileNo);
-            console.log(process.env.TWILIO_NUMBER);
-            let diffDoorOpentime = (openTimeStamp - (new Date()));
-            console.log("diffDoorOpentime> " + diffDoorOpentime); 
-            if(sendOk) {
-              client.messages
-              .create({
-                body: `ALERT ! ${
-                  value.name
-                } is open please follow up with an inspection`,
-                to: doc.data().mobileNo, // Text this number
-                from: process.env.TWILIO_NUMBER // From a valid Twilio number
-              })
-              .then(message => {
-                console.log("SMS sent : > " + message.sid);
-                console.log(`SEND SMS DOOR OPEN!  ${value.name}`);
-                sendEmail(
-                  fromEmail,
-                  doc.data().email,
-                  `${value.name} is OPEN`,
-                  `<p>${value.name} is OPEN</p>`
-                );
-                console.log("< @#@@!@!#@ doorRef : > ");
-                db.collection("door")
-                  .where("sensor_auth", "==", value.sensor_auth)
-                  .get()
-                  .then(function(querySnapshot) {
-                    querySnapshot.forEach(function(doc) {
-                      console.log(doc.id, " => ", doc.data());
-                      // Build doc ref from doc.id
-                      console.log("< @#@@!@!#@ doorRef : > " + doc.data());
-                      db.collection("door")
-                        .doc(doc.id)
-                        .update({ status: "Open" });
-                    });
-                  });
-
-                let notifyRef = notificationCol.doc(
-                  `Email/door_open/${doc.data().email}`
-                );
-                notifyRef.set({
-                  transportType: "Email",
-                  type: "door_open",
-                  fromEmail: fromEmail,
-                  toEmail: doc.data().email,
-                  subject: `${value.name} is OPEN`,
-                  emailContent: `<p>${value.name} is OPEN</p>`,
-                  sentTimestamp: new Date()
-                });
-
-                notifyRef = notificationCol.doc(
-                  `SMS/door_open/${doc.data().mobileNo}`
-                );
-                notifyRef.push({
-                  transportType: "Sms",
-                  type: "door_open",
-                  fromPhone: process.env.TWILIO_NUMBER,
-                  toPhone: doc.data().mobileNo,
-                  message: `ALERT ! ${
-                    value.name
-                  } is open. Respective guard please follow up with an inspection.`,
-                  sentTimestamp: new Date()
-                });
-              });
-            } 
-            
-          } else {
-            if(sendOk) {
-              sendEmail(
-                fromEmail,
-                doc.data().email,
-                `${value.name} is CLOSED`,
-                `<p>${value.name} is CLOSED</p>`
-              );
-  
-              console.log(`SEND EMAIL DOOR CLOSED!  ${value.name}`);
-              db.collection("door")
-                .where("sensor_auth", "==", value.sensor_auth)
-                .get()
-                .then(function(querySnapshot) {
-                  querySnapshot.forEach(function(doc) {
-                    console.log(doc.id, " => ", doc.data());
-                    // Build doc ref from doc.id
-                    db.collection("door")
-                      .doc(doc.id)
-                      .update({ status: "Closed" });
-                  });
-                });
-  
-              let notifyRef = notificationCol.doc(
-                `Email/door_closed/${doc.data().email}`
-              );
-              notifyRef.push({
-                transportType: "Email",
-                type: "door_closed",
-                fromEmail: fromEmail,
-                toEmail: doc.data().email,
-                subject: `${value.name} is CLOSED`,
-                emailContent: `<p>${value.name} is CLOSED</p>`,
-                sentTimestamp: new Date()
-              });
-            }
-          }
+            updRef.update({
+              status: "Open"
+            });
+          }else{
+            updRef.update({
+              status: "Closed"
+            });
+          } 
         }
       });
     })
@@ -257,36 +123,131 @@ async function pollVirtualPort1(value, doc) {
     }); // end V1 request
 }
 
-setInterval(() => {
-  doorCollection.get().then(snapshot => {
-    let snapshotPromises = snapshot.docs.map(doc => {
-      let doorData = doc.data();
-      console.log("GET doorData --> " + JSON.stringify(doorData));
-      return doorData;
-    });
 
-    Promise.all(snapshotPromises).then(results => {
-      results.forEach(doorValue => {
-        console.log("Checking for door NAME --> " + doorValue.name);
-        if (typeof doorValue.guards !== "undefined") {
-          doorValue.guards.forEach(guardVal => {
-            let guardDoc = db.doc("guard/" + guardVal);
-            guardDoc.get().then(doc => {
-              if (!doc.exists) {
-                console.log("No such document!");
-              } else {
-                console.log("Polling for V1 and V2");
-                // V1 request
-                pollVirtualPort1(doorValue, doc);
-                // v2 request
-                pollVirtualPort2(doorValue, doc);
-              }
+doorRef.on("child_changed", function(snapshot) {
+  console.log(snapshot.val());
+  var changedDoors = snapshot.val();
+  console.log("The updated door guards is " + changedDoors.guards);
+  if(changedDoors.status === "Closed"){
+    if(changedDoors.guards.length > 0){
+      changedDoors.guards.forEach(guardVal => {
+        console.log("GUARD REF ? " + guardVal);
+        db.ref("guard/" + guardVal).once('value').then(function(snapshot) {
+          console.log("GUARD REF >>>" + snapshot.val());
+          if(sendOk) {
+            client.messages
+            .create({
+              body: `ALERT ! ${
+                changedDoors.name
+              } is closed on ${new Date()}`,
+              to: snapshot.val().mobileNo, // Text this number
+              from: process.env.TWILIO_NUMBER // From a valid Twilio number
+            })
+            .then(message => {
+              sendEmail(
+                fromEmail,
+                snapshot.val().email,
+                `${changedDoors.name} is CLOSED`,
+                `<p>${changedDoors.name} is CLOSED on ${new Date()}</p>`
+              );
+              console.log(`SEND EMAIL DOOR CLOSED!  ${changedDoors.name}`);
             });
-          });
-        } else {
-          console.log("No guards assign to the door !");
-        }
+          }
+        });
       });
+    }
+  } //status closed
+
+  if(changedDoors.status === "Open"){
+    console.log(process.env.TWILIO_NUMBER);
+    if(changedDoors.guards.length > 0){
+      changedDoors.guards.forEach(guardVal => {
+        console.log("GUARD guardVal ? " + guardVal);
+        db.ref("guard/" + guardVal).once('value').then(function(snapshot) {
+          console.log("GUARD REF >>>" + snapshot.val());
+          if(sendOk) {
+            client.messages
+            .create({
+              body: `ALERT ! ${
+                changedDoors.name
+              } is open please follow up with an inspection`,
+              to: snapshot.val().mobileNo, // Text this number
+              from: process.env.TWILIO_NUMBER // From a valid Twilio number
+            })
+            .then(message => {
+              console.log("SMS sent : > " + message.sid);
+              console.log(`SEND SMS DOOR OPEN!  ${changedDoors.name}`);
+              sendEmail(
+                fromEmail,
+                snapshot.val().email,
+                `${changedDoors.name} is OPEN`,
+                `<p>${changedDoors.name} is OPEN on ${new Date()}</p>`
+              );
+            });
+          }
+        });
+        
+      });
+    }
+  }
+  console.log(" BATTERY ! changedDoors.battery" + changedDoors.battery);
+  if (
+    changedDoors.battery == 50 ||
+    changedDoors.battery == 20 ||
+    changedDoors.battery == 2
+  ) {
+    console.log("send battery notification");
+    if(changedDoors.guards.length > 0){
+      changedDoors.guards.forEach(guardVal => {
+        db.ref("guard/" + guardVal).once('value').then(function(snapshot) {
+          console.log("GUARD REF >>>" + snapshot.val());
+          if(sendOk) {
+            client.messages
+            .create({
+              body: `ALERT ! ${
+                changedDoors.name
+              } is running low (${changedDoors.battery}%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
+              to: snapshot.val().mobileNo, // Text this number
+              from: process.env.TWILIO_NUMBER // From a valid Twilio number
+            })
+            .then(message => {
+                sendEmail(
+                  fromEmail,
+                  snapshot.val().email,
+                  `${value.name} device battery running low`,
+                  `<p>Device battery is running low (${changedDoors.battery}%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}</p>`
+                );
+            });
+            
+          }
+        });
+      });
+    }
+  }
+});
+
+function UndefinedToEmptyStr(val){
+  if(typeof(val) === 'undefined'){
+    return "";
+  }  
+  return val; 
+}
+
+setInterval(() => {
+  doorRef.on("value", function(snapshot) {
+    let arrOfDoors = [];
+    for (let k of Object.keys(snapshot.val())) {
+      let d = {
+        key: k,
+        data: snapshot.val()[k]
+      } 
+      arrOfDoors.push(d);
+    }
+    arrOfDoors.forEach((door, index)=>{
+      pollVirtualPort1(door);
+      pollVirtualPort2(door);
     });
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
-}, parseInt(process.env.INTERVAL));
+}, parseInt(process.env.JOB_INTERVAL));

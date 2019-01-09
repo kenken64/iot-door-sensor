@@ -10,8 +10,8 @@ char auth[] = "b40605f4f5d5484bbe7b9a3cb78f1976";
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-char ssid[] = "kenneth-N550RC-RC1";
-char pass[] = "fY5amFe9";
+char ssid[] = "kenken64";
+char pass[] = "7730112910100";
 
 const int doorSensor = 12;
 const int greenLED = 2;

@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: "door", component: DoorComponent },
   { path: "addDoor", component: AddDoorComponent },
   { path: "addGuard", component: AddGuardComponent },
-  { path: "guard/:id", component: GuardComponent },
+  { path: "guard/:key", component: GuardComponent },
   { path: '', redirectTo: '/', pathMatch: 'full' },
   { path: "**", redirectTo: "/", pathMatch: 'full' }
 ]

@@ -18,6 +18,7 @@ import { AddGuardComponent } from "./components/guard/add/add.component";
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 // firebase dependencies 
 import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
 import { AngularFireModule } from '@angular/fire';
@@ -42,6 +43,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     AngularFontAwesomeModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
     AngularFireStorageModule,
     AngularFireMessagingModule,
     AngularFireAuthModule,
