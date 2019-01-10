@@ -61,9 +61,7 @@ async function pollVirtualPort2(value) {
       resp.on("end", () => {
         if (typeof data !== "undefined") {
           if (data === "Invalid token.") return;
-          console.log(
-            "pollVirtualPort2 : battery level > " + JSON.parse(data) + "%"
-          );
+          console.log("pollVirtualPort2 : battery level > " + JSON.parse(data) + "%");
           
           if (
             parseInt(JSON.parse(data)) == 50 ||
@@ -137,7 +135,7 @@ doorRef.on("child_changed", function(snapshot) {
           if(sendOk) {
             client.messages
             .create({
-              body: `ALERT ! ${
+              body: `INFO ! ${
                 changedDoors.name
               } is closed on ${new Date()}`,
               to: snapshot.val().mobileNo, // Text this number
