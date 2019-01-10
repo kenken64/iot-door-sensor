@@ -22,6 +22,7 @@ admin.initializeApp({
 
 var db = admin.database();
 var doorRef = db.ref("door");
+var eventsRef = db.ref("events");
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -62,22 +63,15 @@ async function pollVirtualPort2(value) {
         if (typeof data !== "undefined") {
           if (data === "Invalid token.") return;
           console.log("pollVirtualPort2 : battery level > " + JSON.parse(data) + "%");
-          
-          if (
-            parseInt(JSON.parse(data)) == 50 ||
-            parseInt(JSON.parse(data)) == 20 ||
-            parseInt(JSON.parse(data)) == 2
-          ) {
-            let additionalMessage = null;
-            if (parseInt(JSON.parse(data)) == 2) {
-              additionalMessage = "Device probably went offline";
-            }
-            var updRef = doorRef.child(value.key);
-            updRef.update({
-              battery: parseInt(JSON.parse(data)),
-              additionalMessage: additionalMessage
-            });
+          var updRef = doorRef.child(value.key);
+          let additionalMessage = "";
+          if (parseInt(JSON.parse(data)) == 2) {
+            additionalMessage = "Device probably went offline";
           }
+          updRef.update({
+            battery: parseInt(JSON.parse(data)),
+            additionalMessage: additionalMessage
+          });
         }
       });
     })
@@ -209,6 +203,7 @@ doorRef.on("child_changed", function(snapshot) {
               from: process.env.TWILIO_NUMBER // From a valid Twilio number
             })
             .then(message => {
+                console.log("SMS : " + message.sid);
                 sendEmail(
                   fromEmail,
                   snapshot.val().email,

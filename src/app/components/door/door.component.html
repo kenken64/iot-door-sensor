@@ -8,7 +8,7 @@
         <mat-icon svgIcon="door_open"></mat-icon>
       </div>
       <h4 mat-line>{{c.name}} - {{c.sensor_auth}}</h4>
-      <p mat-line>&nbsp;<b *ngIf="c.battery == '2'">OFFLINE</b></p>
+      <p mat-line>&nbsp;<b *ngIf="c.battery == '0'">OFFLINE</b></p>
       <p *ngIf="c.status == 'Closed'" mat-line>
           <mat-chip-list>
             <mat-chip color="accent" selected>{{c.status}}</mat-chip>
