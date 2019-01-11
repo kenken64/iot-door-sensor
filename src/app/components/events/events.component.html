@@ -1,0 +1,16 @@
+<mat-action-list>
+  <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+    <mat-button-toggle (click)="exportToExcel()" value="bold">
+      Export to Excel
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</mat-action-list>
+
+<mat-list>
+  <h3 mat-subheader>Events</h3>
+  <mat-list-item *ngFor="let message of messages">
+    <h3 matLine>{{ message.from }}</h3>
+    <p matLine>{{ message.subject }}</p>
+    <p matLine class="demo-2">{{ message.content }}</p>
+  </mat-list-item>
+</mat-list>
