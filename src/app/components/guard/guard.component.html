@@ -24,7 +24,7 @@
                {{ i.name }} - {{ i.mobileNo }}
         <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
       </mat-chip>
-      <input placeholder="Guard Officer in-charge for this door ({{doorName}})"
+      <input placeholder="Security guard that in-charge for this door ({{doorName}})"
              [matChipInputFor]="chipList"
              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
              [matChipInputAddOnBlur]="addOnBlur"

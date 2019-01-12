@@ -3,6 +3,7 @@ import { DoorService } from '../../services/door.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatIconRegistry} from '@angular/material';
 import { map } from 'rxjs/operators';
+import {Howl, Howler} from 'howler';
 
 @Component({
   selector: 'app-door',
@@ -24,6 +25,11 @@ export class DoorComponent implements OnInit {
         sanitizer.bypassSecurityTrustResourceUrl('assets/door_closed.svg'));
   }
 
+  sound = new Howl({
+      src: ['../../assets/door-open.mp3'],
+      loop: true
+  });
+
   ngOnInit() {
     this.getDoorList();
   }
@@ -36,6 +42,20 @@ export class DoorComponent implements OnInit {
       )
     ).subscribe(doors => {
       this.doors = doors;
+      console.log("door data changed !")
+      let item1 = this.doors.find(i => i.status === 'Open');
+      console.log("at least one door is open");
+      console.log(item1);
+      if(typeof(item1) === 'undefined' ){
+        // Play the sound.
+        this.sound.stop();
+      }else{
+        this.sound.stop();
+        // Play the sound.
+        this.sound.play();
+        // Change global volume.
+        Howler.volume(0.3);
+      }
       this.doors.sort((n1 , n2)=>{
         if (n1.name > n2.name) {
             return 1;
