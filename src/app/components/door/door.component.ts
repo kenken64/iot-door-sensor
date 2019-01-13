@@ -1,17 +1,9 @@
-<<<<<<< HEAD
 import { Component, OnInit } from '@angular/core';
 import { DoorService } from '../../services/door.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatIconRegistry} from '@angular/material';
 import { map } from 'rxjs/operators';
 import {Howl, Howler} from 'howler';
-=======
-import { Component, OnInit } from "@angular/core";
-import { DoorService } from "../../services/door.service";
-import { DomSanitizer } from "@angular/platform-browser";
-import { MatIconRegistry } from "@angular/material";
-import { map } from "rxjs/operators";
->>>>>>> 38fe6a88a425a01ca92dd0e19c98db4c5b8ca8e9
 
 @Component({
   selector: "app-door",

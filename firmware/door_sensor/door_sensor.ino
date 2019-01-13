@@ -10,8 +10,8 @@ char auth[] = "b40605f4f5d5484bbe7b9a3cb78f1976";
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-char ssid[] = "kennethP";
-char pass[] = "password1234";
+char ssid[] = "kenken64";
+char pass[] = "7730112910100";
 
 const int doorSensor = 12;
 const int greenLED = 2;
@@ -40,22 +40,22 @@ void doorSensorWidget()
   }
   
   if(state == HIGH){
+    Serial.println("Door Closed");
+    //led1.off();
+    Serial.print("Percentage: ");
+    Serial.println(battery.getPercentage());
+    Blynk.virtualWrite(V1, 0);
+    Blynk.virtualWrite(V2, battery.getPercentage());
+    ESP.deepSleep(10e6);
+  }else {
     Serial.println("Door Open");
     Serial.print("Percentage: ");
     Serial.println(battery.getPercentage());
     analogWrite(greenLED,1023);
     //led1.on();
-    Blynk.virtualWrite(V1, state);
+    Blynk.virtualWrite(V1, 1);
     Blynk.virtualWrite(V2, battery.getPercentage());
     delay(30);
-  }else {
-    Serial.println("Door Closed");
-    //led1.off();
-    Serial.print("Percentage: ");
-    Serial.println(battery.getPercentage());
-    Blynk.virtualWrite(V1, state);
-    Blynk.virtualWrite(V2, battery.getPercentage());
-    ESP.deepSleep(10e6);
   }
 }
 
