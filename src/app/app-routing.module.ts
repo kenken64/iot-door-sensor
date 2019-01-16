@@ -4,7 +4,6 @@ import { DoorComponent } from "./components/door/door.component";
 import { AddDoorComponent } from "./components/door/add/add.component";
 import { AddGuardComponent } from "./components/guard/add/add.component";
 import { EventsComponent } from "./components/events/events.component";
-
 import { GuardComponent } from "./components/guard/guard.component";
 
 const routes: Routes = [

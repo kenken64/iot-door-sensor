@@ -1,5 +1,6 @@
 <mat-action-list>
   <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+    <mat-button-toggle (click)="back()" value="bold">Back</mat-button-toggle>
     <mat-button-toggle (click)="exportToExcel()" value="bold">
       Export to Excel
     </mat-button-toggle>
@@ -8,9 +9,29 @@
 
 <mat-list>
   <h3 mat-subheader>Events</h3>
-  <mat-list-item *ngFor="let message of messages">
-    <h3 matLine>{{ message.from }}</h3>
-    <p matLine>{{ message.subject }}</p>
-    <p matLine class="demo-2">{{ message.content }}</p>
+  <mat-list-item *ngFor="let event of events">
+    <img
+      *ngIf="event.type == 'Battery'"
+      matListAvatar
+      src="https://cdn4.iconfinder.com/data/icons/bold-battery-1/512/Battery_3-512.png"
+      alt="..."
+    />
+    <img
+      *ngIf="event.type == 'DoorClosed'"
+      matListAvatar
+      src="https://cdn3.iconfinder.com/data/icons/real-estate-glyph-1/2048/637_-_Door-512.png"
+      alt="..."
+    />
+    <img
+      *ngIf="event.type == 'DoorOpen'"
+      matListAvatar
+      src="https://image.flaticon.com/icons/svg/59/59801.svg"
+      alt="..."
+    />
+    <h3 matLine>{{ event.eventDatetime | date: "medium" }}</h3>
+    <p matLine>{{ event.doorName }}</p>
+    <p matLine>{{ event.type }}</p>
+    <p matLine>{{ event.device }}</p>
+    <p matLine>{{ event.message }}</p>
   </mat-list-item>
 </mat-list>

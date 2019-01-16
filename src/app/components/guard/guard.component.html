@@ -1,33 +1,43 @@
 <mat-action-list>
-    <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-        <mat-button-toggle (click)="back()" value="bold">Back</mat-button-toggle>
-        <mat-button-toggle (click)="save()" value="italic">Save</mat-button-toggle>
-      </mat-button-toggle-group>
+  <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+    <mat-button-toggle (click)="back()" value="bold">Back</mat-button-toggle>
+    <mat-button-toggle (click)="save()" value="italic">Save</mat-button-toggle>
+  </mat-button-toggle-group>
 </mat-action-list>
 
 <mat-selection-list #guardz (selectionChange)="onSelection($event)">
   <mat-list-option *ngFor="let c of guards" [value]="c" (click)="getValue(c)">
-      <img matListAvatar src="https://www.cobdoglaps.sa.edu.au/wp-content/uploads/2017/11/placeholder-profile-sq.jpg" alt="...">
-      <h4 mat-line>{{c.name}}</h4>
-      <p mat-line>{{c.mobileNo}}</p>
-      <p mat-line>{{c.email}}</p>
+    <img
+      matListAvatar
+      src="https://www.cobdoglaps.sa.edu.au/wp-content/uploads/2017/11/placeholder-profile-sq.jpg"
+      alt="..."
+    />
+    <h4 mat-line>{{ c.name }}</h4>
+    <p mat-line>{{ c.mobileNo }}</p>
+    <p mat-line>{{ c.email }}</p>
   </mat-list-option>
 </mat-selection-list>
 <p class="example-container">
-  Options selected: {{guardz.selectedOptions.selected.length}}
+  Options selected: {{ guardz.selectedOptions.selected.length }}
 </p>
-<hr>
+<hr />
 <mat-form-field class="example-chip-list">
-    <mat-chip-list #chipList>
-      <mat-chip *ngFor="let i of selectedGuard" [selectable]="selectable"
-               [removable]="removable" (removed)="remove(i)">
-               {{ i.name }} - {{ i.mobileNo }}
-        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-      </mat-chip>
-      <input placeholder="Security guard that in-charge for this door ({{doorName}})"
-             [matChipInputFor]="chipList"
-             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-             [matChipInputAddOnBlur]="addOnBlur"
-             (matChipInputTokenEnd)="add($event)">
-    </mat-chip-list>
-  </mat-form-field>
+  <mat-chip-list #chipList>
+    <mat-chip
+      *ngFor="let i of selectedGuard"
+      [selectable]="selectable"
+      [removable]="removable"
+      (removed)="remove(i)"
+    >
+      {{ i.name }} - {{ i.mobileNo }}
+      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+    </mat-chip>
+    <input
+      placeholder="Security guard that in-charge for this door ({{ doorName }})"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="addOnBlur"
+      (matChipInputTokenEnd)="add($event)"
+    />
+  </mat-chip-list>
+</mat-form-field>

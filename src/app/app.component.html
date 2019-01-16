@@ -2,8 +2,10 @@
   <mat-icon [routerLink]="['']">meeting_room</mat-icon>
   <span> &nbsp; </span> <span> Door Sensor </span>
   <span class="example-spacer"></span>
-  <fa name="square" [routerLink]="['addDoor']"></fa> <span> &nbsp; </span>
-  <fa name="user" [routerLink]="['addGuard']"></fa> <span> &nbsp; </span>
+
+  <fa name="square" [routerLink]="['addDoor']"></fa>
+  <span> &nbsp;&nbsp; </span> <fa name="user" [routerLink]="['addGuard']"></fa>
+  <span> &nbsp;&nbsp; </span>
   <fa name="calendar" [routerLink]="['events']"></fa>
 </mat-toolbar>
 <router-outlet></router-outlet>

@@ -3,7 +3,7 @@ const http = require("http");
 const twilio = require("twilio");
 const nodemailer = require("nodemailer");
 const admin = require("firebase-admin");
-const _ = require('lodash');
+const _ = require("lodash");
 var accountSid = process.env.TWILIO_SSID;
 var authToken = process.env.TWILIO_AUTH_TOKEN;
 
@@ -32,7 +32,7 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-var sendOk = (process.env.NOTIFICATION_ENABLE =="true");
+var sendOk = process.env.NOTIFICATION_ENABLE == "true";
 
 function sendEmail(fromEmail, toEmail, subject, htmlcontent) {
   const mailOptions = {
@@ -62,7 +62,9 @@ async function pollVirtualPort2(value) {
       resp.on("end", () => {
         if (typeof data !== "undefined") {
           if (data === "Invalid token.") return;
-          console.log("pollVirtualPort2 : battery level > " + JSON.parse(data) + "%");
+          console.log(
+            "pollVirtualPort2 : battery level > " + JSON.parse(data) + "%"
+          );
           var updRef = doorRef.child(value.key);
           let additionalMessage = "";
           if (parseInt(JSON.parse(data)) == 2) {
@@ -102,11 +104,11 @@ async function pollVirtualPort1(value) {
             updRef.update({
               status: "Open"
             });
-          }else{
+          } else {
             updRef.update({
               status: "Closed"
             });
-          } 
+          }
         }
       });
     })
@@ -115,132 +117,177 @@ async function pollVirtualPort1(value) {
     }); // end V1 request
 }
 
-
 doorRef.on("child_changed", function(snapshot) {
   console.log(snapshot.val());
   var changedDoors = snapshot.val();
   console.log("The updated door guards is " + changedDoors.guards);
-  if(changedDoors.status === "Closed"){
-    if(changedDoors.guards.length > 0){
+  if (changedDoors.status === "Closed") {
+    eventsRef.push({
+      doorName: changedDoors.name,
+      device: changedDoors.sensor_auth,
+      type: "DoorClosed",
+      message: "Door is closed",
+      eventDatetime: new Date().getTime()
+    });
+    console.log(typeof changedDoors.guards);
+    if (
+      typeof changedDoors.guards !== "undefined" &&
+      changedDoors.guards.length > 0
+    ) {
       changedDoors.guards.forEach(guardVal => {
         console.log("GUARD REF ? " + guardVal);
-        db.ref("guard/" + guardVal).once('value').then(function(snapshot) {
-          console.log("GUARD REF >>>" + snapshot.val());
-          if(sendOk) {
-            client.messages
-            .create({
-              body: `INFO ! ${
-                changedDoors.name
-              } is closed on ${new Date()}`,
-              to: snapshot.val().mobileNo, // Text this number
-              from: process.env.TWILIO_NUMBER // From a valid Twilio number
-            })
-            .then(message => {
-              sendEmail(
-                fromEmail,
-                snapshot.val().email,
-                `${changedDoors.name} is CLOSED`,
-                `<p>${changedDoors.name} is CLOSED on ${new Date()}</p>`
-              );
-              console.log(`SEND EMAIL DOOR CLOSED!  ${changedDoors.name}`);
-            });
-          }
-        });
+        db.ref("guard/" + guardVal)
+          .once("value")
+          .then(function(snapshot) {
+            console.log("GUARD REF >>>" + snapshot.val());
+            if (sendOk) {
+              client.messages
+                .create({
+                  body: `INFO ! ${
+                    changedDoors.name
+                  } is closed on ${new Date()}`,
+                  to: snapshot.val().mobileNo, // Text this number
+                  from: process.env.TWILIO_NUMBER // From a valid Twilio number
+                })
+                .then(message => {
+                  sendEmail(
+                    fromEmail,
+                    snapshot.val().email,
+                    `${changedDoors.name} is CLOSED`,
+                    `<p>${changedDoors.name} is CLOSED on ${new Date()}</p>`
+                  );
+                  console.log(`SEND EMAIL DOOR CLOSED!  ${changedDoors.name}`);
+                });
+            }
+          });
       });
     }
   } //status closed
 
-  if(changedDoors.status === "Open"){
+  if (changedDoors.status === "Open") {
+    eventsRef.push({
+      doorName: changedDoors.name,
+      device: changedDoors.sensor_auth,
+      type: "DoorOpen",
+      message: "Door is open",
+      eventDatetime: new Date().getTime()
+    });
     console.log(process.env.TWILIO_NUMBER);
-    if(changedDoors.guards.length > 0){
+    if (
+      typeof changedDoors.guards !== "undefined" &&
+      changedDoors.guards.length > 0
+    ) {
       changedDoors.guards.forEach(guardVal => {
         console.log("GUARD guardVal ? " + guardVal);
-        db.ref("guard/" + guardVal).once('value').then(function(snapshot) {
-          console.log("GUARD REF >>>" + snapshot.val());
-          if(sendOk) {
-            client.messages
-            .create({
-              body: `ALERT ! ${
-                changedDoors.name
-              } is open please follow up with an inspection`,
-              to: snapshot.val().mobileNo, // Text this number
-              from: process.env.TWILIO_NUMBER // From a valid Twilio number
-            })
-            .then(message => {
-              console.log("SMS sent : > " + message.sid);
-              console.log(`SEND SMS DOOR OPEN!  ${changedDoors.name}`);
-              sendEmail(
-                fromEmail,
-                snapshot.val().email,
-                `${changedDoors.name} is OPEN`,
-                `<p>${changedDoors.name} is OPEN on ${new Date()}</p>`
-              );
-            });
-          }
-        });
-        
+        db.ref("guard/" + guardVal)
+          .once("value")
+          .then(function(snapshot) {
+            console.log("GUARD REF >>>" + snapshot.val());
+            if (sendOk) {
+              client.messages
+                .create({
+                  body: `ALERT ! ${
+                    changedDoors.name
+                  } is open please follow up with an inspection`,
+                  to: snapshot.val().mobileNo, // Text this number
+                  from: process.env.TWILIO_NUMBER // From a valid Twilio number
+                })
+                .then(message => {
+                  console.log("SMS sent : > " + message.sid);
+                  console.log(`SEND SMS DOOR OPEN!  ${changedDoors.name}`);
+                  sendEmail(
+                    fromEmail,
+                    snapshot.val().email,
+                    `${changedDoors.name} is OPEN`,
+                    `<p>${changedDoors.name} is OPEN on ${new Date()}</p>`
+                  );
+                });
+            }
+          });
       });
     }
   }
   console.log(" BATTERY ! changedDoors.battery" + changedDoors.battery);
   if (
     changedDoors.battery == 50 ||
+    changedDoors.battery == 49 ||
     changedDoors.battery == 20 ||
-    changedDoors.battery == 2
+    changedDoors.battery == 19 ||
+    changedDoors.battery == 2 ||
+    changedDoors.battery == 0
   ) {
+    eventsRef.push({
+      doorName: changedDoors.name,
+      device: changedDoors.sensor_auth,
+      type: "Battery",
+      message: "Battery level : " + changedDoors.battery + "%",
+      eventDatetime: new Date().getTime()
+    });
     console.log("send battery notification");
-    if(changedDoors.guards.length > 0){
+    if (
+      typeof changedDoors.guards !== "undefined" &&
+      changedDoors.guards.length > 0
+    ) {
       changedDoors.guards.forEach(guardVal => {
-        db.ref("guard/" + guardVal).once('value').then(function(snapshot) {
-          console.log("GUARD REF >>>" + snapshot.val());
-          if(sendOk) {
-            client.messages
-            .create({
-              body: `ALERT ! ${
-                changedDoors.name
-              } is running low (${changedDoors.battery}%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
-              to: snapshot.val().mobileNo, // Text this number
-              from: process.env.TWILIO_NUMBER // From a valid Twilio number
-            })
-            .then(message => {
-                console.log("SMS : " + message.sid);
-                sendEmail(
-                  fromEmail,
-                  snapshot.val().email,
-                  `${value.name} device battery running low`,
-                  `<p>Device battery is running low (${changedDoors.battery}%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}</p>`
-                );
-            });
-            
-          }
-        });
+        db.ref("guard/" + guardVal)
+          .once("value")
+          .then(function(snapshot) {
+            console.log("GUARD REF >>>" + snapshot.val());
+            if (sendOk) {
+              client.messages
+                .create({
+                  body: `ALERT ! ${changedDoors.name} is running low (${
+                    changedDoors.battery
+                  }%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
+                  to: snapshot.val().mobileNo, // Text this number
+                  from: process.env.TWILIO_NUMBER // From a valid Twilio number
+                })
+                .then(message => {
+                  console.log("SMS : " + message.sid);
+                  sendEmail(
+                    fromEmail,
+                    snapshot.val().email,
+                    `${value.name} device battery running low`,
+                    `<p>Device battery is running low (${
+                      changedDoors.battery
+                    }%). ${UndefinedToEmptyStr(
+                      changedDoors.additionalMessage
+                    )}</p>`
+                  );
+                });
+            }
+          });
       });
     }
   }
 });
 
-function UndefinedToEmptyStr(val){
-  if(typeof(val) === 'undefined'){
+function UndefinedToEmptyStr(val) {
+  if (typeof val === "undefined") {
     return "";
-  }  
-  return val; 
+  }
+  return val;
 }
 
 setInterval(() => {
-  doorRef.on("value", function(snapshot) {
-    let arrOfDoors = [];
-    for (let k of Object.keys(snapshot.val())) {
-      let d = {
-        key: k,
-        data: snapshot.val()[k]
-      } 
-      arrOfDoors.push(d);
+  doorRef.on(
+    "value",
+    function(snapshot) {
+      let arrOfDoors = [];
+      for (let k of Object.keys(snapshot.val())) {
+        let d = {
+          key: k,
+          data: snapshot.val()[k]
+        };
+        arrOfDoors.push(d);
+      }
+      arrOfDoors.forEach((door, index) => {
+        pollVirtualPort1(door);
+        pollVirtualPort2(door);
+      });
+    },
+    function(errorObject) {
+      console.log("The read failed: " + errorObject.code);
     }
-    arrOfDoors.forEach((door, index)=>{
-      pollVirtualPort1(door);
-      pollVirtualPort2(door);
-    });
-  }, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-  });
+  );
 }, parseInt(process.env.JOB_INTERVAL));

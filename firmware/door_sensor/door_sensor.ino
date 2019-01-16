@@ -15,7 +15,8 @@
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
 // b40605f4f5d5484bbe7b9a3cb78f1976
-char blynk_token[33] = "YOUR_BLYNK_AUTH_TOKEN";
+// 166fff24ab4f4a52a31a936369d0a1cc
+char blynk_token[33] = "b40605f4f5d5484bbe7b9a3cb78f1976";
 
 //flag for saving data
 bool shouldSaveConfig = false;
@@ -52,7 +53,8 @@ void doorSensorWidget()
     Serial.println("Failed to read from battery pct!");
     return;
   }
-  
+
+  /*
   if(state == HIGH){
     Serial.println("Door Closed");
     Serial.print("Percentage: ");
@@ -71,6 +73,28 @@ void doorSensorWidget()
     Blynk.virtualWrite(V2, battery.getPercentage());
     Blynk.virtualWrite(V3, battery.getLevel());
     delay(30);
+  }*/
+
+  
+   if(state == HIGH){
+    Serial.println("Door Open");
+    Serial.print("Percentage: ");
+    Serial.println(battery.getPercentage());
+    analogWrite(greenLED,1023);
+    Blynk.virtualWrite(V1, 1);
+    Blynk.virtualWrite(V2, battery.getPercentage());
+    Blynk.virtualWrite(V3, battery.getLevel());
+    delay(30);
+  }else {
+    Serial.println("Door Closed");
+    Serial.print("Percentage: ");
+    Serial.println(battery.getPercentage());
+    Blynk.virtualWrite(V1, 0);
+    Blynk.virtualWrite(V2, battery.getPercentage());
+    Blynk.virtualWrite(V3, battery.getLevel());
+    Serial.println("ESP8266 in sleep mode");
+    ESP.deepSleep(10e6, WAKE_RF_DEFAULT);
+    
   }
 }
 
