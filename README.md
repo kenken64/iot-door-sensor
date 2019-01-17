@@ -1,4 +1,16 @@
-# IotDoorSensor
+# Internet of Things Window/Door Sensor
+
+# Twilio - SMS Notification
+
+- Create a twilio account and top up with the credits.
+- Note down the twilio SSID and AUTH TOKEN.
+
+# SMTP or Gmail account Email notification
+
+- Create gmail account. Please do not use personal gmail account for this.
+- Enable unsecure access to this account
+
+# Angular
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 

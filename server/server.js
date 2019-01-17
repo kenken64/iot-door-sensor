@@ -7,8 +7,6 @@ const _ = require("lodash");
 var accountSid = process.env.TWILIO_SSID;
 var authToken = process.env.TWILIO_AUTH_TOKEN;
 
-var alreadySentBefore = false;
-var alreadySentBeforeCnt = 0;
 var client = new twilio(accountSid, authToken);
 
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
@@ -100,15 +98,41 @@ async function pollVirtualPort1(value) {
           if (data === "Invalid token.") return;
           console.log("pollVirtualPort1 : > " + JSON.parse(data));
           var updRef = doorRef.child(value.key);
-          if (parseInt(JSON.parse(data)) == 1) {
-            updRef.update({
-              status: "Open"
-            });
-          } else {
-            updRef.update({
-              status: "Closed"
-            });
-          }
+          updRef.once(
+            "value",
+            function(snapshot) {
+              doorRefVal = snapshot.val();
+              if (typeof doorRefVal.status === "undefined") {
+                statusOfNightMare = "Closed";
+              } else {
+                statusOfNightMare = doorRefVal.status;
+                console.log(
+                  "ARE WE FLIPPING THE STATUS > " + statusOfNightMare
+                );
+                console.log(
+                  "ARE WE FLIPPING THE STATUS CURRENT > " + doorRefVal.status
+                );
+                console.log(
+                  "ARE WE FLIPPING THE STATUS PREV > " + doorRefVal.prev_status
+                );
+              }
+
+              if (parseInt(JSON.parse(data)) == 1) {
+                updRef.update({
+                  status: "Open",
+                  prev_status: statusOfNightMare
+                });
+              } else {
+                updRef.update({
+                  status: "Closed",
+                  prev_status: statusOfNightMare
+                });
+              }
+            },
+            function(errorObject) {
+              console.log("The read failed: " + errorObject.code);
+            }
+          );
         }
       });
     })
@@ -141,23 +165,31 @@ doorRef.on("child_changed", function(snapshot) {
           .then(function(snapshot) {
             console.log("GUARD REF >>>" + snapshot.val());
             if (sendOk) {
-              client.messages
-                .create({
-                  body: `INFO ! ${
-                    changedDoors.name
-                  } is closed on ${new Date()}`,
-                  to: snapshot.val().mobileNo, // Text this number
-                  from: process.env.TWILIO_NUMBER // From a valid Twilio number
-                })
-                .then(message => {
-                  sendEmail(
-                    fromEmail,
-                    snapshot.val().email,
-                    `${changedDoors.name} is CLOSED`,
-                    `<p>${changedDoors.name} is CLOSED on ${new Date()}</p>`
-                  );
-                  console.log(`SEND EMAIL DOOR CLOSED!  ${changedDoors.name}`);
-                });
+              if (changedDoors.status !== changedDoors.prev_status) {
+                client.messages
+                  .create({
+                    body: `INFO ! ${
+                      changedDoors.name
+                    } is closed on ${new Date().toLocaleString("en-US", {
+                      timeZone: "Asia/Singapore"
+                    })}`,
+                    to: snapshot.val().mobileNo, // Text this number
+                    from: process.env.TWILIO_NUMBER // From a valid Twilio number
+                  })
+                  .then(message => {
+                    console.log("SMS sent : > " + message.sid);
+                    console.log(`SEND SMS DOOR CLOSED!  ${changedDoors.name}`);
+                    sendEmail(
+                      fromEmail,
+                      snapshot.val().email,
+                      `${changedDoors.name} is CLOSED`,
+                      `<p>${changedDoors.name} is CLOSED on ${new Date()}</p>`
+                    );
+                    console.log(
+                      `SEND EMAIL DOOR CLOSED!  ${changedDoors.name}`
+                    );
+                  });
+              }
             }
           });
       });
@@ -184,24 +216,26 @@ doorRef.on("child_changed", function(snapshot) {
           .then(function(snapshot) {
             console.log("GUARD REF >>>" + snapshot.val());
             if (sendOk) {
-              client.messages
-                .create({
-                  body: `ALERT ! ${
-                    changedDoors.name
-                  } is open please follow up with an inspection`,
-                  to: snapshot.val().mobileNo, // Text this number
-                  from: process.env.TWILIO_NUMBER // From a valid Twilio number
-                })
-                .then(message => {
-                  console.log("SMS sent : > " + message.sid);
-                  console.log(`SEND SMS DOOR OPEN!  ${changedDoors.name}`);
-                  sendEmail(
-                    fromEmail,
-                    snapshot.val().email,
-                    `${changedDoors.name} is OPEN`,
-                    `<p>${changedDoors.name} is OPEN on ${new Date()}</p>`
-                  );
-                });
+              if (changedDoors.status !== changedDoors.prev_status) {
+                client.messages
+                  .create({
+                    body: `ALERT ! ${
+                      changedDoors.name
+                    } is open please follow up with an inspection`,
+                    to: snapshot.val().mobileNo, // Text this number
+                    from: process.env.TWILIO_NUMBER // From a valid Twilio number
+                  })
+                  .then(message => {
+                    console.log("SMS sent : > " + message.sid);
+                    console.log(`SEND SMS DOOR OPEN!  ${changedDoors.name}`);
+                    sendEmail(
+                      fromEmail,
+                      snapshot.val().email,
+                      `${changedDoors.name} is OPEN`,
+                      `<p>${changedDoors.name} is OPEN on ${new Date()}</p>`
+                    );
+                  });
+              }
             }
           });
       });
