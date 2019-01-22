@@ -1,0 +1,29 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=door-sensor
+*Date=00:00:31
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;46.6451;-43.454;0;Bottom;TXT1
+2;;;2.99593;-2.69839;0;Bottom;Hole3
+3;;;42.1466;-20.478;180;Bottom;Part1
+4;;;43.636;-2.6985;0;Top;Pad1
+5;;5 mm [THT];5.53593;-36.3697;0;Bottom;LED1
+6;;;2.99593;-43.3385;0;Bottom;Hole4
+7;;;66.496;-2.69839;0;Bottom;Hole2
+8;;;66.496;-43.3385;0;Bottom;Hole1
+9;;;58.614;-37.6003;0;Bottom;IMG1
+10;10k;THT;20.7759;-40.7985;0;Bottom;R2
+11;;reed_switch_plastic;13.1559;-21.7485;-90;Bottom;S1
+12;47k;THT;41.0959;-38.2585;0;Bottom;R1
+13;;;41.096;-2.6985;0;Top;Pad2
+14;220;THT;5.53593;-10.3185;90;Bottom;R3

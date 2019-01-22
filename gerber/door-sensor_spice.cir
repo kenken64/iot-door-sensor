@@ -1,0 +1,8 @@
+door-sensor
+R2 0 1 10k
+R3 2 4 220
+R1 5 1 47k
+
+.TRAN 1ms 100ms
+* .AC DEC 100 100 1MEG
+.END
