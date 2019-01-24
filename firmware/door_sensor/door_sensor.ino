@@ -16,7 +16,7 @@
 // Go to the Project Settings (nut icon).
 // b40605f4f5d5484bbe7b9a3cb78f1976
 // 166fff24ab4f4a52a31a936369d0a1cc
-char blynk_token[33] = "962d1f57311e47c7bb71697b8051def0";
+char blynk_token[33] = "185333bfb0d14a2a9365fdc3bd27966a";
 
 //flag for saving data
 bool shouldSaveConfig = false;

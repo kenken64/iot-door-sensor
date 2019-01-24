@@ -5,3 +5,32 @@
 .example-spacer {
     flex: 1 1 auto;
 }
+
+.example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+.example-full-width {
+  width: 100%;
+}
+
+.example-card {
+    justify-content: center;
+    align-items: center;
+    max-width: 400px;
+}
+  
+.example-header-image {
+  background-size: cover;
+}
+
+.example-margin {
+  margin: 0 10px;
+}
+
+.transparent .mat-dialog-container {
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.0);
+}
