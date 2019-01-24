@@ -1,9 +1,9 @@
 <div *ngIf="afAuth.user | async as user; else showLogin">
 <mat-toolbar color="primary">
   <mat-icon [routerLink]="['']">meeting_room</mat-icon>
-  <span> &nbsp; </span> <span> Window/Door Sensor </span>
+  <span> &nbsp; </span> 
+  <span noWrap=false> Window/Door </span>
   <span class="example-spacer"></span>
-
   <fa name="square" [routerLink]="['addDoor']"></fa>
   <span> &nbsp;&nbsp; </span> <fa name="user" [routerLink]="['addGuard']"></fa>
   <span> &nbsp;&nbsp; </span>

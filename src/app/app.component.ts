@@ -28,7 +28,8 @@ export class AppComponent {
   loginWithEmail(){
     const formValue = this.loginForm.value;
     this.isLoading = true;
-    this.authService.loginWithEmail(formValue.email, formValue.password)
+    try{
+      this.authService.loginWithEmail(formValue.email, formValue.password)
           .subscribe(
               (result) => {
                 console.log(result);
@@ -38,13 +39,22 @@ export class AppComponent {
                 setTimeout(function() {
                     console.log("delay ...");
                     this.isLoading = false;
-                }.bind(this), 9000);
+                }.bind(this), 5000);
                 
+              },
+              (error) => {
+                console.log(error)
+                this.isLoading = false; // error path
               }
           )
+    }catch(e){
+      this.isLoading = false;
+      console.log(">>>>" + e);
+    }
   }
 
   logout(){
+    this.isLoading = false;
     this.afAuth.auth.signOut().then(result=>this.authService.destroyToken());
   }
 }
