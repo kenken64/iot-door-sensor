@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from "@angular/material";
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable, Subject, BehaviorSubject} from "rxjs";
 import { catchError } from 'rxjs/operators';
@@ -13,7 +13,8 @@ export class AuthService {
  authInfo$: BehaviorSubject<AuthInfo> = new BehaviorSubject<AuthInfo>(AuthService.UNKNOWN_USER);
  authState: any = null;
   
-  constructor(private afAuth: AngularFireAuth, private http: HttpClient) { 
+  constructor(private afAuth: AngularFireAuth, 
+    private snackBar: MatSnackBar) { 
   }
 
   loginWithEmail(email, password){
@@ -25,7 +26,11 @@ export class AuthService {
 
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(JSON.stringify(error))
+      console.error(JSON.stringify(error));
+      let snackBarRef = this.snackBar.open(
+        JSON.stringify(error),
+        "Done"
+      );  
       return Observable.throw(error  || 'backend server error');
     };
   }

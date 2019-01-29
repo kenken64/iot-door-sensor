@@ -1,5 +1,5 @@
 <mat-list>
-  <h3 mat-subheader>Doors</h3>
+  <h3 mat-subheader>&nbsp;&nbsp;Doors</h3>
   <mat-list-item *ngFor="let c of doors" [routerLink]="['guard', c.key]">
     <div *ngIf="c.status == 'Closed'">
       <mat-icon svgIcon="door_closed"></mat-icon>
@@ -9,6 +9,8 @@
     </div>
     <h4 mat-line>{{ c.name }}</h4>
     <p mat-line>&nbsp;{{ c.sensor_auth }}</p>
+    <p mat-line *ngIf="c.battery <= 21">&nbsp;</p>
+    <p mat-line *ngIf="c.battery <= 21" >&nbsp; <strong>OFFLINE</strong></p>
     <p mat-line>&nbsp;</p>
     <p mat-line *ngIf="c.battery == '0'">&nbsp;<strong>OFFLINE</strong></p>
     <p *ngIf="c.status == 'Closed'" mat-line>
@@ -21,5 +23,6 @@
         <mat-chip color="primary" selected>{{ c.status }}</mat-chip>
       </mat-chip-list>
     </p>
+    <mat-divider></mat-divider>
   </mat-list-item>
 </mat-list>
