@@ -27,7 +27,8 @@ export class AddDoorComponent implements OnInit {
       name: name,
       sensor_auth: sensorAuth,
       status: "Closed",
-      prev_status: "Closed"
+      prev_status: "Closed",
+      battery: "0"
     };
 
     let unsub = this.svc

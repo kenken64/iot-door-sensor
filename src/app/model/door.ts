@@ -6,4 +6,5 @@ export interface Door {
   prev_status?: string;
   closedDatetime?: Date;
   guards?: any[];
+  battery?: string;
 }
