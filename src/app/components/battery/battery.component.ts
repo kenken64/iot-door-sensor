@@ -59,9 +59,9 @@ export class BatteryComponent implements OnInit, AfterViewInit {
       // the value axis
       yAxis: {
         stops: [
-          [0.5, "#DF5353"], // green
-          [0.6, "yellow"], // yellow
-          [0.9, "green"] // red
+          [0.2, "#DF5353"], // green
+          [0.8, "yellow"], // yellow
+          [1.0, "green"] // red
         ],
         length: 5,
         lineWidth: 0,
@@ -77,7 +77,7 @@ export class BatteryComponent implements OnInit, AfterViewInit {
         max: 100,
         plotBands: [
           { from: 80, to: 100, color: "green" },
-          { from: 50, to: 80, color: "yellow" },
+          { from: 20, to: 80, color: "yellow" },
           { from: 0, to: 20, color: "red" }
         ]
       },

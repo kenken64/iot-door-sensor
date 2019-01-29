@@ -40,7 +40,7 @@
           </mat-progress-spinner>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="loginWithEmail()">&nbsp;Login</button><br>
+            <button mat-raised-button color="primary" (click)="loginWithEmail()" [disabled]="!loginForm.valid">&nbsp;Login</button><br>
         </mat-card-actions>
       </mat-card>
   
