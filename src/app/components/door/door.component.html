@@ -9,10 +9,9 @@
     </div>
     <h4 mat-line>{{ c.name }}</h4>
     <p mat-line>&nbsp;{{ c.sensor_auth }}</p>
-    <p mat-line *ngIf="c.battery <= 21">&nbsp;</p>
-    <p mat-line *ngIf="c.battery <= 21" >&nbsp; <strong>OFFLINE</strong></p>
     <p mat-line>&nbsp;</p>
     <p mat-line *ngIf="c.battery == '0'">&nbsp;<strong>OFFLINE</strong></p>
+    <p mat-line *ngIf="c.battery == '0'">&nbsp;</p>
     <p *ngIf="c.status == 'Closed'" mat-line>
       <mat-chip-list>
         <mat-chip color="accent" selected>{{ c.status }}</mat-chip>
