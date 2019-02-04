@@ -34,6 +34,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { ChartModule, HIGHCHARTS_MODULES } from "angular-highcharts";
 import * as more from "highcharts/highcharts-more.src";
 import * as solidGauge from "highcharts/modules/solid-gauge.src";
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import * as solidGauge from "highcharts/modules/solid-gauge.src";
     AngularFireMessagingModule,
     AngularFireAuthModule,
     ReactiveFormsModule,
-    ChartModule
+    ChartModule,
+    InfiniteScrollModule
   ],
   providers: [
     AngularFirestore,

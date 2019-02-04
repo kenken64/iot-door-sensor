@@ -20,8 +20,9 @@ export class EventsService {
     return of(this.eventsRef.push(events));
   }
 
-  getAllEvents(): AngularFireList<Events> {
-    this.eventsRef = this.db.list(this.dbPath);
+  getAllEvents(batch, lastKey?): AngularFireList<Events> {
+    this.eventsRef = this.db.list(this.dbPath, ref => 
+      ref.startAt(String(lastKey)).limitToLast(batch).orderByKey());
     return this.eventsRef;
   }
 

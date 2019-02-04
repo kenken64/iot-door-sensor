@@ -1,3 +1,5 @@
+'use strict';
+
 var openTimeStamp =  new Date();
 var closedTimeStamp =  new Date();
 var batteryTimeStamp =  new Date();
