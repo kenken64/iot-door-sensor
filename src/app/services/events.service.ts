@@ -20,9 +20,8 @@ export class EventsService {
     return of(this.eventsRef.push(events));
   }
 
-  getAllEvents(): AngularFireList<Events> {
-    this.eventsRef = this.db.list(this.dbPath);
-    return this.eventsRef;
+  getAllEvents() : AngularFireList<Events> {
+    return this.db.list(this.dbPath);
   }
 
   getEvents(id): Observable<Events> {
