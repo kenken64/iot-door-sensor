@@ -1,0 +1,19 @@
+<mat-action-list>
+  <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+    <mat-button-toggle (click)="back()" value="bold">Back</mat-button-toggle>
+    <mat-button-toggle (click)="addFeedback()" value="bold">
+      Add
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</mat-action-list>
+
+<mat-list>
+  <h3 mat-subheader>{{doorName}}</h3>
+  <mat-list-item *ngFor="let feedback of feedbacks">
+    <h3 matLine>{{ feedback.datetime | date: "medium" }}</h3>
+    <p matLine>{{ feedback.deviceAuthToken }}</p>
+    <p matLine>{{ feedback.message }}</p>
+    <p matLine>{{ feedback.by }}</p>
+    <p matLine>{{ feedback.action }}</p>
+  </mat-list-item>
+</mat-list>

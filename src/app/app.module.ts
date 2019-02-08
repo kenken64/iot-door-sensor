@@ -18,6 +18,7 @@ import { EventsComponent } from "./components/events/events.component";
 
 import { AddDoorComponent } from "./components/door/add/add.component";
 import { AddGuardComponent } from "./components/guard/add/add.component";
+import { BatteryComponent } from "./components/battery/battery.component";
 
 import { AngularFontAwesomeModule } from "angular-font-awesome";
 // firebase dependencies
@@ -31,6 +32,11 @@ import { AngularFireMessagingModule } from "@angular/fire/messaging";
 import { ReactiveFormsModule } from "@angular/forms";
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
+import { ChartModule, HIGHCHARTS_MODULES } from "angular-highcharts";
+import * as more from "highcharts/highcharts-more.src";
+import * as solidGauge from "highcharts/modules/solid-gauge.src";
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +44,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     GuardComponent,
     AddDoorComponent,
     AddGuardComponent,
-    EventsComponent
+    EventsComponent,
+    BatteryComponent
   ],
   imports: [
     BrowserModule,
@@ -56,9 +63,16 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     AngularFireMessagingModule,
     AngularFireAuthModule,
     ReactiveFormsModule,
+    ChartModule,
     InfiniteScrollModule
   ],
-  providers: [AngularFirestore, DoorService, GuardService, ExcelService],
+  providers: [
+    AngularFirestore,
+    DoorService,
+    GuardService,
+    ExcelService,
+    { provide: HIGHCHARTS_MODULES, useFactory: () => [more, solidGauge] }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

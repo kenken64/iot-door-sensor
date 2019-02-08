@@ -12,7 +12,7 @@ import { MatSnackBar } from "@angular/material";
 import { ActivatedRoute, Router } from "@angular/router";
 import * as _ from "lodash";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
-import { map } from 'rxjs/operators';
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-guard",
@@ -26,6 +26,7 @@ export class GuardComponent implements OnInit {
   selectedGuard: Guard[] = [];
   doorName: String = "";
   doorId: String = "";
+  doorBatteryValue: String = "";
   roomId: String;
   visible = true;
   selectable = true;
@@ -49,7 +50,8 @@ export class GuardComponent implements OnInit {
       console.log(">>> ID ??? " + this.roomId);
       this.doorName = result.name;
       this.doorId = this.roomId;
-      if (typeof(result.guards) !== 'undefined'){
+      this.doorBatteryValue = result.battery;
+      if (typeof result.guards !== "undefined") {
         result.guards.forEach(value => {
           console.log(value);
           this.guardSvc.getGuard(value).subscribe(guardVal => {
@@ -58,29 +60,39 @@ export class GuardComponent implements OnInit {
           });
         });
       }
-      
     });
-    
-    this.guardSvc.getAllGuard().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+
+    this.guardSvc
+      .getAllGuard()
+      .snapshotChanges()
+      .pipe(
+        map(changes =>
+          changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+        )
       )
-    ).subscribe(guards => {
-      this.guards = guards;
-      this.guards.sort((n1 , n2)=>{
-        if (n1.name > n2.name) {
+      .subscribe(guards => {
+        this.guards = guards;
+        this.guards.sort((n1, n2) => {
+          if (n1.name > n2.name) {
             return 1;
-        }
-        if (n1.name < n2.name) {
+          }
+          if (n1.name < n2.name) {
             return -1;
-        }
-        return 0;
+          }
+          return 0;
+        });
       });
-    });
   }
 
   back() {
     this.router.navigate(["/"]);
+  }
+
+  showBattery() {
+    console.log(this.doorBatteryValue);
+    console.log(this.doorName);
+
+    this.router.navigate(["/battery", this.doorBatteryValue, this.doorName]);
   }
 
   add($event) {}
