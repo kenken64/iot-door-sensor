@@ -30,12 +30,11 @@ import { AngularFireModule } from "@angular/fire";
 import { AngularFireStorageModule } from "@angular/fire/storage";
 import { AngularFireMessagingModule } from "@angular/fire/messaging";
 import { ReactiveFormsModule } from "@angular/forms";
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 import { ChartModule, HIGHCHARTS_MODULES } from "angular-highcharts";
 import * as more from "highcharts/highcharts-more.src";
 import * as solidGauge from "highcharts/modules/solid-gauge.src";
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { InfiniteScrollModule } from "ngx-infinite-scroll";
 
 @NgModule({
   declarations: [

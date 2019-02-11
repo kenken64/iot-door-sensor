@@ -7,39 +7,39 @@
   </mat-button-toggle-group>
 </mat-action-list>
 <div
-      class="search-results"
-      infiniteScroll
-      [infiniteScrollDistance]="2"
-      [infiniteScrollThrottle]="15"
-      (scrolled)="onScroll()"
-      [scrollWindow]="true"
-    >
-<mat-list>
-  <h3 mat-subheader>Events</h3>
-  <mat-list-item *ngFor="let event of events | async">
-    <img
-      *ngIf="event.type == 'Battery'"
-      matListAvatar
-      src="https://cdn4.iconfinder.com/data/icons/bold-battery-1/512/Battery_3-512.png"
-      alt="..."
-    />
-    <img
-      *ngIf="event.type == 'DoorClosed'"
-      matListAvatar
-      src="https://cdn3.iconfinder.com/data/icons/real-estate-glyph-1/2048/637_-_Door-512.png"
-      alt="..."
-    />
-    <img
-      *ngIf="event.type == 'DoorOpen'"
-      matListAvatar
-      src="https://image.flaticon.com/icons/svg/59/59801.svg"
-      alt="..."
-    />
-    <h3 matLine>{{ event.eventDatetime | date: "medium" }}</h3>
-    <p matLine>{{ event.doorName }}</p>
-    <p matLine>{{ event.type }}</p>
-    <p matLine>{{ event.device }}</p>
-    <p matLine>{{ event.message }}</p>
-  </mat-list-item>
-</mat-list>
+  class="search-results"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="15"
+  (scrolled)="onScroll()"
+  [scrollWindow]="true"
+>
+  <mat-list>
+    <h3 mat-subheader>Events</h3>
+    <mat-list-item *ngFor="let event of events">
+      <img
+        *ngIf="event.type == 'Battery'"
+        matListAvatar
+        src="https://cdn4.iconfinder.com/data/icons/bold-battery-1/512/Battery_3-512.png"
+        alt="..."
+      />
+      <img
+        *ngIf="event.type == 'DoorClosed'"
+        matListAvatar
+        src="https://cdn3.iconfinder.com/data/icons/real-estate-glyph-1/2048/637_-_Door-512.png"
+        alt="..."
+      />
+      <img
+        *ngIf="event.type == 'DoorOpen'"
+        matListAvatar
+        src="https://image.flaticon.com/icons/svg/59/59801.svg"
+        alt="..."
+      />
+      <h3 matLine>{{ event.eventDatetime | date: "medium" }}</h3>
+      <p matLine>{{ event.doorName }}</p>
+      <p matLine>{{ event.type }}</p>
+      <p matLine>{{ event.device }}</p>
+      <p matLine>{{ event.message }}</p>
+    </mat-list-item>
+  </mat-list>
 </div>
