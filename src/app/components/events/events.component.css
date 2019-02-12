@@ -1,3 +1,7 @@
 .search-results {
     height: 100%;
   }
+
+.mat-badge-medium.mat-badge-above .mat-badge-content {
+    top: -1px;
+}

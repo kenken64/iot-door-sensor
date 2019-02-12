@@ -45,8 +45,9 @@
       <p matLine>{{ event.device }}</p>
       <p matLine>{{ event.message }}</p>
       <p matLine>&nbsp;</p>
+      
       <p matLine>
-        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]">Feedback</button>&nbsp;<span matBadge="4" matBadgeOverlap="false"></span>
+        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]" matBadge="8" matBadgePosition="after" matBadgeColor="accent">Feedback</button>&nbsp;
       </p>
       <mat-divider></mat-divider>
     </mat-list-item>
