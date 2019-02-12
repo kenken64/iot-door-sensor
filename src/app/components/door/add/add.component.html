@@ -1,16 +1,35 @@
 <section class="mat-title mat-typography">
-    <h2 class="mat-h2">&nbsp;&nbsp;Windows/Door</h2>
+  <h2 class="mat-h2">&nbsp;&nbsp;Windows/Door</h2>
 </section>
 <mat-card>
-<div class="example-container">
-  <form  class="example-container" [formGroup]="doorForm">
-  <mat-form-field>
-    <input matInput placeholder="Name" formControlName="name" required>
-  </mat-form-field>
-  <mat-form-field>
-    <textarea matInput placeholder="Sensor Auth" formControlName="sensorAuth" required></textarea>
-  </mat-form-field>
-  <button mat-raised-button color="primary" (click)="saveDoor()" [disabled]="!doorForm.valid">Add</button>
-  </form>
-</div>
+  <div class="example-container">
+    <form class="example-container" [formGroup]="doorForm">
+      <mat-form-field>
+        <input matInput placeholder="Name" formControlName="name" required />
+      </mat-form-field>
+      <mat-form-field>
+        <textarea
+          matInput
+          placeholder="Sensor Auth"
+          formControlName="sensorAuth"
+          required
+        ></textarea>
+      </mat-form-field>
+      <mat-form-field>
+        <textarea
+          matInput
+          placeholder="Lock/Unlock Auth"
+          formControlName="triggerAuth"
+        ></textarea>
+      </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="saveDoor()"
+        [disabled]="!doorForm.valid"
+      >
+        Add
+      </button>
+    </form>
+  </div>
 </mat-card>

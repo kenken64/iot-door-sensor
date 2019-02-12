@@ -15,7 +15,8 @@ export class AddDoorComponent implements OnInit {
 
   doorForm = new FormGroup({
     name: new FormControl("", Validators.required),
-    sensorAuth: new FormControl("", Validators.required)
+    sensorAuth: new FormControl("", Validators.required),
+    triggerAuth: new FormControl("")
   });
 
   ngOnInit() {}
@@ -23,9 +24,11 @@ export class AddDoorComponent implements OnInit {
   saveDoor() {
     let name = this.doorForm.get("name").value;
     let sensorAuth = this.doorForm.get("sensorAuth").value;
+    let triggerAuth = this.doorForm.get("triggerAuth").value;
     let d: Door = {
       name: name,
       sensor_auth: sensorAuth,
+      trigger_auth: triggerAuth,
       status: "Closed",
       prev_status: "Closed",
       battery: "0"
