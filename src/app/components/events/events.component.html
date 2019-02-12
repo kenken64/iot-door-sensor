@@ -4,9 +4,6 @@
     <mat-button-toggle (click)="exportToExcel()" value="bold">
       Export to Excel
     </mat-button-toggle>
-    <mat-button-toggle (click)="toFeedback()" value="bold">
-      Feedback
-    </mat-button-toggle>
   </mat-button-toggle-group>
 </mat-action-list>
 <div
@@ -43,6 +40,11 @@
       <p matLine>{{ event.type }}</p>
       <p matLine>{{ event.device }}</p>
       <p matLine>{{ event.message }}</p>
+      <p matLine>&nbsp;</p>
+      <p matLine>
+        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]">Feedback</button>
+      </p>
+      <mat-divider></mat-divider>
     </mat-list-item>
   </mat-list>
 </div>

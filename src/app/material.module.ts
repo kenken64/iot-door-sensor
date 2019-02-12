@@ -40,7 +40,6 @@ import {
   MatTooltipModule,
   MatTreeModule,
 } from '@angular/material';
-
 @NgModule({
   exports: [
     CdkTableModule,

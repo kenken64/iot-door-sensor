@@ -19,6 +19,8 @@ import { EventsComponent } from "./components/events/events.component";
 import { AddDoorComponent } from "./components/door/add/add.component";
 import { AddGuardComponent } from "./components/guard/add/add.component";
 import { BatteryComponent } from "./components/battery/battery.component";
+import { FeedbackComponent } from "./components/events/feedback/feedback.component";
+import { AddFeedbackComponent } from "./components/events/feedback/add/add.component";
 
 import { AngularFontAwesomeModule } from "angular-font-awesome";
 // firebase dependencies
@@ -35,6 +37,7 @@ import { ChartModule, HIGHCHARTS_MODULES } from "angular-highcharts";
 import * as more from "highcharts/highcharts-more.src";
 import * as solidGauge from "highcharts/modules/solid-gauge.src";
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 @NgModule({
   declarations: [
@@ -44,7 +47,9 @@ import { InfiniteScrollModule } from "ngx-infinite-scroll";
     AddDoorComponent,
     AddGuardComponent,
     EventsComponent,
-    BatteryComponent
+    BatteryComponent,
+    FeedbackComponent,
+    AddFeedbackComponent
   ],
   imports: [
     BrowserModule,
@@ -63,7 +68,8 @@ import { InfiniteScrollModule } from "ngx-infinite-scroll";
     AngularFireAuthModule,
     ReactiveFormsModule,
     ChartModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    NgxMaterialTimepickerModule.forRoot()
   ],
   providers: [
     AngularFirestore,

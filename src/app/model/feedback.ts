@@ -1,7 +1,10 @@
 export interface Feedback {
   id?: string;
+  eventId: string;
   device: string;
   doorName: string;
   comment: string;
-  feedbackDatetime?: Date;
+  feedbackDate?: Date;
+  feedbackTime?: Date;
+  guardEmail?: String;
 }

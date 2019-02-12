@@ -1,3 +1,38 @@
-<p>
-  add works!
-</p>
+<mat-action-list>
+    <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+      <mat-button-toggle (click)="goBack()" value="bold">Back</mat-button-toggle>
+    </mat-button-toggle-group>
+</mat-action-list>
+
+<section class="mat-title mat-typography">
+    <h2 class="mat-h2">&nbsp;&nbsp;Feedback</h2>
+</section>
+<mat-card>
+<div class="example-container">
+    <form class="example-container" [formGroup]="feedbackForm">
+    <mat-form-field>
+        <input matInput placeholder="Event Id" formControlName="eventId">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Door Name" formControlName="doorName">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Device" formControlName="device">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Comment" formControlName="comment" required>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput [matDatepicker]="datepicker" placeholder="Choose a date" formControlName="feedbackDate" required>
+        <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+        <mat-datepicker #datepicker></mat-datepicker>
+      </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Feedback time" [ngxTimepicker]="timepicker" formControlName="feedbackTime" required>
+        <ngx-material-timepicker #timepicker></ngx-material-timepicker>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!feedbackForm.valid">Add</button>
+    </form>
+</div>
+</mat-card>
+ 

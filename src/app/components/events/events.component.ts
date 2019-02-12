@@ -76,10 +76,6 @@ export class EventsComponent implements OnInit {
     this.router.navigate(["/"]);
   }
 
-  toFeedback() {
-    this.router.navigate(["/"]);
-  }
-
   onScroll() {
     console.log("scrolled!!");
     console.log("this.nextKey!!" + this.nextKey);

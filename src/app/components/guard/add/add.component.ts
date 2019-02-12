@@ -15,7 +15,7 @@ export class AddGuardComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private guardSvc: GuardService,
-    private snackSvc:  MatSnackBar,) { 
+    private snackSvc:  MatSnackBar) { 
     this.guardForm = fb.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],

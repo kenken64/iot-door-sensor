@@ -59,7 +59,7 @@ export class AuthService {
     setFirebaseTokenToLocalstorage(){
         this.afAuth.auth.currentUser.getIdToken().then(idToken => {
             console.log("FIREBASE TOKEN !!!! " + idToken);
-            this.saveToken(idToken);
+            this.saveToken(idToken, this.afAuth.auth.currentUser.email);
         });
     }
 
@@ -67,12 +67,18 @@ export class AuthService {
         return window.localStorage['firebaseToken'];
     }
 
-    saveToken(token: String) {
+    getEmail(): String {
+        return window.localStorage['email'];
+    }
+
+    saveToken(token: String,  email: String) {
         console.log("Firebase token ! > " + token);
         window.localStorage['firebaseToken'] = token;
+        window.localStorage['email'] = email;
     }
 
     destroyToken() {
         window.localStorage.removeItem('firebaseToken');
+        window.localStorage.removeItem('email');
     } 
 }

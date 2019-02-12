@@ -20,7 +20,7 @@ export class EventsService {
 
   constructor(private db: AngularFireDatabase) {
     this.eventsRef = db.list(this.dbPath);
-    this.feedbackRef = db.list(this.dbPath);
+    this.feedbackRef = db.list(this.feedbackDbPath);
   }
 
   saveEvents(events) {
@@ -32,15 +32,15 @@ export class EventsService {
   }
 
   updateFeedback(feedback) {
-    const path = `/events/${feedback.id}`;
+    const path = `/feedback/${feedback.id}`;
     feedback = this.db.object<Feedback>(path);
     console.log(this.events$);
     return feedback.set(feedback);
   }
 
-  getAllFeedback(): AngularFireList<Feedback> {
+  getAllFeedback(id): AngularFireList<Feedback> {
     return this.db.list(this.feedbackDbPath, ref =>
-      ref.limitToFirst(this.limitofRecords)
+      ref.orderByChild('eventId').equalTo(id).limitToFirst(this.limitofRecords)
     );
   }
 
@@ -51,9 +51,9 @@ export class EventsService {
     return this.feedback$;
   }
 
-  getFeedbackByEventsTime(feedbackDateTime): AngularFireList<Feedback> {
+  getFeedbackByEventsTime(feedbackDate): AngularFireList<Feedback> {
     this.feedbackRef = this.db.list("/feedback", ref =>
-      ref.orderByChild("feedbackDatetime").equalTo(feedbackDateTime)
+      ref.orderByChild("feedbackDate").equalTo(feedbackDate)
     );
     return this.feedbackRef;
   }
