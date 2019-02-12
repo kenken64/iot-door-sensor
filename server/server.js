@@ -100,36 +100,47 @@ async function pollVirtualPort1(value) {
           if (data === "Invalid token.") return;
           console.log("pollVirtualPort1 : > " + JSON.parse(data));
           if(typeof(doorRef) !=='undefined'){
+            console.log("doorRef : > " + doorRef);
+            console.log("value.key : > " + value.key);
             var updRef = doorRef.child(value.key);
             updRef.once(
               "value",
               function(snapshot) {
-                doorRefVal = snapshot.val();
-                if (typeof doorRefVal.status === "undefined") {
-                  statusOfNightMare = "Closed";
-                } else {
-                  statusOfNightMare = doorRefVal.status;
-                  console.log(
-                    "ARE WE FLIPPING THE STATUS > " + statusOfNightMare
-                  );
-                  console.log(
-                    "ARE WE FLIPPING THE STATUS CURRENT > " + doorRefVal.status
-                  );
-                  console.log(
-                    "ARE WE FLIPPING THE STATUS PREV > " + doorRefVal.prev_status
-                  );
-                }
-
-                if (parseInt(JSON.parse(data)) == 1) {
-                  updRef.update({
-                    status: "Open",
-                    prev_status: statusOfNightMare
-                  });
-                } else {
-                  updRef.update({
-                    status: "Closed",
-                    prev_status: statusOfNightMare
-                  });
+                console.log("111");
+                if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
+                  console.log("1112");
+                  let doorRefVal = snapshot.val();
+                  if(!(_.isNil(doorRefVal))){
+                    console.log("1www11");
+                    console.log(doorRefVal);
+                    let statusOfNightMare = "";
+                    if (typeof doorRefVal.status === "undefined") {
+                      statusOfNightMare = "Closed";
+                    } else {
+                      statusOfNightMare = doorRefVal.status;
+                      console.log(
+                        "ARE WE FLIPPING THE STATUS > " + statusOfNightMare
+                      );
+                      console.log(
+                        "ARE WE FLIPPING THE STATUS CURRENT > " + doorRefVal.status
+                      );
+                      console.log(
+                        "ARE WE FLIPPING THE STATUS PREV > " + doorRefVal.prev_status
+                      );
+                    }
+    
+                    if (parseInt(JSON.parse(data)) == 1) {
+                      updRef.update({
+                        status: "Open",
+                        prev_status: statusOfNightMare
+                      });
+                    } else {
+                      updRef.update({
+                        status: "Closed",
+                        prev_status: statusOfNightMare
+                      });
+                    }  
+                  }
                 }
               },
               function(errorObject) {
@@ -312,17 +323,21 @@ setInterval(() => {
     "value",
     function(snapshot) {
       let arrOfDoors = [];
-      for (let k of Object.keys(snapshot.val())) {
-        let d = {
-          key: k,
-          data: snapshot.val()[k]
-        };
-        arrOfDoors.push(d);
+      if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
+        console.log("xxx" + _.isNil(snapshot));
+        console.log("xxx" + _.isNil(snapshot.val()));
+        for (let k of Object.keys(snapshot.val())) {
+          let d = {
+            key: k,
+            data: snapshot.val()[k]
+          };
+          arrOfDoors.push(d);
+        }
+        arrOfDoors.forEach((door, index) => {
+          pollVirtualPort1(door);
+          pollVirtualPort2(door);
+        });
       }
-      arrOfDoors.forEach((door, index) => {
-        pollVirtualPort1(door);
-        pollVirtualPort2(door);
-      });
     },
     function(errorObject) {
       console.log("The read failed: " + errorObject.code);
