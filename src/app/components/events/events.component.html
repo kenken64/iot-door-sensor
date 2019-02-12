@@ -4,7 +4,11 @@
     <mat-button-toggle (click)="exportToExcel()" value="bold">
       Export to Excel
     </mat-button-toggle>
+    <mat-button-toggle (click)="openBottomSheet()" value="bold">
+        Filter
+    </mat-button-toggle>
   </mat-button-toggle-group>
+  
 </mat-action-list>
 <div
   class="search-results"
@@ -42,7 +46,7 @@
       <p matLine>{{ event.message }}</p>
       <p matLine>&nbsp;</p>
       <p matLine>
-        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]">Feedback</button>
+        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]">Feedback</button>&nbsp;<span matBadge="4" matBadgeOverlap="false"></span>
       </p>
       <mat-divider></mat-divider>
     </mat-list-item>

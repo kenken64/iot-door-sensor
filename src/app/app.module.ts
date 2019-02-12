@@ -14,7 +14,7 @@ import { ExcelService } from "./services/excel-service";
 
 import { DoorComponent } from "./components/door/door.component";
 import { GuardComponent } from "./components/guard/guard.component";
-import { EventsComponent } from "./components/events/events.component";
+import { EventsComponent, BottomSheetFilterStatusSheet } from "./components/events/events.component";
 
 import { AddDoorComponent } from "./components/door/add/add.component";
 import { AddGuardComponent } from "./components/guard/add/add.component";
@@ -40,6 +40,7 @@ import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 @NgModule({
+  entryComponents: [EventsComponent, BottomSheetFilterStatusSheet],
   declarations: [
     AppComponent,
     DoorComponent,
@@ -49,7 +50,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     EventsComponent,
     BatteryComponent,
     FeedbackComponent,
-    AddFeedbackComponent
+    AddFeedbackComponent,
+    BottomSheetFilterStatusSheet
   ],
   imports: [
     BrowserModule,

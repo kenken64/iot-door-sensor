@@ -5,6 +5,20 @@ import { EventsService } from "../../services/events.service";
 import { map } from "rxjs/operators";
 import * as _ from "lodash";
 import { InfiniteScrollDirective } from "ngx-infinite-scroll";
+import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
+
+@Component({
+  selector: 'filterstatus',
+  templateUrl: 'filterstatus.html',
+})
+export class BottomSheetFilterStatusSheet {
+  constructor(private bottomSheetRef: MatBottomSheetRef<BottomSheetFilterStatusSheet>) {}
+
+  openLink(event: MouseEvent): void {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+  }
+}
 
 @Component({
   selector: "app-events",
@@ -19,12 +33,17 @@ export class EventsComponent implements OnInit {
   finished = false; // boolean when end of database is reached
   nextKey: any; // for next button
   prevKeys: any[] = []; // for prev button
-
+  
   constructor(
     private excelService: ExcelService,
     private router: Router,
-    private svc: EventsService
+    private svc: EventsService,
+    private bottomSheet: MatBottomSheet
   ) {}
+
+  openBottomSheet(): void {
+    this.bottomSheet.open(BottomSheetFilterStatusSheet);
+  }
 
   ngOnInit() {
     this.svc
