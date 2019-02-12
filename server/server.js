@@ -99,42 +99,44 @@ async function pollVirtualPort1(value) {
         if (typeof data !== "undefined") {
           if (data === "Invalid token.") return;
           console.log("pollVirtualPort1 : > " + JSON.parse(data));
-          var updRef = doorRef.child(value.key);
-          updRef.once(
-            "value",
-            function(snapshot) {
-              doorRefVal = snapshot.val();
-              if (typeof doorRefVal.status === "undefined") {
-                statusOfNightMare = "Closed";
-              } else {
-                statusOfNightMare = doorRefVal.status;
-                console.log(
-                  "ARE WE FLIPPING THE STATUS > " + statusOfNightMare
-                );
-                console.log(
-                  "ARE WE FLIPPING THE STATUS CURRENT > " + doorRefVal.status
-                );
-                console.log(
-                  "ARE WE FLIPPING THE STATUS PREV > " + doorRefVal.prev_status
-                );
-              }
+          if(typeof(doorRef) !=='undefined'){
+            var updRef = doorRef.child(value.key);
+            updRef.once(
+              "value",
+              function(snapshot) {
+                doorRefVal = snapshot.val();
+                if (typeof doorRefVal.status === "undefined") {
+                  statusOfNightMare = "Closed";
+                } else {
+                  statusOfNightMare = doorRefVal.status;
+                  console.log(
+                    "ARE WE FLIPPING THE STATUS > " + statusOfNightMare
+                  );
+                  console.log(
+                    "ARE WE FLIPPING THE STATUS CURRENT > " + doorRefVal.status
+                  );
+                  console.log(
+                    "ARE WE FLIPPING THE STATUS PREV > " + doorRefVal.prev_status
+                  );
+                }
 
-              if (parseInt(JSON.parse(data)) == 1) {
-                updRef.update({
-                  status: "Open",
-                  prev_status: statusOfNightMare
-                });
-              } else {
-                updRef.update({
-                  status: "Closed",
-                  prev_status: statusOfNightMare
-                });
+                if (parseInt(JSON.parse(data)) == 1) {
+                  updRef.update({
+                    status: "Open",
+                    prev_status: statusOfNightMare
+                  });
+                } else {
+                  updRef.update({
+                    status: "Closed",
+                    prev_status: statusOfNightMare
+                  });
+                }
+              },
+              function(errorObject) {
+                console.log("The read failed: " + errorObject.code);
               }
-            },
-            function(errorObject) {
-              console.log("The read failed: " + errorObject.code);
-            }
-          );
+            );
+          }
         }
       });
     })
