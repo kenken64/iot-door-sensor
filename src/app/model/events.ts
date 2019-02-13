@@ -4,4 +4,5 @@ export interface Events {
   doorName: string;
   message: string;
   eventDatetime?: Date;
+  feedbackcnt?: number;
 }

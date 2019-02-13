@@ -73,6 +73,7 @@ export class AuthService {
 
     saveToken(token: String,  email: String) {
         console.log("Firebase token ! > " + token);
+        console.log("Firebase email ! > " + email);
         window.localStorage['firebaseToken'] = token;
         window.localStorage['email'] = email;
     }

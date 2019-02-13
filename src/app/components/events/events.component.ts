@@ -14,7 +14,8 @@ import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
 export class BottomSheetFilterStatusSheet {
   constructor(private bottomSheetRef: MatBottomSheetRef<BottomSheetFilterStatusSheet>) {}
 
-  openLink(event: MouseEvent): void {
+  openLink(event: MouseEvent, indicator: string): void {
+    console.log(">>>>>" + indicator);
     this.bottomSheetRef.dismiss();
     event.preventDefault();
   }

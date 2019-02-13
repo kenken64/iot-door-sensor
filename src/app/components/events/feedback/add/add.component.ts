@@ -32,6 +32,7 @@ export class AddFeedbackComponent implements OnInit {
         comment: ['', [Validators.required]],
         feedbackDate: ['', [Validators.required]],
         feedbackTime: ['', [Validators.required]],
+        feedbackcnt: [''],
       })
   }
 
@@ -41,7 +42,8 @@ export class AddFeedbackComponent implements OnInit {
       this.feedbackForm.patchValue({
         eventId: this.eventId,
         doorName: result.doorName,
-        device: result.device
+        device: result.device,
+        feedbackcnt: result.feedbackcnt,
       })
       console.log(this.eventId);
       this.feedbackForm.get('eventId').disable();
@@ -54,12 +56,19 @@ export class AddFeedbackComponent implements OnInit {
     let eventId = this.feedbackForm.get("eventId").value;
     let doorName = this.feedbackForm.get("doorName").value;
     let device = this.feedbackForm.get("device").value;
+    let feedbackcnt = this.feedbackForm.get("feedbackcnt").value;
     let comment = this.feedbackForm.get("comment").value;
     let feedbackDate = this.feedbackForm.get("feedbackDate").value;
     let feedbackTime = this.feedbackForm.get("feedbackTime").value;
     console.log(feedbackDate);
     let guardEmail = this.authSvc.getEmail();
     console.log(guardEmail);
+    console.log(feedbackcnt);
+    if(typeof(feedbackcnt) === 'undefined'){
+      feedbackcnt = 1;
+    }else{
+      feedbackcnt++;
+    }
     let feedbackValue: Feedback = {
       eventId: eventId,
       doorName: doorName,
@@ -74,6 +83,7 @@ export class AddFeedbackComponent implements OnInit {
       console.log(">>>?feedbackDate "  +  feedbackValue.feedbackDate);
       this.eventsSvc.saveFeedback(feedbackValue).subscribe((result)=>{
         console.log(result);
+        this.eventsSvc.updateFeedbackCount(eventId ,feedbackcnt);
         let snackBarRef = this.snackSvc.open("Feedback added!", 'Done', {
           duration: 3000
         });

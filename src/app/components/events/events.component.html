@@ -1,12 +1,8 @@
 <mat-action-list>
   <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
     <mat-button-toggle (click)="back()" value="bold">Back</mat-button-toggle>
-    <mat-button-toggle (click)="exportToExcel()" value="bold">
-      Export to Excel
-    </mat-button-toggle>
-    <mat-button-toggle (click)="openBottomSheet()" value="bold">
-        Filter
-    </mat-button-toggle>
+    <button mat-raised-button (click)="exportToExcel()" color="primary">Export to Excel</button>
+    <button mat-raised-button (click)="openBottomSheet()" color="accent">Filter</button>
   </mat-button-toggle-group>
   
 </mat-action-list>
@@ -47,7 +43,7 @@
       <p matLine>&nbsp;</p>
       
       <p matLine>
-        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]" matBadge="8" matBadgePosition="after" matBadgeColor="accent">Feedback</button>&nbsp;
+        <button mat-raised-button color="primary" [routerLink]="['/feedback', event.key]" matBadge="{{ (event.feedbackcnt !== null) ? event.feedbackcnt: '0'}}" matBadgePosition="after" matBadgeColor="accent">Feedback</button>&nbsp;
       </p>
       <mat-divider></mat-divider>
     </mat-list-item>

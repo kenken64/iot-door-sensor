@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { AngularFireDatabase, AngularFireList } from "@angular/fire/database";
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from "@angular/fire/database";
 import { Observable, of } from "rxjs";
 import { Events } from "../model/events";
 import { Feedback } from "../model/feedback";
@@ -33,9 +33,16 @@ export class EventsService {
 
   updateFeedback(feedback) {
     const path = `/feedback/${feedback.id}`;
-    feedback = this.db.object<Feedback>(path);
-    console.log(this.events$);
-    return feedback.set(feedback);
+    feedback = this.db.object(path);
+    return feedback.update(feedback);
+  }
+
+  updateFeedbackCount(eventId, feedbackcnt) {
+    const path = `/events/${eventId}`;
+    const events = this.db.object(path);
+    return events.update({
+      feedbackcnt: feedbackcnt,
+    });
   }
 
   getAllFeedback(id): AngularFireList<Feedback> {
