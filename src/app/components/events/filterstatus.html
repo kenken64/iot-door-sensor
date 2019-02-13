@@ -1,4 +1,7 @@
 <mat-nav-list>
+<a href="#" mat-list-item (click)="openLink($event,'A')">
+    <span mat-line>Show All</span>
+</a>
 <a href="#" mat-list-item (click)="openLink($event,'C')">
     <span mat-line>Door is Closed</span>
 </a>
@@ -11,7 +14,4 @@
     <span mat-line>Device battery is low</span>
 </a>
 
-<a href="#" mat-list-item (click)="openLink($event, 'F')">
-    <span mat-line>Device is offline</span>
-</a>
 </mat-nav-list>

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Output, EventEmitter } from "@angular/core";
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from "@angular/fire/database";
 import { Observable, of } from "rxjs";
 import { Events } from "../model/events";
@@ -17,6 +17,7 @@ export class EventsService {
   private dbPath = "/events";
   private feedbackDbPath = "/feedback";
   private historicaldbPath = "events-history";
+  @Output() filterEvt: EventEmitter<string> = new EventEmitter();
 
   constructor(private db: AngularFireDatabase) {
     this.eventsRef = db.list(this.dbPath);
@@ -49,6 +50,10 @@ export class EventsService {
     return this.db.list(this.feedbackDbPath, ref =>
       ref.orderByChild('eventId').equalTo(id).limitToFirst(this.limitofRecords)
     );
+  }
+
+  toggleFilter(value){
+    this.filterEvt.emit(value);
   }
 
   getFeedback(id): Observable<Feedback> {
