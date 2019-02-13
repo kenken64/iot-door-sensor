@@ -16,7 +16,7 @@
 // Go to the Project Settings (nut icon).
 // b40605f4f5d5484bbe7b9a3cb78f1976
 // 166fff24ab4f4a52a31a936369d0a1cc
-char blynk_token[33] = "2dde80b00cf342c1b6977e91dd9b6009";
+char blynk_token[33] = "c56c9a1ab4b1415998c06173786454f2";
 
 //flag for saving data
 bool shouldSaveConfig = false;
@@ -55,7 +55,7 @@ void doorSensorWidget()
     return;
   }
 
-  /*
+  
   if(state == HIGH){
     Serial.println("Door Closed");
     Serial.print("Percentage: ");
@@ -74,9 +74,9 @@ void doorSensorWidget()
     Blynk.virtualWrite(V2, battery.getPercentage());
     Blynk.virtualWrite(V3, battery.getLevel());
     delay(30);
-  }*/
+  }
 
-
+  /*
    if(state == HIGH){
     Serial.println("Door Open");
     Serial.print("Percentage: ");
@@ -95,8 +95,7 @@ void doorSensorWidget()
     Blynk.virtualWrite(V3, battery.getLevel());
     Serial.println("ESP8266 in sleep mode");
     ESP.deepSleep(10e6, WAKE_RF_DEFAULT);
-    
-  }
+  }*/
 }
 
 
