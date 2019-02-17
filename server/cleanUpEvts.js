@@ -15,9 +15,11 @@ var db = admin.database();
 var eventsRef = db.ref("events");
 console.log(process.env.CLEAN_UP_SCHEDULE);
 console.log('Clean up events records...');
-eventsRef.orderByValue().once('value', (snapshot) => {
-    snapshot.forEach((child) => {
-        console.log(child);
-        child.ref.set(null);
+var j = schedule.scheduleJob(process.env.CLEAN_UP_SCHEDULE, function(){
+    eventsRef.orderByValue().once('value', (snapshot) => {
+        snapshot.forEach((child) => {
+            console.log(child);
+            child.ref.set(null);
+        });
     });
 });
