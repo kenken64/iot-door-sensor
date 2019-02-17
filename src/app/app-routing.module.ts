@@ -9,13 +9,14 @@ import { AddFeedbackComponent } from "./components/events/feedback/add/add.compo
 
 import { GuardComponent } from "./components/guard/guard.component";
 import { BatteryComponent } from "./components/battery/battery.component";
+import { FeedbackSolver } from './components/events/feedback/add/feedback.resolver';
 
 const routes: Routes = [
   { path: "", component: DoorComponent },
   { path: "door", component: DoorComponent },
   { path: "events", component: EventsComponent },
   { path: "feedback/:key", component: FeedbackComponent },
-  { path: "addFeedback/:key", component: AddFeedbackComponent },
+  { path: "addFeedback/:key", component: AddFeedbackComponent, resolve: { email: FeedbackSolver } },
   { path: "battery/:value/:name", component: BatteryComponent },
   { path: "addDoor", component: AddDoorComponent },
   { path: "addGuard", component: AddGuardComponent },
@@ -26,6 +27,9 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [
+    FeedbackSolver
+  ]
 })
 export class AppRoutingModule {}

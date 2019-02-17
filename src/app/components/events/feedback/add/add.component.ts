@@ -6,6 +6,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
+
 @Component({
   selector: 'app-add',
   templateUrl: './add.component.html',
@@ -17,7 +18,8 @@ export class AddFeedbackComponent implements OnInit {
   doorName: String;
   eventId: String;
   device: String;
-  
+  data: any;
+
   constructor(private location: Location,
     private fb: FormBuilder,
     private eventsSvc: EventsService,
@@ -37,6 +39,8 @@ export class AddFeedbackComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.data = this.activatedRoute.snapshot.data;
+    console.log(this.data);
     this.eventId = this.activatedRoute.snapshot.params.key;
     this.eventsSvc.getEvents(this.eventId).subscribe((result)=>{
       this.feedbackForm.patchValue({
@@ -61,8 +65,14 @@ export class AddFeedbackComponent implements OnInit {
     let feedbackDate = this.feedbackForm.get("feedbackDate").value;
     let feedbackTime = this.feedbackForm.get("feedbackTime").value;
     console.log(feedbackDate);
-    let guardEmail = this.authSvc.getEmail();
+    let guardEmail = this.data.email.guardEmail;
     console.log(guardEmail);
+    if(typeof(guardEmail) === 'undefined' ){
+      let snackBarRef = this.snackSvc.open("Invalid security guard email. Please relogin!", 'Done', {
+        duration: 3000
+      });
+      return;
+    }
     console.log(feedbackcnt);
     if(typeof(feedbackcnt) === 'undefined'){
       feedbackcnt = 1;
