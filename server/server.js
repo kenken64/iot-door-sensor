@@ -160,7 +160,7 @@ doorRef.on("child_changed", function(snapshot) {
   console.log(snapshot.val());
   var changedDoors = snapshot.val();
   console.log("The updated door guards is " + changedDoors.guards);
-  if (changedDoors.status === "Closed") {
+  if (changedDoors.status === "Closed" && changedDoors.prev_status === "Open") {
     eventsRef.push({
       doorName: changedDoors.name,
       device: changedDoors.sensor_auth,
@@ -211,7 +211,7 @@ doorRef.on("child_changed", function(snapshot) {
     }
   } //status closed
 
-  if (changedDoors.status === "Open") {
+  if (changedDoors.status === "Open" && changedDoors.prev_status === "Closed") {
     eventsRef.push({
       doorName: changedDoors.name,
       device: changedDoors.sensor_auth,
@@ -263,6 +263,7 @@ doorRef.on("child_changed", function(snapshot) {
     changedDoors.battery == 20 ||
     changedDoors.battery == 19 ||
     changedDoors.battery == 2 ||
+    changedDoors.battery == 1 ||
     changedDoors.battery == 0
   ) {
     eventsRef.push({
