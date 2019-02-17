@@ -14,13 +14,10 @@ admin.initializeApp({
 var db = admin.database();
 var eventsRef = db.ref("events");
 console.log(process.env.CLEAN_UP_SCHEDULE);
-var j = schedule.scheduleJob(process.env.CLEAN_UP_SCHEDULE, function(){
-    console.log('Clean up events records...');
-    eventsRef.orderByValue().once('value', (snapshot) => {
-        snapshot.forEach((child) => {
-            console.log(child);
-            child.ref.set(null);
-        });
+console.log('Clean up events records...');
+eventsRef.orderByValue().once('value', (snapshot) => {
+    snapshot.forEach((child) => {
+        console.log(child);
+        child.ref.set(null);
     });
 });
-console.log(j);
