@@ -38,7 +38,8 @@ export class EventsComponent implements OnInit {
   nextKey: any; // for next button
   prevKeys: any[] = []; // for prev button
   indicator: string;
-  
+  userTriggerExport: boolean;
+
   constructor(
     private excelService: ExcelService,
     private router: Router,
@@ -64,6 +65,7 @@ export class EventsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.userTriggerExport = false;
     this.svc
       .getAllEvents()
       .snapshotChanges()
@@ -98,7 +100,9 @@ export class EventsComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.svc
+    this.userTriggerExport = true;
+    
+      this.svc
       .getAllHistoricalEvents()
       .snapshotChanges()
       .pipe(
@@ -116,8 +120,12 @@ export class EventsComponent implements OnInit {
           }
           return 0;
         });
-        this.excelService.exportAsExcelFile(events, "door-events");
+        if(this.userTriggerExport){
+          this.excelService.exportAsExcelFile(events, "door-events");
+          this.userTriggerExport = false;
+        }
       });
+    
   }
 
   back() {
