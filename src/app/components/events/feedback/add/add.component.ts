@@ -38,9 +38,19 @@ export class AddFeedbackComponent implements OnInit {
       })
   }
 
+  formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+  }
+
   ngOnInit() {
     this.data = this.activatedRoute.snapshot.data;
-    console.log(this.data);
     this.eventId = this.activatedRoute.snapshot.params.key;
     this.eventsSvc.getEvents(this.eventId).subscribe((result)=>{
       this.feedbackForm.patchValue({
@@ -48,8 +58,8 @@ export class AddFeedbackComponent implements OnInit {
         doorName: result.doorName,
         device: result.device,
         feedbackcnt: result.feedbackcnt,
+        feedbackTime: this.formatAMPM(new Date)
       })
-      console.log(this.eventId);
       this.feedbackForm.get('eventId').disable();
       this.feedbackForm.get('doorName').disable();
       this.feedbackForm.get('device').disable();
@@ -64,6 +74,7 @@ export class AddFeedbackComponent implements OnInit {
     let comment = this.feedbackForm.get("comment").value;
     let feedbackDate = this.feedbackForm.get("feedbackDate").value;
     let feedbackTime = this.feedbackForm.get("feedbackTime").value;
+    console.log(feedbackTime);
     console.log(feedbackDate);
     let guardEmail = this.data.email.guardEmail;
     console.log(guardEmail);
