@@ -1,5 +1,4 @@
 #include <FS.h> 
-#include <fauxmoESP.h>
 #include "ESPBattery.h";
 #define BLYNK_PRINT Serial
 #include <ESP8266WiFi.h>
@@ -16,7 +15,7 @@
 // Go to the Project Settings (nut icon).
 // b40605f4f5d5484bbe7b9a3cb78f1976
 // 166fff24ab4f4a52a31a936369d0a1cc
-char blynk_token[33] = "c56c9a1ab4b1415998c06173786454f2";
+char blynk_token[33] = "194eab22d2bd49c0a580c01d7d19ce44";
 
 //flag for saving data
 bool shouldSaveConfig = false;
@@ -29,7 +28,6 @@ const int sleepTimeS = 10;
 //WidgetLED led1(V3);
 BlynkTimer timer;
 ESPBattery battery = ESPBattery();
-fauxmoESP fauxmo;
 
 //callback notifying us of the need to save config
 void saveConfigCallback () {
@@ -198,19 +196,12 @@ void setup() {
   Serial.println("\n\nLevel charging Handler");
   stateHandler(battery);
   timer.setInterval(1000L, doorSensorWidget);
-  fauxmo.addDevice("door two");
-  fauxmo.setPort(80); // required for gen3 devices
-  fauxmo.enable(true);
-  fauxmo.onSetState([](unsigned char device_id, const char * device_name, bool state, unsigned char value) {
-        Serial.printf("[MAIN] Device #%d (%s) state: %s value: %d\n", device_id, device_name, state ? "ON" : "OFF", value);
-  });
 }
 
 void loop() {
   battery.loop();
   Blynk.run();
   timer.run();
-  fauxmo.handle();
   static unsigned long last = millis();
   if (millis() - last > 5000) {
       last = millis();

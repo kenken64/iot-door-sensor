@@ -22,18 +22,36 @@ A connected home brings devices and services together for an integrated, autonom
 
 IoT powers the connected home by bringing new features and capabilities to smart devices, like interconnectivity, security, offline communication, predictive maintenance, analytics for consumer insights, and machine learning. Each of these capabilities play a different role in key connected home use cases such as home automation, home security and monitoring, and home networking.
 
-# Pre-requisite software
+# Pre-requisite microcontroller and parts
+- Adafruit Huzzah ESP8266
+- LED
+- 47k Ohm Resistor
+- 10k Ohm Resistor
+- 220 Ohm Resistor
+- Magnetic Door Sensor
+- Jumper
+- Custom made PCB by me
+- Lipo Battery
+- Headers
+
+# PCB Design (Eagle and Fritzing)
+- Version 1
+- Version 2
+
+# Pre-requisite software & library
 
 - Microsoft Visual Studio Code
 - Node JS
 - Angular 7 Cli
--
+- Arduino IDE
+- ESPBattery
+- ESP
 
 # Pre-requisite Cloud account
 
-- Twilio
+- Twilio (require your own credit to send out SMS)
 - Gmail
-- Google Firebase
+- Google Firebase Realtime Database
 - Blynk
 
 # Twilio - SMS Notification
@@ -70,6 +88,11 @@ IoT powers the connected home by bringing new features and capabilities to smart
 | FIREBASE_SVC_ACC_FILE | Firebase credential file to perform admin operations     | 
 
 # Window/Door sensor Web App
+
+## List of door/window attached with sensor
+
+![List of doors](docs/list.png)
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
