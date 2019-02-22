@@ -22,18 +22,36 @@ A connected home brings devices and services together for an integrated, autonom
 
 IoT powers the connected home by bringing new features and capabilities to smart devices, like interconnectivity, security, offline communication, predictive maintenance, analytics for consumer insights, and machine learning. Each of these capabilities play a different role in key connected home use cases such as home automation, home security and monitoring, and home networking.
 
-# Pre-requisite software
+# Pre-requisite microcontroller and parts
+- Adafruit Huzzah ESP8266
+- LED
+- 47k Ohm Resistor
+- 10k Ohm Resistor
+- 220 Ohm Resistor
+- Magnetic Door Sensor
+- Jumper
+- Custom made PCB by me
+- Lipo Battery
+- Headers
+
+# PCB Design (Eagle and Fritzing)
+- Version 1
+- Version 2
+
+# Pre-requisite software & library
 
 - Microsoft Visual Studio Code
 - Node JS
 - Angular 7 Cli
--
+- Arduino IDE
+- ESPBattery
+- ESP
 
 # Pre-requisite Cloud account
 
-- Twilio
+- Twilio (require your own credit to send out SMS)
 - Gmail
-- Google Firebase
+- Google Firebase Realtime Database
 - Blynk
 
 # Twilio - SMS Notification
@@ -48,7 +66,33 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Create gmail account. Please do not use personal gmail account for this.
 - Enable unsecure access to this account [Gmail API setting](https://support.google.com/accounts/answer/6010255?hl=en)
 
-# Angular
+# Server side 
+- Detect door is open and closed.
+- Send SMS using twilio to the security guard
+- Send email address to the guard
+- Detect battery is low send notification
+- Log all events to the door's device
+
+# Environment variable
+
+| Env variables        | Description           | 
+| ------------- |:-------------:| 
+| SMTP_GMAIL_ACC      | Gmail SMTP account that use to send email to security guard  | 
+| SMTP_GMAIL_PASSWORD     | Password for the above email account      |  
+| TWILIO_SSID | SSID for the twilio sms APIs      |   
+| TWILIO_AUTH_TOKEN | Security token for the twilio sms APIs      | 
+| TWILIO_NUMBER | You need a twilio phone number in order to send SMS to the receipient      | 
+| FIREBASE_DB_URL | NoSQL Database url     | 
+| JOB_INTERVAL | Interval period where the job poll for the changes from firebase and the blynk APIs      | 
+| NOTIFICATION_ENABLE | Disable and enable notification when door is open and closed      | 
+| FIREBASE_SVC_ACC_FILE | Firebase credential file to perform admin operations     | 
+
+# Window/Door sensor Web App
+
+## List of door/window attached with sensor
+
+![List of doors](docs/list.png)
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
