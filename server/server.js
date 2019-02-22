@@ -198,7 +198,9 @@ doorRef.on("child_changed", function(snapshot) {
                       fromEmail,
                       snapshot.val().email,
                       `${changedDoors.name} is CLOSED`,
-                      `<p>${changedDoors.name} is CLOSED on ${new Date()}</p>`
+                      `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Singapore"
+                      })}</p>`
                     );
                     console.log(
                       `SEND EMAIL DOOR CLOSED!  ${changedDoors.name}`
@@ -247,7 +249,9 @@ doorRef.on("child_changed", function(snapshot) {
                       fromEmail,
                       snapshot.val().email,
                       `${changedDoors.name} is OPEN`,
-                      `<p>${changedDoors.name} is OPEN on ${new Date()}</p>`
+                      `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Singapore"
+                      })}</p>`
                     );
                   });
               }
@@ -286,7 +290,7 @@ doorRef.on("child_changed", function(snapshot) {
             if (sendOk) {
               client.messages
                 .create({
-                  body: `ALERT ! ${changedDoors.name} is running low (${
+                  body: `ALERT ! ${changedDoors.name} device battery is running low (${
                     changedDoors.battery
                   }%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
                   to: snapshot.val().mobileNo, // Text this number
@@ -297,7 +301,9 @@ doorRef.on("child_changed", function(snapshot) {
                   sendEmail(
                     fromEmail,
                     snapshot.val().email,
-                    `${value.name} device battery running low`,
+                    `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
+                      timeZone: "Asia/Singapore"
+                    })}`,
                     `<p>Device battery is running low (${
                       changedDoors.battery
                     }%). ${UndefinedToEmptyStr(
