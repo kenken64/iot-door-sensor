@@ -22,6 +22,11 @@ A connected home brings devices and services together for an integrated, autonom
 
 IoT powers the connected home by bringing new features and capabilities to smart devices, like interconnectivity, security, offline communication, predictive maintenance, analytics for consumer insights, and machine learning. Each of these capabilities play a different role in key connected home use cases such as home automation, home security and monitoring, and home networking.
 
+# Pre-requisite Lora Gateway
+Use the raspi-config tool (with sudo raspi-config) to enable SPI on the Raspberry Pi
+Install wiringpi (sudo apt-get install wiringpi)
+
+
 # Pre-requisite microcontroller and parts
 - Adafruit Huzzah ESP8266
 - LED
