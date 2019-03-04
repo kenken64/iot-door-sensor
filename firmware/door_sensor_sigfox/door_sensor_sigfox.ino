@@ -35,6 +35,8 @@ void setup() {  //  Will be called only once.
   //attachInterrupt(digitalPinToInterrupt(DOOR1), doorChange, CHANGE);
   //  Check whether the SIGFOX module is functioning.
   if (!transceiver.begin()) stop(F("Unable to init SIGFOX module, may be missing"));  //  Will never return.
+  digitalWrite(RED_LED , HIGH);
+  digitalWrite(GREEN_LED , LOW);
 }
 
 void loop() {  //  Will be called repeatedly.
@@ -43,9 +45,9 @@ void loop() {  //  Will be called repeatedly.
   Serial.print(F("\nRunning loop #")); 
   Serial.println(val);
   if(val == 1){
+    digitalWrite(RED_LED , HIGH);
+    digitalWrite(GREEN_LED , LOW);
     if(prevTriggerDoorSensor != triggerDoorSensor){
-      digitalWrite(RED_LED , HIGH);
-      digitalWrite(GREEN_LED , LOW);
       transceiver.getVoltage(voltage);
       Message msg(transceiver);  //  Will contain the structured sensor data.
       msg.addField("blynk", "sf01");  //  4 bytes for the id.
