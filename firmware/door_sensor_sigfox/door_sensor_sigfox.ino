@@ -44,31 +44,39 @@ void loop() {  //  Will be called repeatedly.
   //  Send message counter, temperature and voltage as a structured SIGFOX message, up to 10 times.
   Serial.print(F("\nRunning loop #")); 
   Serial.println(val);
+  
+  
   if(val == 1){
     digitalWrite(RED_LED , HIGH);
     digitalWrite(GREEN_LED , LOW);
+    Serial.println(prevTriggerDoorSensor);  
+    Serial.println(triggerDoorSensor);  
     if(prevTriggerDoorSensor != triggerDoorSensor){
       transceiver.getVoltage(voltage);
+      float percent = ((voltage-3)/0.7)*100;
       Message msg(transceiver);  //  Will contain the structured sensor data.
-      msg.addField("blynk", "sf01");  //  4 bytes for the id.
-      msg.addField("vlt", voltage);  //  4 bytes for the voltage.
-      msg.addField("doorState", val); //  1 bytes for the door state.
+      msg.addField("id", "sf01");  //  4 bytes for the id.
+      msg.addField("bat", percent);  //  4 bytes for the voltage.
+      msg.addField("dor", val); //  1 bytes for the door state.
       msg.send();
-      Serial.println(F("SENT ! for closed open"));  
+      Serial.println(F("SENT ! for door closed"));  
       triggerDoorSensor = 1;
     }
   }else if(val == 0){
     digitalWrite(RED_LED , LOW);
     digitalWrite(GREEN_LED , HIGH);
-    prevTriggerDoorSensor = triggerDoorSensor;
-    triggerDoorSensor = val;
-    transceiver.getVoltage(voltage);
-    Message msg(transceiver);  //  Will contain the structured sensor data.
-    msg.addField("blynk", "sf01");  //  4 bytes for the id.
-    msg.addField("vlt", voltage);  //  4 bytes for the voltage.
-    msg.addField("doorState", val); //  1 bytes for the id.
-    msg.send();
-    Serial.println(F("SENT ! for door open"));  
+    if(triggerDoorSensor != 0){
+      prevTriggerDoorSensor = triggerDoorSensor;
+      triggerDoorSensor = val;
+      transceiver.getVoltage(voltage);
+      float percent = ((voltage-3)/0.7)*100;
+      Message msg(transceiver);  //  Will contain the structured sensor data.
+      msg.addField("id", "sf01");  //  4 bytes for the id.
+      msg.addField("bat", percent);  //  4 bytes for the voltage.
+      msg.addField("dor", val); //  1 bytes for the id.
+      msg.send();
+      Serial.println(F("SENT ! for door open"));  
+    }
   } 
   delay(10000);
   //Sleepy::loseSomeTime(120000);
