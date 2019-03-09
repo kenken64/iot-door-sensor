@@ -1,7 +1,8 @@
 <mat-action-list>
   <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
     <mat-button-toggle (click)="back()" value="bold">Back</mat-button-toggle>
-    <mat-button-toggle (click)="save()" value="italic">Save</mat-button-toggle>
+    <button mat-raised-button (click)="save()"  color="primary">Save</button>
+    <button mat-raised-button (click)="editDoor()"  color="accent">Edit</button>
     <mat-button-toggle (click)="showBattery()" value="italic"
       >Battery</mat-button-toggle
     >

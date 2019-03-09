@@ -3,7 +3,8 @@ export interface Door {
   name: string;
   sensor_auth: string;
   trigger_auth?: string;
-  status: string;
+  rechargeableBat?: string;
+  status?: string;
   prev_status?: string;
   closedDatetime?: Date;
   guards?: any[];

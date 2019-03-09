@@ -1,9 +1,9 @@
 <section class="mat-title mat-typography">
-  <h2 class="mat-h2">&nbsp;&nbsp;Windows/Door</h2>
+  <h2 class="mat-h2">&nbsp;&nbsp;Edit Windows/Door</h2>
 </section>
 <mat-card>
   <div class="example-container">
-    <form class="example-container" [formGroup]="doorForm">
+    <form class="example-container" [formGroup]="editDoorForm">
       <mat-form-field>
         <input matInput placeholder="Name" formControlName="name" required />
       </mat-form-field>
@@ -22,13 +22,17 @@
           formControlName="triggerAuth"
         ></textarea>
       </mat-form-field>
+      <section class="example-section">
+        <mat-checkbox formControlName="rechargeableBat">Is rechargeable battery</mat-checkbox>
+      </section>
+
       <button
         mat-raised-button
         color="primary"
         (click)="saveDoor()"
-        [disabled]="!doorForm.valid"
+        [disabled]="!editDoorForm.valid"
       >
-        Add
+        Update
       </button>
     </form>
   </div>

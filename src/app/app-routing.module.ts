@@ -1,7 +1,9 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { DoorComponent } from "./components/door/door.component";
+
 import { AddDoorComponent } from "./components/door/add/add.component";
+import { EditDoorComponent } from "./components/door/edit/edit.component";
 import { AddGuardComponent } from "./components/guard/add/add.component";
 import { EventsComponent } from "./components/events/events.component";
 import { FeedbackComponent } from "./components/events/feedback/feedback.component";
@@ -14,6 +16,7 @@ import { FeedbackSolver } from './components/events/feedback/add/feedback.resolv
 const routes: Routes = [
   { path: "", component: DoorComponent },
   { path: "door", component: DoorComponent },
+  { path: "editDoor/:value/:name", component: EditDoorComponent },
   { path: "events", component: EventsComponent },
   { path: "feedback/:key", component: FeedbackComponent },
   { path: "addFeedback/:key", component: AddFeedbackComponent, resolve: { email: FeedbackSolver } },

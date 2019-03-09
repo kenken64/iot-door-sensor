@@ -272,13 +272,13 @@ doorRef.on("child_changed", function(snapshot) {
   }
   console.log(" BATTERY ! changedDoors.battery" + changedDoors.battery);
   if (
-    changedDoors.battery == 50 ||
+    (changedDoors.battery == 50 ||
     changedDoors.battery == 49 ||
     changedDoors.battery == 20 ||
     changedDoors.battery == 19 ||
     changedDoors.battery == 2 ||
     changedDoors.battery == 1 ||
-    changedDoors.battery == 0
+    changedDoors.battery == 0) && (changedDoors.rechargeableBat == true)
   ) {
     eventsRef.push({
       doorName: changedDoors.name,

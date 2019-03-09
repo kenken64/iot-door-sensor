@@ -21,7 +21,7 @@ import { AddGuardComponent } from "./components/guard/add/add.component";
 import { BatteryComponent } from "./components/battery/battery.component";
 import { FeedbackComponent } from "./components/events/feedback/feedback.component";
 import { AddFeedbackComponent } from "./components/events/feedback/add/add.component";
-
+import { EditDoorComponent } from "./components/door/edit/edit.component";
 import { AngularFontAwesomeModule } from "angular-font-awesome";
 // firebase dependencies
 import { AngularFirestore } from "@angular/fire/firestore";
@@ -51,7 +51,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     BatteryComponent,
     FeedbackComponent,
     AddFeedbackComponent,
-    BottomSheetFilterStatusSheet
+    BottomSheetFilterStatusSheet,
+    EditDoorComponent
   ],
   imports: [
     BrowserModule,

@@ -11,8 +11,8 @@ char auth[] = "980f92ef13db430594a89315d86dd77b";
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-char ssid[] = "kennethp";
-char pass[] = "password1234";
+char ssid[] = "kenken64";
+char pass[] = "7730112910100";
 const int doorSensor = 4;
 const int greenLED = 2;
 // Timer: Auxiliary variables
@@ -35,6 +35,7 @@ void setup()
   pinMode(doorSensor,INPUT_PULLUP);
   pinMode(greenLED, OUTPUT);
   digitalWrite(greenLED, LOW);
+  WiFi.enableSTA(true);  
   Blynk.begin(auth, ssid, pass);
   Blynk.syncAll();
   // You can also specify server:

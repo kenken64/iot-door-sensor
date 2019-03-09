@@ -95,6 +95,12 @@ export class GuardComponent implements OnInit {
     this.router.navigate(["/battery", this.doorBatteryValue, this.doorName]);
   }
 
+  editDoor() {
+    console.log(this.doorId);
+    console.log(this.doorName);
+    this.router.navigate(["/editDoor", this.doorId, this.doorName]);
+  }
+
   add($event) {}
 
   getValue($event) {
@@ -129,7 +135,7 @@ export class GuardComponent implements OnInit {
     console.log(updateGuards);
     console.log(this.doorId);
     this.selectedGuard = [];
-    this.doorSvc.updateDoor(this.doorId, updateGuards);
+    this.doorSvc.updateDoorWithGuards(this.doorId, updateGuards);
     let snackBarRef = this.snackBar.open(
       "Guard added to door sensor.",
       "Done",

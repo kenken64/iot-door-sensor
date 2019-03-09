@@ -40,9 +40,18 @@ export class DoorService {
     return this.doorsRef;
   }
 
-  updateDoor(doorId, guards) {
+  updateDoorWithGuards(doorId, guards) {
     const path = `/${doorId}`;
     const itemRef = this.db.object(`door/${path}`);
     itemRef.update({ guards: guards });
+  }
+
+  updateDoor(doorId, door) {
+    const path = `/${doorId}`;
+    const itemRef = this.db.object(`door/${path}`);
+    itemRef.update({ name: door.name,  
+        sensor_auth: door.sensor_auth,
+        trigger_auth: door.trigger_auth,
+        rechargeableBat: door.rechargeableBat});
   }
 }
