@@ -70,7 +70,9 @@ async function pollVirtualPort2(value) {
           if (parseInt(JSON.parse(data)) == 2) {
             additionalMessage = "Device probably went offline";
           }
-          if(isNaN(JSON.parse(data))){
+          console.log(isNaN(JSON.parse(data)));
+          console.log(JSON.parse(data));
+          if(typeof(JSON.parse(data)) !== 'number'){
             updRef.update({
               battery: 100,
               additionalMessage: additionalMessage
