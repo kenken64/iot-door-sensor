@@ -1,4 +1,4 @@
-# Internet of Things Window/Door Sensor
+# Internet of Things  - Window/Door Sensor
 
 Nothing spells security than being notified or alerted if somebody has entered your premises without your permission. It also helps when even before someone can gain entry, you already know who he or she is. The main idea of this door sensor is to simply provide you information if someone has gone through any of your property entry points.
 
@@ -22,9 +22,15 @@ A connected home brings devices and services together for an integrated, autonom
 
 IoT powers the connected home by bringing new features and capabilities to smart devices, like interconnectivity, security, offline communication, predictive maintenance, analytics for consumer insights, and machine learning. Each of these capabilities play a different role in key connected home use cases such as home automation, home security and monitoring, and home networking.
 
+
+# Multiple version
+- Wifi version
+- Sigfox version
+- Lorawan version require an existing lorawan gateway
+
 # Pre-requisite Lora Gateway
-Use the raspi-config tool (with sudo raspi-config) to enable SPI on the Raspberry Pi
-Install wiringpi (sudo apt-get install wiringpi)
+- Use the raspi-config tool (with sudo raspi-config) to enable SPI on the Raspberry Pi
+- Install wiringpi (sudo apt-get install wiringpi)
 
 
 # Pre-requisite microcontroller and parts
@@ -50,7 +56,7 @@ Install wiringpi (sudo apt-get install wiringpi)
 - Angular 7 Cli
 - Arduino IDE
 - ESPBattery
-- ESP
+- ESP 8266/32 Arduino library
 
 # Pre-requisite Cloud account
 
@@ -71,12 +77,13 @@ Install wiringpi (sudo apt-get install wiringpi)
 - Create gmail account. Please do not use personal gmail account for this.
 - Enable unsecure access to this account [Gmail API setting](https://support.google.com/accounts/answer/6010255?hl=en)
 
-# Server side 
+# Server side (AWS IOT)
 - Detect door is open and closed.
-- Send SMS using twilio to the security guard
-- Send email address to the guard
-- Detect battery is low send notification
+- Send SMS using twilio to the configure recipient mobile number
+- Send notification email to the configure recipient email address
+- Detect battery is low send notification via SMS and email
 - Log all events to the door's device
+- Provide exportable reporting of all doors 
 
 # Environment variable
 
@@ -94,12 +101,14 @@ Install wiringpi (sudo apt-get install wiringpi)
 
 # Window/Door sensor Web App
 
-## List of door/window attached with sensor
+## List of door/window installed with sensor
 
 ![List of doors](docs/list.png)
 
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+
+# PWA Web Application
 
 ## Development server
 

@@ -14,6 +14,5 @@ var db = admin.database();
 var eventsRef = db.ref("events");
 var eventsHistoryRef = db.ref("events-history");
 eventsRef.orderByChild("eventDatetime").on("child_added", function(snapshot) {
-    console.log(snapshot.key + " was " + snapshot.val().message + " msg");
     eventsHistoryRef.child(snapshot.key).set(snapshot.val());
 });
