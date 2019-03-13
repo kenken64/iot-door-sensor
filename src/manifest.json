@@ -1,6 +1,6 @@
 {
-  "name": "iot-door-sensor",
-  "short_name": "iot-door-sensor",
+  "name": "SilverlinersDS",
+  "short_name": "SilverlinersDS",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
