@@ -6,6 +6,7 @@ const twilio = require("twilio");
 const nodemailer = require("nodemailer");
 const admin = require("firebase-admin");
 const _ = require("lodash");
+const BLYNK_API_URL = process.env.BLYNK_API_URL;
 var accountSid = process.env.TWILIO_SSID;
 var authToken = process.env.TWILIO_AUTH_TOKEN;
 
@@ -49,7 +50,7 @@ function sendEmail(fromEmail, toEmail, subject, htmlcontent) {
 
 async function pollVirtualPort2(value) {
   await http
-    .get(`http://blynk-cloud.com/${value.data.sensor_auth}/get/V2`, resp => {
+    .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -88,7 +89,7 @@ async function pollVirtualPort2(value) {
 
 async function pollVirtualPort1(value) {
   await http
-    .get(`http://blynk-cloud.com/${value.data.sensor_auth}/get/V1`, resp => {
+    .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -239,7 +240,7 @@ doorRef.on("child_changed", function(snapshot) {
     changedDoors.battery == 19 ||
     changedDoors.battery == 2 ||
     changedDoors.battery == 1 ||
-    changedDoors.battery == 0) && (changedDoors.rechargeableBat == true)
+    changedDoors.battery == 0)
   ) {
     eventsRef.push({
       doorName: changedDoors.name,
@@ -296,7 +297,7 @@ function UndefinedToEmptyStr(val) {
 setInterval(() => {
   doorRef.on(
     "value",
-    function(snapshot) {
+    async function(snapshot) {
       let arrOfDoors = [];
       if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
         for (let k of Object.keys(snapshot.val())) {
@@ -306,9 +307,32 @@ setInterval(() => {
           };
           arrOfDoors.push(d);
         }
-        arrOfDoors.forEach((door, index) => {
-          pollVirtualPort1(door);
-          pollVirtualPort2(door);
+        arrOfDoors.forEach(async (door, index) => {
+          await http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, resp =>{
+          let data = "";
+
+          resp.on("data", chunk => {
+            data += chunk;
+          });
+    
+          resp.on("end", () => {
+              var updRef = doorRef.child(door.key);
+              if(data === 'true'){
+                pollVirtualPort1(door);
+                pollVirtualPort2(door);
+              }else if(data ==='false'){
+                updRef.update({
+                  battery: 0
+                });
+              }else{
+                console.log("Other protocol door!");
+                // TODO 
+              }
+            });
+          })
+          .on("error", err => {
+            console.error("Error: " + err.message);
+          });
         });
       }
     },

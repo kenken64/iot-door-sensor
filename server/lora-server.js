@@ -1,7 +1,9 @@
+'use strict';
+
 import { data } from "ttn"
 
-const appID = "doorsensorgw2019"
-const accessKey = "ttn-account-v2.tks9H-OecpQ5Y-v0CKtZgcA900K9PfaDkbFJOBzbUm8"
+const appID = process.env.LORAWAN_APP_ID;
+const accessKey = process.env.LORAWAN_ACCESS_KEY;
 
 const main = async function () {
   const client = await data(appID, accessKey)
