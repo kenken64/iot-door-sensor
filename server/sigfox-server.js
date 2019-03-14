@@ -42,7 +42,7 @@ router.post("/sigfox-callback-data", (req, res, next) => {
     const result = Object.assign({}, req.body, decodedData);
     console.log(">>>>" + result.id);
     console.log(">>>>" + JSON.stringify(result));
-    doorRef.on(
+    doorRef.once(
       "value",
       async function(snapshot) {
         let arrOfDoors = [];
