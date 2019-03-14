@@ -239,8 +239,7 @@ doorRef.on("child_changed", function(snapshot) {
     changedDoors.battery == 20 ||
     changedDoors.battery == 19 ||
     changedDoors.battery == 2 ||
-    changedDoors.battery == 1 ||
-    changedDoors.battery == 0)
+    changedDoors.battery == 1 )
   ) {
     eventsRef.push({
       doorName: changedDoors.name,
@@ -262,7 +261,9 @@ doorRef.on("child_changed", function(snapshot) {
                 .create({
                   body: `ALERT ! ${changedDoors.name} device battery is running low (${
                     changedDoors.battery
-                  }%). ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
+                  }%). on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                  })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
                   to: snapshot.val().mobileNo, // Text this number
                   from: process.env.TWILIO_NUMBER // From a valid Twilio number
                 })
