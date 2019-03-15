@@ -6,12 +6,16 @@ const express = require("express"),
   admin = require("firebase-admin"),
   structuredMessage = require("./structuredMessage"),
   _ = require("lodash"),
+  notification = require('./util/notification'),
   http = require("http"),
   path = require("path");
+
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
 var app = express();
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
+const sms = new notification.SMS();
+const email = new notification.Email();
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -87,11 +91,65 @@ router.post("/sigfox-callback-data", (req, res, next) => {
                       status: "Open",
                       prev_status: statusOfNightMare
                     });
+
+                    if (
+                      typeof door.data.guards !== "undefined" &&
+                      door.data.guards.length > 0
+                    ) {
+                      door.data.guards.forEach(guardVal => {
+                        db.ref("guard/" + guardVal)
+                          .once("value")
+                          .then(function(snapshot) {
+                            if (sendOk) {
+                              if (door.data.status !== door.data.prev_status) {
+                                  sms.send(`ALERT ! ${
+                                    door.data.name
+                                  } is open. Please follow up with an inspection`,snapshot.val().mobileNo);
+                                  
+                                  email.send(
+                                    snapshot.val().email,
+                                    `${door.data.name} is OPEN`,
+                                    `<p>${door.data.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                                      timeZone: "Asia/Singapore"
+                                    })}. Please follow up with an inspection</p>`);
+                              }
+                            }
+                          });
+                      });
+                    }
                   } else {
                     updRef.update({
                       status: "Closed",
                       prev_status: statusOfNightMare
                     });
+
+                    if (
+                      typeof door.data.guards !== "undefined" &&
+                      door.data.guards.length > 0
+                    ) {
+                      door.data.guards.forEach(guardVal => {
+                        db.ref("guard/" + guardVal)
+                          .once("value")
+                          .then(function(snapshot) {
+                            if (sendOk) {
+                              if (door.data.status !== door.data.prev_status) {
+                                sms.send(`INFO ! ${
+                                  door.data.name
+                                } is closed on ${new Date().toLocaleString("en-US", {
+                                  timeZone: "Asia/Singapore"
+                                })}`,snapshot.val().mobileNo);
+              
+                                email.send(
+                                  snapshot.val().email,
+                                  `${door.data.name} is CLOSED`,
+                                  `<p>${door.data.name} is CLOSED on ${new Date().toLocaleString("en-US", {
+                                    timeZone: "Asia/Singapore"
+                                })}</p>`);
+                              }
+                            }
+                          });
+                      });
+                    }
                   }  
                 }
               });

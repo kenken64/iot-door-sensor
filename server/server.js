@@ -1,20 +1,16 @@
 'use strict';
 
 require("dotenv").config();
-const http = require("http");
-const twilio = require("twilio");
-const nodemailer = require("nodemailer");
-const admin = require("firebase-admin");
-const _ = require("lodash");
+const http = require("http"),
+      admin = require("firebase-admin"),
+      notification = require('./util/notification'),
+      _ = require("lodash");
+
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
-var accountSid = process.env.TWILIO_SSID;
-var authToken = process.env.TWILIO_AUTH_TOKEN;
-
-var client = new twilio(accountSid, authToken);
-
+const sms = new notification.SMS();
+const email = new notification.Email();
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
-const fromEmail = process.env.SMTP_GMAIL_ACC;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -25,28 +21,7 @@ var db = admin.database();
 var doorRef = db.ref("door");
 var eventsRef = db.ref("events");
 
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: fromEmail,
-    pass: process.env.SMTP_GMAIL_PASSWORD
-  }
-});
-
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
-
-function sendEmail(fromEmail, toEmail, subject, htmlcontent) {
-  const mailOptions = {
-    from: fromEmail, // sender address
-    to: toEmail, // list of receivers
-    subject: subject, // Subject line
-    html: htmlcontent
-  };
-  transporter.sendMail(mailOptions, function(err, info) {
-    if (err) console.log(err);
-    else console.log(info);
-  });
-}
 
 async function pollVirtualPort2(value) {
   await http
@@ -163,26 +138,18 @@ doorRef.on("child_changed", function(snapshot) {
           .then(function(snapshot) {
             if (sendOk) {
               if (changedDoors.status !== changedDoors.prev_status) {
-                client.messages
-                  .create({
-                    body: `INFO ! ${
-                      changedDoors.name
-                    } is closed on ${new Date().toLocaleString("en-US", {
+                  sms.send(`INFO ! ${
+                    changedDoors.name
+                  } is closed on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                  })}`,snapshot.val().mobileNo);
+
+                  email.send(
+                    snapshot.val().email,
+                    `${changedDoors.name} is CLOSED`,
+                    `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
                       timeZone: "Asia/Singapore"
-                    })}`,
-                    to: snapshot.val().mobileNo, // Text this number
-                    from: process.env.TWILIO_NUMBER // From a valid Twilio number
-                  })
-                  .then(message => {
-                    sendEmail(
-                      fromEmail,
-                      snapshot.val().email,
-                      `${changedDoors.name} is CLOSED`,
-                      `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
-                        timeZone: "Asia/Singapore"
-                      })}</p>`
-                    );
-                  });
+                  })}</p>`);
               }
             }
           });
@@ -208,24 +175,16 @@ doorRef.on("child_changed", function(snapshot) {
           .then(function(snapshot) {
             if (sendOk) {
               if (changedDoors.status !== changedDoors.prev_status) {
-                client.messages
-                  .create({
-                    body: `ALERT ! ${
-                      changedDoors.name
-                    } is open please follow up with an inspection`,
-                    to: snapshot.val().mobileNo, // Text this number
-                    from: process.env.TWILIO_NUMBER // From a valid Twilio number
-                  })
-                  .then(message => {
-                    sendEmail(
-                      fromEmail,
-                      snapshot.val().email,
-                      `${changedDoors.name} is OPEN`,
-                      `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
-                        timeZone: "Asia/Singapore"
-                      })}</p>`
-                    );
-                  });
+                  sms.send(`ALERT ! ${
+                    changedDoors.name
+                  } is open. Please follow up with an inspection`,snapshot.val().mobileNo);
+                  
+                  email.send(
+                    snapshot.val().email,
+                    `${changedDoors.name} is OPEN`,
+                    `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                      timeZone: "Asia/Singapore"
+                    })}. Please follow up with an inspection</p>`);
               }
             }
           });
@@ -257,30 +216,22 @@ doorRef.on("child_changed", function(snapshot) {
           .once("value")
           .then(function(snapshot) {
             if (sendOk) {
-              client.messages
-                .create({
-                  body: `ALERT ! ${changedDoors.name} device battery is running low (${
-                    changedDoors.battery
-                  }%). on ${new Date().toLocaleString("en-US", {
-                    timeZone: "Asia/Singapore"
-                  })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,
-                  to: snapshot.val().mobileNo, // Text this number
-                  from: process.env.TWILIO_NUMBER // From a valid Twilio number
-                })
-                .then(message => {
-                  sendEmail(
-                    fromEmail,
-                    snapshot.val().email,
-                    `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
-                      timeZone: "Asia/Singapore"
-                    })}`,
-                    `<p>Device battery is running low (${
-                      changedDoors.battery
-                    }%). ${UndefinedToEmptyStr(
-                      changedDoors.additionalMessage
-                    )}</p>`
-                  );
-                });
+              sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
+                changedDoors.battery
+              }%). on ${new Date().toLocaleString("en-US", {
+                timeZone: "Asia/Singapore"
+              })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
+              
+              email.send(
+                snapshot.val().email,
+                `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
+                  timeZone: "Asia/Singapore"
+                })}`,
+                `<p>Device battery is running low (${
+                  changedDoors.battery
+                }%). ${UndefinedToEmptyStr(
+                  changedDoors.additionalMessage
+                )}</p>`);
             }
           });
       });
@@ -326,8 +277,8 @@ setInterval(() => {
                   battery: 0
                 });
               }else{
-                console.log("Other protocol door!");
-                // TODO 
+                console.info("Other protocol door!");
+                console.info("Sigfox/Lorawan sensor...");
               }
             });
           })
