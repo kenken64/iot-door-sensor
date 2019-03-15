@@ -16,7 +16,7 @@ const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
 const sms = new notification.SMS();
 const email = new notification.Email();
-
+var sendOk = process.env.NOTIFICATION_ENABLE == "true";
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.FIREBASE_DB_URL
