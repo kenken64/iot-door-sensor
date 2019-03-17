@@ -22,6 +22,7 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DB_URL
 });
 
+process.setMaxListeners(0);
 var db = admin.database();
 var doorRef = db.ref("door");
 // init router
