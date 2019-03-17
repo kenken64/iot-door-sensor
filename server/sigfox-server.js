@@ -168,6 +168,7 @@ router.post("/sigfox-callback-data", (req, res, next) => {
     console.log(">>>>" + result.id);
     console.log(">>>>" + JSON.stringify(result));
     urlExists(`${BLYNK_API_URL}`, function(err, exists) {
+      console.log("......" + exists)
       if(exists){
         checkDoorSensors();
         res.status(200).json(result);
