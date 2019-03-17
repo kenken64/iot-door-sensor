@@ -58,11 +58,12 @@ function checkDoorSensors(result){
             resp.on("end", () => {
                 var updRef = doorRef.child(door.key);
                 if(data === 'true'){
-                  
+                  resp.removeAllListeners('data');
                 }else if(data ==='false'){
                   updRef.update({
                     battery: 0
                   });
+                  resp.removeAllListeners('data');
                 }else{
                   console.log("Other protocol door!");
                   // TODO
@@ -106,6 +107,7 @@ function checkDoorSensors(result){
                           });
                       });
                     }
+                    resp.removeAllListeners('data');
                   } else {
                     updRef.update({
                       status: "Closed",
@@ -140,6 +142,7 @@ function checkDoorSensors(result){
                       });
                     }
                   }  
+                  resp.removeAllListeners('data');
                 }
               });
             })

@@ -277,14 +277,17 @@ function checkDoorSensors(){
                     console.log("in...." + door.data.name)
                     pollVirtualPort1(door);
                     pollVirtualPort2(door);
+                    resp.removeAllListeners('data');
                   }else if(data ==='false'){
                     var updRef = doorRef.child(door.key);
                     updRef.update({
                       battery: 0
                     });
+                    resp.removeAllListeners('data');
                   }else{
                     console.info("Other protocol door!");
                     console.info("Sigfox/Lorawan sensor...");
+                    resp.removeAllListeners('data');
                   }
                 });
               })
