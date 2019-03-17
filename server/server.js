@@ -4,6 +4,7 @@ require("dotenv").config();
 const http = require("http"),
       admin = require("firebase-admin"),
       notification = require('./util/notification'),
+      urlExists = require('url-exists'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -247,54 +248,58 @@ function UndefinedToEmptyStr(val) {
 }
 
 function checkDoorSensors(){
-  doorRef.on(
-    "value",
-    function(snapshot) {
-      let arrOfDoors = [];
-      if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
-        for (let k of Object.keys(snapshot.val())) {
-          let d = {
-            key: k,
-            data: snapshot.val()[k]
-          };
-          arrOfDoors.push(d);
-        }
-        arrOfDoors.forEach(async (door, index) => {
-          await http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, resp =>{
-          let data = "";
+  urlExists(`${BLYNK_API_URL}`, function(err, exists) {
+    if(exists){
+      doorRef.on(
+        "value",
+        function(snapshot) {
+          let arrOfDoors = [];
+          if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
+            for (let k of Object.keys(snapshot.val())) {
+              let d = {
+                key: k,
+                data: snapshot.val()[k]
+              };
+              arrOfDoors.push(d);
+            }
+            arrOfDoors.forEach(async (door, index) => {
+              await http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, resp =>{
+              let data = "";
 
-          resp.on("data", chunk => {
-            data += chunk;
-          });
-    
-          resp.on("end", () => {
-              console.log(data);
-              if(data === 'true'){
-                console.log("in....")
-                console.log("in...." + door.data.name)
-                pollVirtualPort1(door);
-                pollVirtualPort2(door);
-              }else if(data ==='false'){
-                var updRef = doorRef.child(door.key);
-                updRef.update({
-                  battery: 0
+              resp.on("data", chunk => {
+                data += chunk;
+              });
+        
+              resp.on("end", () => {
+                  console.log(data);
+                  if(data === 'true'){
+                    console.log("in....")
+                    console.log("in...." + door.data.name)
+                    pollVirtualPort1(door);
+                    pollVirtualPort2(door);
+                  }else if(data ==='false'){
+                    var updRef = doorRef.child(door.key);
+                    updRef.update({
+                      battery: 0
+                    });
+                  }else{
+                    console.info("Other protocol door!");
+                    console.info("Sigfox/Lorawan sensor...");
+                  }
                 });
-              }else{
-                console.info("Other protocol door!");
-                console.info("Sigfox/Lorawan sensor...");
-              }
+              })
+              .on("error", err => {
+                console.error("Error: " + err.message);
+              });
             });
-          })
-          .on("error", err => {
-            console.error("Error: " + err.message);
-          });
-        });
-      }
-    },
-    function(errorObject) {
-      console.error("The read failed: " + errorObject.code);
+          }
+        },
+        function(errorObject) {
+          console.error("The read failed: " + errorObject.code);
+        }
+      );
     }
-  );
+  });
 }
 
 var intervalObj = setInterval(checkDoorSensors, parseInt(process.env.JOB_INTERVAL));

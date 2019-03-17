@@ -17,7 +17,8 @@
     "node-schedule": "^1.3.1",
     "nodemailer": "^5.0.0",
     "ttn": "^2.3.2",
-    "twilio": "^3.26.1"
+    "twilio": "^3.26.1",
+    "url-exists": "^1.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
