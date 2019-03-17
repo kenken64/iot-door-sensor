@@ -23,8 +23,7 @@ var doorRef = db.ref("door");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
-var options = {headers: { "user-agent":
-"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko)  Chrome/41.0.2228.0 Safari/537.36"}};
+var options = {headers: { "user-agent": "curl/7.47.0"}};
 
 async function pollVirtualPort2(value) {
   await http
@@ -284,10 +283,11 @@ function checkDoorSensors(){
                         pollVirtualPort2(door);
                         resp.removeAllListeners('data');
                       }else if(data ==='false'){
+                        /*
                         var updRef = doorRef.child(door.key);
                         updRef.update({
                           battery: 0
-                        });
+                        });*/
                         resp.removeAllListeners('data');
                       }else{
                         console.info("Other protocol door!");

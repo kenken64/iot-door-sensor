@@ -61,9 +61,10 @@ function checkDoorSensors(result){
                 if(data === 'true'){
                   resp.removeAllListeners('data');
                 }else if(data ==='false'){
+                  /*
                   updRef.update({
                     battery: 0
-                  });
+                  });*/
                   resp.removeAllListeners('data');
                 }else{
                   console.log("Other protocol door!");
