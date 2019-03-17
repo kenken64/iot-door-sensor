@@ -273,14 +273,16 @@ function checkDoorSensors(){
                   data += chunk;
                 });
           
-                resp.on("end", () => {
+                resp.on("end", async () => {
                     console.log(data);
                     try {
                       if(data === 'true'){
                         console.log("in....")
                         console.log("in...." + door.data.name)
-                        pollVirtualPort1(door);
-                        pollVirtualPort2(door);
+                        let [stat1, stat2] = await Promise.all([
+                          pollVirtualPort1(door),
+                          pollVirtualPort2(door)
+                        ]);
                         resp.removeAllListeners('data');
                       }else if(data ==='false'){
                         /*

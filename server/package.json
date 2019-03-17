@@ -14,7 +14,6 @@
     "firebase-admin": "^7.0.0",
     "lodash": "^4.17.11",
     "mqtt": "^2.18.8",
-    "node-schedule": "^1.3.1",
     "nodemailer": "^5.0.0",
     "ttn": "^2.3.2",
     "twilio": "^3.26.1",
