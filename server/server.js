@@ -1,5 +1,5 @@
 'use strict';
-
+require('events').EventEmitter.defaultMaxListeners = 0
 require("dotenv").config();
 const http = require("http"),
       admin = require("firebase-admin"),
@@ -12,7 +12,7 @@ const sms = new notification.SMS();
 const email = new notification.Email();
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
-process.setMaxListeners(25);
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.FIREBASE_DB_URL

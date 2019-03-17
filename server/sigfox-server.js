@@ -1,4 +1,5 @@
 'use strict';
+require('events').EventEmitter.defaultMaxListeners = 0
 require("dotenv").config();
 console.log("Sigfox device server");
 const express = require("express"),
@@ -22,7 +23,6 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DB_URL
 });
 
-process.setMaxListeners(15);
 var db = admin.database();
 var doorRef = db.ref("door");
 // init router
