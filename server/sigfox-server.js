@@ -34,7 +34,7 @@ var router = express.Router();
 
 app.use("/", router);
 
-function checkDoorSensors(){
+function checkDoorSensors(result){
     doorRef.once(
       "value",
       async function(snapshot) {
@@ -167,7 +167,7 @@ router.post("/sigfox-callback-data", (req, res, next) => {
     const result = Object.assign({}, req.body, decodedData);
     console.log(">>>>" + result.id);
     console.log(">>>>" + JSON.stringify(result));
-    checkDoorSensors();
+    checkDoorSensors(result);
     res.status(200).json(result);
   } catch (error) {
     //  In case of error, return the original message.
