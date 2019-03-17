@@ -249,7 +249,7 @@ function UndefinedToEmptyStr(val) {
 setInterval(() => {
   doorRef.on(
     "value",
-    async function(snapshot) {
+    function(snapshot) {
       let arrOfDoors = [];
       if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
         for (let k of Object.keys(snapshot.val())) {
@@ -268,11 +268,14 @@ setInterval(() => {
           });
     
           resp.on("end", () => {
-              var updRef = doorRef.child(door.key);
+              console.log(data);
               if(data === 'true'){
+                console.log("in....")
+                console.log("in...." + door.data.name)
                 pollVirtualPort1(door);
                 pollVirtualPort2(door);
               }else if(data ==='false'){
+                var updRef = doorRef.child(door.key);
                 updRef.update({
                   battery: 0
                 });

@@ -35,14 +35,17 @@ void setup()
   pinMode(doorSensor,INPUT_PULLUP);
   pinMode(greenLED, OUTPUT);
   digitalWrite(greenLED, LOW);
-  WiFi.enableSTA(true);  
-  Blynk.begin(auth, ssid, pass);
+  WiFi.enableSTA(true);
+  WiFi.persistent(false); 
+  WiFi.begin(ssid, pass);
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Connecting to WiFi..");
+    delay(300);
+  }
+  Serial.println("Connected to the WiFi network");
+  Blynk.config(auth);
+  Blynk.connect();
   Blynk.syncAll();
-  // You can also specify server:
-  //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
-  //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
-  //timer.setInterval(1000L, doorSensorWidget);
-  //esp_sleep_enable_ext0_wakeup(doorSensor,0);
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_4,1); //1 = High, 0 = Low
   attachInterrupt(digitalPinToInterrupt(GPIO_NUM_4), detectsDoorState, RISING);
 }
@@ -51,27 +54,26 @@ void loop()
 {
   if(!Blynk.connected())
   {
-    Serial.println("Reconnecting ... ");
+    Serial.println("Reconnecting blynk... ");
+    Blynk.config(auth);
     Blynk.connect();
-  }
-  Blynk.run();
-  int state = digitalRead(doorSensor);
-  Serial.println(state);
-  if (isnan(state) || isnan(state)) {
-    Serial.println("Failed to read from door sensor!");
-    return;
-  }
-  if(state == LOW){
-    Serial.println("Door Closed");
-    Blynk.virtualWrite(V1, 0);
-    digitalWrite(greenLED, LOW);
-    delay(200);
-    esp_deep_sleep_start();
   }else{
-    digitalWrite(greenLED, HIGH);
-    Blynk.virtualWrite(V1, 1);
+    int state = digitalRead(doorSensor);
+    //Serial.println(state);
+    if (isnan(state) || isnan(state)) {
+      Serial.println("Failed to read from door sensor!");
+      return;
+    }
+    if(state == LOW){
+      Serial.println("Door Closed");
+      Blynk.virtualWrite(V1, 0);
+      digitalWrite(greenLED, LOW);
+      delay(1500);
+      esp_deep_sleep_start();
+    }else{
+      digitalWrite(greenLED, HIGH);
+      Blynk.virtualWrite(V1, 1);
+    }
+    Blynk.run();
   }
-  // You can inject your own code or combine it with other sketches.
-  // Check other examples on how to communicate with Blynk. Remember
-  // to avoid delay() function!
 }
