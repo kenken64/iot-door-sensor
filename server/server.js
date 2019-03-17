@@ -23,7 +23,7 @@ var doorRef = db.ref("door");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
-var options = {headers: { "user-agent": "curl/7.47.0"}};
+var options = {headers: { "user-agent": "curl/7.47.0"}, agent: false, pool: {maxSockets: 100}};
 
 async function pollVirtualPort2(value) {
   await http
