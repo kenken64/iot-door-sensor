@@ -155,7 +155,7 @@ function checkDoorSensors(){
     );
 }
 
-router.post("/sigfox-callback-data", (req, res, next) => {
+router.post("/sigfox-callback-data", async (req, res, next) => {
   console.log("/sigfox-callback-data");
   //console.log(req);
   console.log(req.body.data);
@@ -167,7 +167,7 @@ router.post("/sigfox-callback-data", (req, res, next) => {
     const result = Object.assign({}, req.body, decodedData);
     console.log(">>>>" + result.id);
     console.log(">>>>" + JSON.stringify(result));
-    urlExists(`${BLYNK_API_URL}`, function(err, exists) {
+    await urlExists(`${BLYNK_API_URL}`, function(err, exists) {
       console.log("......" + exists)
       if(exists){
         checkDoorSensors();
