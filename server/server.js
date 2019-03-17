@@ -23,7 +23,9 @@ var doorRef = db.ref("door");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
-var options = {agent:false};
+var options = {headers: { "user-agent":
+"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko)  Chrome/41.0.2228.0 Safari/537.36"}};
+
 async function pollVirtualPort2(value) {
   await http
     .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
@@ -60,7 +62,7 @@ async function pollVirtualPort2(value) {
     })
     .on("error", err => {
       console.error("Error: " + err.message);
-    });
+    }).end();
 }
 
 async function pollVirtualPort1(value) {
@@ -116,7 +118,7 @@ async function pollVirtualPort1(value) {
     })
     .on("error", err => {
       console.error("Error: " + err.message);
-    }); // end V1 request
+    }).end(); // end V1 request
 }
 
 doorRef.on("child_changed", function(snapshot) {
@@ -274,28 +276,33 @@ function checkDoorSensors(){
           
                 resp.on("end", () => {
                     console.log(data);
-                    if(data === 'true'){
-                      console.log("in....")
-                      console.log("in...." + door.data.name)
-                      pollVirtualPort1(door);
-                      pollVirtualPort2(door);
+                    try {
+                      if(data === 'true'){
+                        console.log("in....")
+                        console.log("in...." + door.data.name)
+                        pollVirtualPort1(door);
+                        pollVirtualPort2(door);
+                        resp.removeAllListeners('data');
+                      }else if(data ==='false'){
+                        var updRef = doorRef.child(door.key);
+                        updRef.update({
+                          battery: 0
+                        });
+                        resp.removeAllListeners('data');
+                      }else{
+                        console.info("Other protocol door!");
+                        console.info("Sigfox/Lorawan sensor...");
+                        resp.removeAllListeners('data');
+                      }
+                    }catch(error){
                       resp.removeAllListeners('data');
-                    }else if(data ==='false'){
-                      var updRef = doorRef.child(door.key);
-                      updRef.update({
-                        battery: 0
-                      });
-                      resp.removeAllListeners('data');
-                    }else{
-                      console.info("Other protocol door!");
-                      console.info("Sigfox/Lorawan sensor...");
-                      resp.removeAllListeners('data');
+                      console.warn(error);
                     }
                   });
                 })
                 .on("error", err => {
                   console.error("Error: " + err.message);
-                });
+                }).end();
               });
             }
           },
