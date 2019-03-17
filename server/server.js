@@ -246,7 +246,7 @@ function UndefinedToEmptyStr(val) {
   return val;
 }
 
-setInterval(() => {
+function checkDoorSensors(){
   doorRef.on(
     "value",
     function(snapshot) {
@@ -295,4 +295,6 @@ setInterval(() => {
       console.error("The read failed: " + errorObject.code);
     }
   );
-}, parseInt(process.env.JOB_INTERVAL));
+}
+
+var intervalObj = setInterval(checkDoorSensors, parseInt(process.env.JOB_INTERVAL));
