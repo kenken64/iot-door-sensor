@@ -18,7 +18,7 @@
     "nodemailer": "^5.0.0",
     "ttn": "^2.3.2",
     "twilio": "^3.26.1",
-    "url-exists": "^1.0.3"
+    "url-exists-deep": "^1.1.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
