@@ -74,7 +74,7 @@ function checkDoorSensors(){
                   } else {
                     statusOfNightMare = door.data.status;
                   }
-                  console.log(result.dor);
+                  console.log("SIGFOX DOOR STATE !!! " + result.dor);
                   if (parseInt(JSON.parse(result.dor)) == 0) {
                     updRef.update({
                       status: "Open",
