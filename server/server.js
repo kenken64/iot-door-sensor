@@ -52,7 +52,6 @@ function createQueueJob(){
                   job.on('complete', (result) => {
                     console.log('CHECK DOOR SENSORS JOB COMPLETE');
                     //console.log(result);
-                    clearInterval(intervalObj);
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
