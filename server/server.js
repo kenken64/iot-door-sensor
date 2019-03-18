@@ -5,6 +5,7 @@ const http = require("http"),
       admin = require("firebase-admin"),
       notification = require('./util/notification'),
       urlExists = require('url-exists-deep'),
+      Agent = require('agentkeepalive'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -12,6 +13,13 @@ const sms = new notification.SMS();
 const email = new notification.Email();
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
+
+const keepaliveAgent = new Agent({
+  maxSockets: 100,
+  maxFreeSockets: 10,
+  timeout: 60000, // active socket keepalive for 60 seconds
+  freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+});
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -23,49 +31,54 @@ var doorRef = db.ref("door");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
-var options = {headers: { "user-agent": "curl/7.47.0"}, agent: false, pool: {maxSockets: 100}};
+var options = {agent: keepaliveAgent};
 
 async function pollVirtualPort2(value) {
-  await http
-    .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
-      let data = "";
+  try{
+    await http
+      .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
+        let data = "";
 
-      // A chunk of data has been recieved.
-      resp.on("data", chunk => {
-        data += chunk;
-      });
+        // A chunk of data has been recieved.
+        resp.on("data", chunk => {
+          data += chunk;
+        });
 
-      // The whole response has been received. Print out the result.
-      resp.on("end", () => {
-        if (typeof data !== "undefined") {
-          if (data === "Invalid token.") return;
-          var updRef = doorRef.child(value.key);
-          let additionalMessage = "";
-          if (parseInt(JSON.parse(data)) == 2) {
-            additionalMessage = "Device probably went offline";
+        // The whole response has been received. Print out the result.
+        resp.on("end", () => {
+          if (typeof data !== "undefined") {
+            if (data === "Invalid token.") return;
+            var updRef = doorRef.child(value.key);
+            let additionalMessage = "";
+            if (parseInt(JSON.parse(data)) == 2) {
+              additionalMessage = "Device probably went offline";
+            }
+            if(typeof(JSON.parse(data)) !== 'number'){
+              updRef.update({
+                battery: 100,
+                additionalMessage: additionalMessage
+              });
+            }else{
+              updRef.update({
+                battery: parseInt(JSON.parse(data)),
+                additionalMessage: additionalMessage
+              });
+            }
+            
           }
-          if(typeof(JSON.parse(data)) !== 'number'){
-            updRef.update({
-              battery: 100,
-              additionalMessage: additionalMessage
-            });
-          }else{
-            updRef.update({
-              battery: parseInt(JSON.parse(data)),
-              additionalMessage: additionalMessage
-            });
-          }
-          
-        }
-      });
-    })
-    .on("error", err => {
-      console.error("Error: " + err.message);
-    }).end();
+        });
+      })
+      .on("error", err => {
+        console.error("Error: " + err.message);
+      }).end();
+    }catch(error){
+      console.warn(error);
+    }
 }
 
 async function pollVirtualPort1(value) {
-  await http
+  try{
+    await http
     .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
       let data = "";
 
@@ -118,6 +131,9 @@ async function pollVirtualPort1(value) {
     .on("error", err => {
       console.error("Error: " + err.message);
     }).end(); // end V1 request
+  }catch(error){
+    console.warn(error);
+  }
 }
 
 doorRef.on("child_changed", function(snapshot) {
@@ -266,45 +282,49 @@ function checkDoorSensors(){
                 arrOfDoors.push(d);
               }
               arrOfDoors.forEach(async (door, index) => {
-                await http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, options,resp =>{
-                let data = "";
+                try{
+                    await http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, options,resp =>{
+                  let data = "";
 
-                resp.on("data", chunk => {
-                  data += chunk;
-                });
-          
-                resp.on("end", async () => {
-                    console.log(data);
-                    try {
-                      if(data === 'true'){
-                        console.log("in....")
-                        console.log("in...." + door.data.name)
-                        let [stat1, stat2] = await Promise.all([
-                          pollVirtualPort1(door),
-                          pollVirtualPort2(door)
-                        ]);
-                        resp.removeAllListeners('data');
-                      }else if(data ==='false'){
-                        /*
-                        var updRef = doorRef.child(door.key);
-                        updRef.update({
-                          battery: 0
-                        });*/
-                        resp.removeAllListeners('data');
-                      }else{
-                        console.info("Other protocol door!");
-                        console.info("Sigfox/Lorawan sensor...");
-                        resp.removeAllListeners('data');
-                      }
-                    }catch(error){
-                      resp.removeAllListeners('data');
-                      console.warn(error);
-                    }
+                  resp.on("data", chunk => {
+                    data += chunk;
                   });
-                })
-                .on("error", err => {
-                  console.error("Error: " + err.message);
-                }).end();
+            
+                  resp.on("end", async () => {
+                      console.log(data);
+                      try {
+                        if(data === 'true'){
+                          console.log("in....")
+                          console.log("in...." + door.data.name)
+                          let [stat1, stat2] = await Promise.all([
+                            pollVirtualPort1(door),
+                            pollVirtualPort2(door)
+                          ]);
+                          resp.removeAllListeners('data');
+                        }else if(data ==='false'){
+                          /*
+                          var updRef = doorRef.child(door.key);
+                          updRef.update({
+                            battery: 0
+                          });*/
+                          resp.removeAllListeners('data');
+                        }else{
+                          console.info("Other protocol door!");
+                          console.info("Sigfox/Lorawan sensor...");
+                          resp.removeAllListeners('data');
+                        }
+                      }catch(error){
+                        resp.removeAllListeners('data');
+                        console.warn(error);
+                      }
+                    });
+                  })
+                  .on("error", err => {
+                    console.error("Error: " + err.message);
+                  }).end();
+                  }catch(error){
+                    console.warn(error);
+                  }
               });
             }
           },
