@@ -283,10 +283,11 @@ function checkDoorSensors(done, door, index){
                     ]);
                     resp.removeAllListeners('data');
                 }else if(data ==='false'){
+                    /*
                     var updRef = doorRef.child(door.key);
                     updRef.update({
                     battery: 0
-                    });
+                    });*/
                     resp.removeAllListeners('data');
                 }else{
                     //console.info("Other protocol door!");
