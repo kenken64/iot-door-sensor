@@ -48,7 +48,7 @@ function createQueueJob(){
               }
               arrOfDoors.forEach((door, index) => {
                 const queue = kue.createQueue();
-                //console.log('CHECK DOOR SENSORS CONNECTED');
+                console.log('CHECK DOOR SENSORS CONNECTED');
                 const job = queue.create('checkSensor', {
                   title: 'checkSensor',
                   door: JSON.stringify(door),

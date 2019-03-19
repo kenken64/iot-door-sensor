@@ -6,6 +6,7 @@ const http = require("http"),
       notification = require('./util/notification'),
       Agent = require('agentkeepalive'),
       kue = require('kue'),
+      fs = require('fs'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -20,6 +21,17 @@ const keepaliveAgent = new Agent({
   timeout: 60000, // active socket keepalive for 60 seconds
   freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
   forever: true
+});
+
+var processWorkerName = "";
+
+process.argv.forEach((val, index) => {
+  console.log(`${index}: ${val}`);
+  if(index ==2){
+    let workernameArr = val.split('=');
+    console.log(workernameArr);
+    processWorkerName = workernameArr[1];
+  }
 });
 
 admin.initializeApp({
@@ -316,5 +328,29 @@ queue.process('checkSensor', (job, done) => {
     console.log("check ...");
     let door = job.data.door;
     let index = job.data.index;
-    checkDoorSensors(done, JSON.parse(door), index); 
+    let rawdata = fs.readFileSync('./worker-config.json');  
+    let workerConfig = JSON.parse(rawdata);
+    workerConfig.forEach((data, index)=>{
+        console.log("xxx");
+        let workername = data.workerName;
+        console.log(workername);
+        console.log(processWorkerName);
+        
+        if(processWorkerName === workername){
+            console.log("xxx2");
+            let doorsInWorker = data.doors;
+            
+            let doorObj = JSON.parse(door);
+            console.log(doorObj.data);
+            console.log(doorsInWorker);
+            
+            if(doorsInWorker.includes(doorObj.data.sensor_auth)){
+                console.log("Match !");
+                console.log(doorObj.data.sensor_auth);
+                checkDoorSensors(done, doorObj, index); 
+            }else{
+                done();
+            }
+        }
+    });
 });
