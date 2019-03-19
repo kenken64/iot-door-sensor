@@ -159,7 +159,6 @@ doorRef.on("child_changed", function(snapshot) {
           .then(function(snapshot) {
             if (sendOk) {
                 if (changedDoors.status !== changedDoors.prev_status) {
-                    var updRef = doorRef.child(changedDoors.key);
                     sms.send(`INFO ! ${
                         changedDoors.name
                     } is closed on ${new Date().toLocaleString("en-US", {
@@ -171,9 +170,6 @@ doorRef.on("child_changed", function(snapshot) {
                         `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
                         timeZone: "Asia/Singapore"
                     })}</p>`);
-                    updRef.update({
-                        locked: 0
-                    });
                 }
               }
           });
@@ -199,7 +195,6 @@ doorRef.on("child_changed", function(snapshot) {
           .then(function(snapshot) {
             if (sendOk) {
                 if (changedDoors.status !== changedDoors.prev_status) {
-                    var updRef = doorRef.child(changedDoors.key);
                     sms.send(`ALERT ! ${
                         changedDoors.name
                     } is open. Please follow up with an inspection`,snapshot.val().mobileNo);
@@ -210,9 +205,6 @@ doorRef.on("child_changed", function(snapshot) {
                         `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
                         timeZone: "Asia/Singapore"
                         })}. Please follow up with an inspection</p>`);
-                    updRef.update({
-                        locked: 0
-                    });
                 }
             }
           });
@@ -244,7 +236,6 @@ doorRef.on("child_changed", function(snapshot) {
           .once("value")
           .then(function(snapshot) {
             if (sendOk) {
-                var updRef = doorRef.child(changedDoors.key);
                 sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
                     changedDoors.battery
                 }%). on ${new Date().toLocaleString("en-US", {
@@ -261,10 +252,6 @@ doorRef.on("child_changed", function(snapshot) {
                     }%). ${UndefinedToEmptyStr(
                     changedDoors.additionalMessage
                     )}</p>`);
-                console.log("unlock ...");
-                updRef.update({
-                    locked: 0
-                });
             }
           });
       });
@@ -291,20 +278,10 @@ function checkDoorSensors(done, door, index){
         resp.on("end", async () => {
             try {
                 if(data === 'true'){
-                    var updRef = await doorRef.child(door.key);
-                    console.log(updRef.locked);
-                    if(typeof(updRef.locked ==='undefined') || updRef.locked == 0){
-                        console.log("is unlocked");
-                        updRef.update({
-                            locked: 1
-                        });
-                        let [stat1, stat2] = await Promise.all([
-                            pollVirtualPort1(door),
-                            pollVirtualPort2(door)
-                        ]);
-                    }else{
-                        console.log("blocked from checking the door");
-                    }
+                    let [stat1, stat2] = await Promise.all([
+                        pollVirtualPort1(door),
+                        pollVirtualPort2(door)
+                    ]);
                     resp.removeAllListeners('data');
                 }else if(data ==='false'){
                     /*
@@ -336,7 +313,7 @@ function checkDoorSensors(done, door, index){
 const queue = kue.createQueue();
 console.log('WORKER CONNECTED');
 queue.process('checkSensor', (job, done) => {
-    //console.log("check ...");
+    console.log("check ...");
     let door = job.data.door;
     let index = job.data.index;
     checkDoorSensors(done, JSON.parse(door), index); 
