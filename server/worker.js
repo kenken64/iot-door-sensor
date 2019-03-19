@@ -32,7 +32,7 @@ var doorRef = db.ref("door");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
-var options = {agent: keepaliveAgent};
+var options = {agent: false};
 
 async function pollVirtualPort2(value) {
   try{
@@ -57,11 +57,13 @@ async function pollVirtualPort2(value) {
             if(typeof(JSON.parse(data)) !== 'number'){
               updRef.update({
                 battery: 100,
+                locked: 0,
                 additionalMessage: additionalMessage
               });
             }else{
               updRef.update({
                 battery: parseInt(JSON.parse(data)),
+                locked: 0,
                 additionalMessage: additionalMessage
               });
             }
@@ -156,21 +158,24 @@ doorRef.on("child_changed", function(snapshot) {
           .once("value")
           .then(function(snapshot) {
             if (sendOk) {
-              if (changedDoors.status !== changedDoors.prev_status) {
-                  sms.send(`INFO ! ${
-                    changedDoors.name
-                  } is closed on ${new Date().toLocaleString("en-US", {
-                    timeZone: "Asia/Singapore"
-                  })}`,snapshot.val().mobileNo);
-
-                  email.send(
-                    snapshot.val().email,
-                    `${changedDoors.name} is CLOSED`,
-                    `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
-                      timeZone: "Asia/Singapore"
-                  })}</p>`);
+                if (changedDoors.status !== changedDoors.prev_status) {
+                    var updRef = doorRef.child(changedDoors.key);
+                    sms.send(`INFO ! ${
+                        changedDoors.name
+                    } is closed on ${new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Singapore"
+                    })}`,snapshot.val().mobileNo);
+                    email.send(
+                        snapshot.val().email,
+                        `${changedDoors.name} is CLOSED`,
+                        `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Singapore"
+                    })}</p>`);
+                    updRef.update({
+                        locked: 0
+                    });
+                }
               }
-            }
           });
       });
     }
@@ -193,18 +198,22 @@ doorRef.on("child_changed", function(snapshot) {
           .once("value")
           .then(function(snapshot) {
             if (sendOk) {
-              if (changedDoors.status !== changedDoors.prev_status) {
-                  sms.send(`ALERT ! ${
-                    changedDoors.name
-                  } is open. Please follow up with an inspection`,snapshot.val().mobileNo);
-                  
-                  email.send(
-                    snapshot.val().email,
-                    `${changedDoors.name} is OPEN`,
-                    `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
-                      timeZone: "Asia/Singapore"
-                    })}. Please follow up with an inspection</p>`);
-              }
+                if (changedDoors.status !== changedDoors.prev_status) {
+                    var updRef = doorRef.child(changedDoors.key);
+                    sms.send(`ALERT ! ${
+                        changedDoors.name
+                    } is open. Please follow up with an inspection`,snapshot.val().mobileNo);
+                    
+                    email.send(
+                        snapshot.val().email,
+                        `${changedDoors.name} is OPEN`,
+                        `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Singapore"
+                        })}. Please follow up with an inspection</p>`);
+                    updRef.update({
+                        locked: 0
+                    });
+                }
             }
           });
       });
@@ -235,22 +244,27 @@ doorRef.on("child_changed", function(snapshot) {
           .once("value")
           .then(function(snapshot) {
             if (sendOk) {
-              sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
-                changedDoors.battery
-              }%). on ${new Date().toLocaleString("en-US", {
-                timeZone: "Asia/Singapore"
-              })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
-              
-              email.send(
-                snapshot.val().email,
-                `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
-                  timeZone: "Asia/Singapore"
-                })}`,
-                `<p>Device battery is running low (${
-                  changedDoors.battery
-                }%). ${UndefinedToEmptyStr(
-                  changedDoors.additionalMessage
-                )}</p>`);
+                var updRef = doorRef.child(changedDoors.key);
+                sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
+                    changedDoors.battery
+                }%). on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
+                
+                email.send(
+                    snapshot.val().email,
+                    `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                    })}`,
+                    `<p>Device battery is running low (${
+                    changedDoors.battery
+                    }%). ${UndefinedToEmptyStr(
+                    changedDoors.additionalMessage
+                    )}</p>`);
+                console.log("unlock ...");
+                updRef.update({
+                    locked: 0
+                });
             }
           });
       });
@@ -277,10 +291,20 @@ function checkDoorSensors(done, door, index){
         resp.on("end", async () => {
             try {
                 if(data === 'true'){
-                    let [stat1, stat2] = await Promise.all([
-                        pollVirtualPort1(door),
-                        pollVirtualPort2(door)
-                    ]);
+                    var updRef = await doorRef.child(door.key);
+                    console.log(updRef.locked);
+                    if(typeof(updRef.locked ==='undefined') || updRef.locked == 0){
+                        console.log("is unlocked");
+                        updRef.update({
+                            locked: 1
+                        });
+                        let [stat1, stat2] = await Promise.all([
+                            pollVirtualPort1(door),
+                            pollVirtualPort2(door)
+                        ]);
+                    }else{
+                        console.log("blocked from checking the door");
+                    }
                     resp.removeAllListeners('data');
                 }else if(data ==='false'){
                     /*
@@ -312,7 +336,7 @@ function checkDoorSensors(done, door, index){
 const queue = kue.createQueue();
 console.log('WORKER CONNECTED');
 queue.process('checkSensor', (job, done) => {
-    console.log("checking door sensors...");
+    //console.log("check ...");
     let door = job.data.door;
     let index = job.data.index;
     checkDoorSensors(done, JSON.parse(door), index); 

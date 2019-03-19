@@ -27,7 +27,7 @@ const keepaliveAgent = new Agent({
   forever: true
 });
 
-var options = {agent: keepaliveAgent};
+var options = {agent: false};
 
 function createQueueJob(){
   urlExists(`${BLYNK_API_URL}`, options)
@@ -48,7 +48,7 @@ function createQueueJob(){
               }
               arrOfDoors.forEach((door, index) => {
                 const queue = kue.createQueue();
-                console.log('CHECK DOOR SENSORS CONNECTED');
+                //console.log('CHECK DOOR SENSORS CONNECTED');
                 const job = queue.create('checkSensor', {
                   title: 'checkSensor',
                   door: JSON.stringify(door),
@@ -81,7 +81,7 @@ function createQueueJob(){
       }
     }).catch(error=> console.warn(error));
 
-  var intervalObj = setInterval(createQueueJob, parseInt(process.env.JOB_INTERVAL));
+  let intervalObj = setInterval(createQueueJob,parseInt(process.env.JOB_INTERVAL));
 }
 
 createQueueJob();
