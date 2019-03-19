@@ -20,6 +20,7 @@ const keepaliveAgent = new Agent({
   maxFreeSockets: 10,
   timeout: 60000, // active socket keepalive for 60 seconds
   freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+  forever: true
 });
 
 admin.initializeApp({
