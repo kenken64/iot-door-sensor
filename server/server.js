@@ -2,8 +2,9 @@
 require('events').EventEmitter.defaultMaxListeners = 0
 require("dotenv").config();
 const admin = require("firebase-admin"),
-      urlExists = require('url-exists-deep'),
+      urlExists = require('./util/url-exists-deep'),
       kue = require('kue'),
+      Agent = require('agentkeepalive'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -18,8 +19,18 @@ admin.initializeApp({
 var db = admin.database();
 var doorRef = db.ref("door");
 
+const keepaliveAgent = new Agent({
+  maxSockets: 100,
+  maxFreeSockets: 10,
+  timeout: 60000, // active socket keepalive for 60 seconds
+  freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+  forever: true
+});
+
+var options = {agent: keepaliveAgent};
+
 function createQueueJob(){
-  urlExists(`${BLYNK_API_URL}`)
+  urlExists(`${BLYNK_API_URL}`, options)
     .then(function(response){
       if (response) {
         console.log("Url exists", response.href);
