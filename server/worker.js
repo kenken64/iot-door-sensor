@@ -4,7 +4,6 @@ require("dotenv").config();
 const http = require("http"),
       admin = require("firebase-admin"),
       notification = require('./util/notification'),
-      urlExists = require('url-exists-deep'),
       Agent = require('agentkeepalive'),
       kue = require('kue'),
       _ = require("lodash");
