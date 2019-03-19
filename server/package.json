@@ -18,6 +18,7 @@
     "mqtt": "^2.18.8",
     "node-schedule": "^1.3.2",
     "nodemailer": "^5.0.0",
+    "request": "^2.88.0",
     "ttn": "^2.3.2",
     "twilio": "^3.26.1",
     "url-exists-deep": "^1.1.1"
