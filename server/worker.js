@@ -280,47 +280,50 @@ function UndefinedToEmptyStr(val) {
 
 function checkDoorSensors(done, door, index){
   try{
-        http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, options,resp =>{
-        let data = "";
+        let req = http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, options,resp =>{
+          let data = "";
 
-        resp.on("data", chunk => {
-            data += chunk;
+          resp.on("data", chunk => {
+              data += chunk;
+          });
+
+          resp.on("end", async () => {
+              try {
+                  if(data === 'true'){
+                      let [stat1, stat2] = await Promise.all([
+                          pollVirtualPort1(door),
+                          pollVirtualPort2(door)
+                      ]);
+                      resp.removeAllListeners('data');
+                  }else if(data ==='false'){
+                      /*
+                      var updRef = doorRef.child(door.key);
+                      updRef.update({
+                      battery: 0
+                      });*/
+                      resp.removeAllListeners('data');
+                  }else{
+                      //console.info("Other protocol door!");
+                      //console.info("Sigfox/Lorawan sensor...");
+                      resp.removeAllListeners('data');
+                  }
+              }catch(error){
+                  resp.removeAllListeners('data');
+                  console.warn(error);
+              }
+              done();
+          });
         });
 
-        resp.on("end", async () => {
-            try {
-                if(data === 'true'){
-                    let [stat1, stat2] = await Promise.all([
-                        pollVirtualPort1(door),
-                        pollVirtualPort2(door)
-                    ]);
-                    resp.removeAllListeners('data');
-                }else if(data ==='false'){
-                    /*
-                    var updRef = doorRef.child(door.key);
-                    updRef.update({
-                    battery: 0
-                    });*/
-                    resp.removeAllListeners('data');
-                }else{
-                    //console.info("Other protocol door!");
-                    //console.info("Sigfox/Lorawan sensor...");
-                    resp.removeAllListeners('data');
-                }
-            }catch(error){
-                resp.removeAllListeners('data');
-                console.warn(error);
-            }
-            done();
-        });
-        })
-        .on("error", err => {
+        req.on("error", err => {
             console.error("Error: " + err.message);
             if (err.code === "ECONNRESET") {
               console.log("Timeout occurs");
               return;
             }
-        }).end();
+        });
+        
+        req.end();
     }catch(error){
         console.warn(error);
     }  
