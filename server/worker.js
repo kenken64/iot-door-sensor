@@ -316,6 +316,10 @@ function checkDoorSensors(done, door, index){
         })
         .on("error", err => {
             console.error("Error: " + err.message);
+            if (err.code === "ECONNRESET") {
+              console.log("Timeout occurs");
+              return;
+            }
         }).end();
     }catch(error){
         console.warn(error);
