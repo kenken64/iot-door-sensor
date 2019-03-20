@@ -86,7 +86,8 @@ async function pollVirtualPort2(value) {
       });
 
       req.on("error", err => {
-        console.error("Error: " + err.message);
+        console.error("Error: pollVirtualPort2 " + err.message);
+        return;
       })
       
       req.end();
@@ -149,7 +150,8 @@ async function pollVirtualPort1(value) {
     });
 
     req.on("error", err => {
-      console.error("Error: " + err.message);
+      console.error("Error: pollVirtualPort2 " + err.message);
+      return;
     })
     
     req.end(); // end V1 request
@@ -306,7 +308,7 @@ function checkDoorSensors(done, door){
                         if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
                           let doorRefVal = snapshot.val();
                           let lockedtimstamp = nano(process.hrtime());
-                          if(doorRefVal.locked == 0 && doorRefVal.lockedDate !== lockedtimstamp){
+                          if(doorRefVal.locked == 0 && doorRefVal.lockedDate < lockedtimstamp){
                             updRef.update({
                               locked: 1,
                               lockedDate: lockedtimstamp
@@ -349,11 +351,9 @@ function checkDoorSensors(done, door){
         });
 
         req.on("error", err => {
-            console.error("Error: " + err.message);
-            if (err.code === "ECONNRESET") {
-              console.log("Timeout occurs");
-              return;
-            }
+            console.error("Error: checkDoorSensors " + err.message);
+            done();
+            return;
         });
         
         req.end();
