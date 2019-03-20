@@ -7,6 +7,7 @@ const http = require("http"),
       Agent = require('agentkeepalive'),
       kue = require('kue'),
       fs = require('fs'),
+      nano = require('nanoseconds'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -26,10 +27,10 @@ const keepaliveAgent = new Agent({
 var processWorkerName = "";
 
 process.argv.forEach((val, index) => {
-  console.log(`${index}: ${val}`);
+  //console.log(`${index}: ${val}`);
   if(index ==2){
     let workernameArr = val.split('=');
-    console.log(workernameArr);
+    //console.log(workernameArr);
     processWorkerName = workernameArr[1];
   }
 });
@@ -48,8 +49,8 @@ var options = {agent: false};
 
 async function pollVirtualPort2(value) {
   try{
-    await http
-      .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
+    console.log(pollVirtualPort2);
+    let req = await http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
         let data = "";
 
         // A chunk of data has been recieved.
@@ -82,10 +83,13 @@ async function pollVirtualPort2(value) {
             
           }
         });
-      })
-      .on("error", err => {
+      });
+
+      req.on("error", err => {
         console.error("Error: " + err.message);
-      }).end();
+      })
+      
+      req.end();
     }catch(error){
       console.warn(error);
     }
@@ -93,8 +97,8 @@ async function pollVirtualPort2(value) {
 
 async function pollVirtualPort1(value) {
   try{
-    await http
-    .get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
+    console.log("pollVirtualPort1");
+    let req = await http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -142,10 +146,13 @@ async function pollVirtualPort1(value) {
           }
         }
       });
-    })
-    .on("error", err => {
+    });
+
+    req.on("error", err => {
       console.error("Error: " + err.message);
-    }).end(); // end V1 request
+    })
+    
+    req.end(); // end V1 request
   }catch(error){
     console.warn(error);
   }
@@ -278,7 +285,7 @@ function UndefinedToEmptyStr(val) {
   return val;
 }
 
-function checkDoorSensors(done, door, index){
+function checkDoorSensors(done, door){
   try{
         let req = http.get(`${BLYNK_API_URL}${door.data.sensor_auth}/isHardwareConnected`, options,resp =>{
           let data = "";
@@ -287,14 +294,39 @@ function checkDoorSensors(done, door, index){
               data += chunk;
           });
 
-          resp.on("end", async () => {
+          resp.on("end", () => {
               try {
                   if(data === 'true'){
-                      let [stat1, stat2] = await Promise.all([
-                          pollVirtualPort1(door),
-                          pollVirtualPort2(door)
-                      ]);
-                      resp.removeAllListeners('data');
+                    //console.log("ZZZZZ>>>" + door.key);
+                    
+                    var updRef = doorRef.child(door.key);
+                    updRef.once(
+                      "value",
+                      async function(snapshot) {
+                        if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
+                          let doorRefVal = snapshot.val();
+                          let lockedtimstamp = nano(process.hrtime());
+                          if(doorRefVal.locked == 0 && doorRefVal.lockedDate !== lockedtimstamp){
+                            updRef.update({
+                              locked: 1,
+                              lockedDate: lockedtimstamp
+                            });
+                            console.log(">>> IS NOT LOCK !" + doorRefVal.locked+ ' ' + door.key);
+                            let [pollStat1, pollStat2] = await Promise.all([
+                                pollVirtualPort1(door),
+                                pollVirtualPort2(door)
+                            ]);
+                            updRef.update({
+                              locked: 0
+                            });
+                          }else{
+                            console.log(">>> IS LOCKED !!" + doorRefVal.locked + ' '+ door.key);
+                          }
+                        }
+                      }
+                    );
+                    
+                    resp.removeAllListeners('data');
                   }else if(data ==='false'){
                       /*
                       var updRef = doorRef.child(door.key);
@@ -311,6 +343,7 @@ function checkDoorSensors(done, door, index){
                   resp.removeAllListeners('data');
                   console.warn(error);
               }
+              console.log("done ...");
               done();
           });
         });
@@ -332,29 +365,19 @@ function checkDoorSensors(done, door, index){
 const queue = kue.createQueue();
 console.log('WORKER CONNECTED');
 queue.process('checkSensor', (job, done) => {
-    console.log("check ...");
+    //console.log("check ...");
     let door = job.data.door;
     let index = job.data.index;
     let rawdata = fs.readFileSync('./worker-config.json');  
     let workerConfig = JSON.parse(rawdata);
     workerConfig.forEach((data, index)=>{
-        console.log("xxx");
         let workername = data.workerName;
-        console.log(workername);
-        console.log(processWorkerName);
         
         if(processWorkerName === workername){
-            console.log("xxx2");
             let doorsInWorker = data.doors;
-            
             let doorObj = JSON.parse(door);
-            console.log(doorObj.data);
-            console.log(doorsInWorker);
-            
             if(doorsInWorker.includes(doorObj.data.sensor_auth)){
-                console.log("Match !");
-                console.log(doorObj.data.sensor_auth);
-                checkDoorSensors(done, doorObj, index); 
+                checkDoorSensors(done, doorObj); 
             }else{
                 done();
             }

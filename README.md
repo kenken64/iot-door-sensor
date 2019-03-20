@@ -133,3 +133,23 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Start Backend server
+How to start the sms and email backend server that poll the devices.
+
+```
+cd server/
+pm2 start server.js
+```
+
+## Start Worker for the engine
+Worker consumes the job from the delegator to check the door sensors and send out notification.
+
+```
+cd server/
+pm2 start --name worker worker.js -- --workername=worker1
+pm2 start --name worker2 worker.js -- --workername=worker2
+pm2 start --name worker3 worker.js -- --workername=worker3
+pm2 start --name worker4 worker.js -- --workername=worker4
+
+```

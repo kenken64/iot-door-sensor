@@ -18,7 +18,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = new twilio(accountSid, authToken);
 class Email {
     constructor(){
-        console.log("Email");
+        //console.log("Email");
     }
 
     send(toEmail, subject, htmlcontent){
@@ -40,7 +40,7 @@ class Email {
 
 class SMS {
     constructor(){
-        console.log("SMS");
+        //console.log("SMS");
     }
 
     send(body, toMobile){
