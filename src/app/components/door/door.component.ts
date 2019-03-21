@@ -56,6 +56,7 @@ export class DoorComponent implements OnInit {
       console.log(item1);
       if(typeof(item1) === 'undefined' ){
         // Play the sound.
+        console.log("STOP SOUND !");
         this.sound.stop();
       }else{
         this.sound.stop();
