@@ -162,9 +162,13 @@ function pollVirtualPort1(value) {
 
 doorRef.on("child_changed", function(snapshot) {
   var changedDoors = snapshot.val();
+  let updRef = doorRef.child(changedDoors.key);
   if(changedDoors.workerName === processWorkerName && changedDoors.locked == 0){
     console.log("CORRECT SAME WORKER ! > " + processWorkerName);
     if (changedDoors.status === "Closed" && changedDoors.prev_status === "Open") {
+      updRef.update({
+        locked: 1
+      });
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
@@ -196,7 +200,7 @@ doorRef.on("child_changed", function(snapshot) {
                             `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
                             timeZone: "Asia/Singapore"
                         })}</p>`);
-                      let updRef = doorRef.child(changedDoors.key);
+                      
                       updRef.update({
                         locked: 0
                       });
@@ -208,6 +212,9 @@ doorRef.on("child_changed", function(snapshot) {
     } //status closed
   
     if (changedDoors.status === "Open" && changedDoors.prev_status === "Closed") {
+      updRef.update({
+        locked: 0
+      });
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
@@ -238,8 +245,7 @@ doorRef.on("child_changed", function(snapshot) {
                             `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
                             timeZone: "Asia/Singapore"
                             })}. Please follow up with an inspection</p>`);
-
-                        let updRef = doorRef.child(changedDoors.key);
+                        
                         updRef.update({
                           locked: 0
                         });
@@ -259,6 +265,9 @@ doorRef.on("child_changed", function(snapshot) {
       changedDoors.battery == 2 ||
       changedDoors.battery == 1 )
     ) {
+      updRef.update({
+        locked: 0
+      });
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
@@ -295,7 +304,6 @@ doorRef.on("child_changed", function(snapshot) {
                         changedDoors.additionalMessage
                         )}</p>`);
                     
-                    let updRef = doorRef.child(changedDoors.key);
                     updRef.update({
                       locked: 0
                     });    
@@ -340,7 +348,6 @@ function checkDoorSensors(done, door, workerName){
                           console.log(">>> doorRefVal.lockedDate ?" + (lockedtimstamp - doorRefVal.lockedDate));  
                           if(doorRefVal.locked == 0 && (doorRefVal.lockedDate < lockedtimstamp)){
                             updRef.update({
-                              locked: 1,
                               lockedDate: admin.database.ServerValue.TIMESTAMP,
                               workerName: workerName
                             });
