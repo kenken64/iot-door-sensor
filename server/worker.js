@@ -162,13 +162,11 @@ function pollVirtualPort1(value) {
 
 doorRef.on("child_changed", function(snapshot) {
   var changedDoors = snapshot.val();
-  let updRef = doorRef.child(changedDoors.key);
+  
   if(changedDoors.workerName === processWorkerName && changedDoors.locked == 0){
     console.log("CORRECT SAME WORKER ! > " + processWorkerName);
     if (changedDoors.status === "Closed" && changedDoors.prev_status === "Open") {
-      updRef.update({
-        locked: 1
-      });
+      
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
@@ -188,33 +186,25 @@ doorRef.on("child_changed", function(snapshot) {
                   if (changedDoors.status !== changedDoors.prev_status) {
                       let sms = new notification.SMS();
                       let email = new notification.Email();
-                      
-                        sms.send(`INFO ! ${
-                            changedDoors.name
-                        } is closed on ${new Date().toLocaleString("en-US", {
-                            timeZone: "Asia/Singapore"
-                        })}`,snapshot.val().mobileNo);
-                        email.send(
-                            snapshot.val().email,
-                            `${changedDoors.name} is CLOSED`,
-                            `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
-                            timeZone: "Asia/Singapore"
-                        })}</p>`);
-                      
-                      updRef.update({
-                        locked: 0
-                      });
+                      sms.send(`INFO ! ${
+                          changedDoors.name
+                      } is closed on ${new Date().toLocaleString("en-US", {
+                          timeZone: "Asia/Singapore"
+                      })}`,snapshot.val().mobileNo);
+                      email.send(
+                          snapshot.val().email,
+                          `${changedDoors.name} is CLOSED`,
+                          `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
+                          timeZone: "Asia/Singapore"
+                      })}</p>`);
                   }
                 }
             });
         });
-      }
+      }  
     } //status closed
   
     if (changedDoors.status === "Open" && changedDoors.prev_status === "Closed") {
-      updRef.update({
-        locked: 0
-      });
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
@@ -234,27 +224,23 @@ doorRef.on("child_changed", function(snapshot) {
                   if (changedDoors.status !== changedDoors.prev_status) {
                       let sms = new notification.SMS();
                       let email = new notification.Email();
-                        sms.send(`ALERT ! ${
-                            changedDoors.name
-                        } is open. Please follow up with an inspection. ${new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"
-                          })}`,snapshot.val().mobileNo);
-                        
-                        email.send(
-                            snapshot.val().email,
-                            `${changedDoors.name} is OPEN`,
-                            `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
-                            timeZone: "Asia/Singapore"
-                            })}. Please follow up with an inspection</p>`);
-                        
-                        updRef.update({
-                          locked: 0
-                        });
-                     
+                      sms.send(`ALERT ! ${
+                          changedDoors.name
+                      } is open. Please follow up with an inspection. ${new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"
+                        })}`,snapshot.val().mobileNo);
+                      
+                      email.send(
+                          snapshot.val().email,
+                          `${changedDoors.name} is OPEN`,
+                          `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                          timeZone: "Asia/Singapore"
+                          })}. Please follow up with an inspection</p>`);
                   }
               }
             });
         });
       }
+      
     }
     // check battery section
     if (
@@ -265,9 +251,6 @@ doorRef.on("child_changed", function(snapshot) {
       changedDoors.battery == 2 ||
       changedDoors.battery == 1 )
     ) {
-      updRef.update({
-        locked: 0
-      });
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
@@ -284,30 +267,24 @@ doorRef.on("child_changed", function(snapshot) {
             .once("value")
             .then(function(snapshot) {
               if (sendOk) {
-                  let sms = new notification.SMS();
-                  let email = new notification.Email();
-                  
-                    sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
-                        changedDoors.battery
-                    }%). on ${new Date().toLocaleString("en-US", {
-                        timeZone: "Asia/Singapore"
-                    })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
-                    
-                    email.send(
-                        snapshot.val().email,
-                        `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
-                        timeZone: "Asia/Singapore"
-                        })}`,
-                        `<p>Device battery is running low (${
-                        changedDoors.battery
-                        }%). ${UndefinedToEmptyStr(
-                        changedDoors.additionalMessage
-                        )}</p>`);
-                    
-                    updRef.update({
-                      locked: 0
-                    });    
-                  
+                let sms = new notification.SMS();
+                let email = new notification.Email();
+                sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
+                    changedDoors.battery
+                }%). on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
+                
+                email.send(
+                    snapshot.val().email,
+                    `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                    })}`,
+                    `<p>Device battery is running low (${
+                    changedDoors.battery
+                    }%). ${UndefinedToEmptyStr(
+                    changedDoors.additionalMessage
+                    )}</p>`);
               }
             });
         });
@@ -346,7 +323,7 @@ function checkDoorSensors(done, door, workerName){
                           console.log(">>> doorRefVal.lockedDate !" + doorRefVal.lockedDate);
                           console.log(">>> doorRefVal.lockedDate ?" + (doorRefVal.lockedDate < lockedtimstamp));
                           console.log(">>> doorRefVal.lockedDate ?" + (lockedtimstamp - doorRefVal.lockedDate));  
-                          if(doorRefVal.locked == 0 && (doorRefVal.lockedDate < lockedtimstamp)){
+                          if(doorRefVal.lockedDate < lockedtimstamp){
                             updRef.update({
                               lockedDate: admin.database.ServerValue.TIMESTAMP,
                               workerName: workerName

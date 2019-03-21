@@ -10,7 +10,10 @@ const admin = require("firebase-admin"),
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
-
+var indicator = 0;
+var counter = 0;
+var intervalValue = parseInt(process.env.JOB_INTERVAL);
+  
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.FIREBASE_DB_URL
@@ -33,7 +36,7 @@ function createQueueJob(){
   urlExists(`${BLYNK_API_URL}`, options)
     .then(function(response){
       if (response) {
-        console.log("Url exists", response.href);
+        //console.log("Url exists", response.href);
         doorRef.on(
           "value",
           function(snapshot) {
@@ -48,7 +51,7 @@ function createQueueJob(){
               }
               arrOfDoors.forEach((door, index) => {
                 const queue = kue.createQueue();
-                console.log('CHECK DOOR SENSORS CONNECTED');
+                //console.log('CHECK DOOR SENSORS CONNECTED');
                 const job = queue.create('checkSensor', {
                   title: 'checkSensor',
                   door: JSON.stringify(door),
@@ -61,7 +64,7 @@ function createQueueJob(){
                     return;
                   }
                   job.on('complete', (result) => {
-                    console.log('CHECK DOOR SENSORS JOB COMPLETE');
+                    //console.log('CHECK DOOR SENSORS JOB COMPLETE');
                     //console.log(result);
                   });
                   job.on('failed', (errorMessage) => {
@@ -81,7 +84,21 @@ function createQueueJob(){
       }
     }).catch(error=> console.warn(error));
 
-  let intervalObj = setInterval(createQueueJob,parseInt(process.env.JOB_INTERVAL));
+  if(indicator == 0){
+    if(intervalValue > 12000){
+      indicator = 1;
+    }
+    intervalValue = intervalValue + 1000;
+  }else if(indicator == 1){
+    if(intervalValue < 3000){
+      indicator = 0;
+    }
+    intervalValue = intervalValue - 1000;
+  }
+  console.log("intervalValue > " + intervalValue);
+  counter++;
+  console.log("counter > " + counter);
+  setInterval(createQueueJob,intervalValue);
 }
 
 createQueueJob();
