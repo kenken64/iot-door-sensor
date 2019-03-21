@@ -160,10 +160,9 @@ function pollVirtualPort1(value) {
   }
 }
 
-doorRef.on("child_changed", function(snapshot) {
+doorRef.on("child_changed", async function(snapshot) {
   var changedDoors = snapshot.val();
-  
-  if(changedDoors.workerName === processWorkerName && changedDoors.locked == 0){
+  if(await changedDoors.workerName === processWorkerName){
     console.log("CORRECT SAME WORKER ! > " + processWorkerName);
     if (changedDoors.status === "Closed" && changedDoors.prev_status === "Open") {
       
@@ -181,22 +180,50 @@ doorRef.on("child_changed", function(snapshot) {
         changedDoors.guards.forEach(guardVal => {
           db.ref("guard/" + guardVal)
             .once("value")
-            .then(function(snapshot) {
+            .then(async function(snapshot2) {
               if (sendOk) {
                   if (changedDoors.status !== changedDoors.prev_status) {
+                    var key = snapshot.key;
+                    var doorlockedTimestamp = new Date(changedDoors.lockedDate);
+                    doorlockedTimestamp.setUTCDate(8);
+                    var nowTimestamp = new Date();
+                    nowTimestamp.setUTCDate(8);
+                    var compare1 = doorlockedTimestamp.getMinutes();
+                    var compare2 = nowTimestamp.getMinutes();
+                    console.log(compare1);
+                    console.log(compare2);
+                    console.log(compare2>compare1);
+                    console.log(changedDoors.locked ==0);
+                    console.log(changedDoors.workerName === processWorkerName);
+                    var updRef = doorRef.child(key);
+                    
+                    if(await changedDoors.locked == 0){
+                      await updRef.update({
+                        locked: 1
+                      });
                       let sms = new notification.SMS();
                       let email = new notification.Email();
                       sms.send(`INFO ! ${
                           changedDoors.name
                       } is closed on ${new Date().toLocaleString("en-US", {
                           timeZone: "Asia/Singapore"
-                      })}`,snapshot.val().mobileNo);
+                      })}`,snapshot2.val().mobileNo);
+                      console.log("SEND SMS" + processWorkerName);
                       email.send(
-                          snapshot.val().email,
+                           snapshot2.val().email,
                           `${changedDoors.name} is CLOSED`,
                           `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
                           timeZone: "Asia/Singapore"
                       })}</p>`);
+                      console.log("SEND EMAIL" + processWorkerName);
+                      setTimeout(function() {
+                        console.log("delaying ...")
+                      }, 2500);
+                      await updRef.update({
+                        locked: 0
+                      });
+                      
+                    }
                   }
                 }
             });
@@ -219,22 +246,45 @@ doorRef.on("child_changed", function(snapshot) {
         changedDoors.guards.forEach(guardVal => {
           db.ref("guard/" + guardVal)
             .once("value")
-            .then(function(snapshot) {
+            .then(async function(snapshot2) {
               if (sendOk) {
                   if (changedDoors.status !== changedDoors.prev_status) {
-                      let sms = new notification.SMS();
-                      let email = new notification.Email();
-                      sms.send(`ALERT ! ${
-                          changedDoors.name
-                      } is open. Please follow up with an inspection. ${new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"
-                        })}`,snapshot.val().mobileNo);
+                      var key = snapshot.key;
+                      var doorlockedTimestamp = new Date(changedDoors.lockedDate);
+                      doorlockedTimestamp.setUTCDate(8);
+                      var nowTimestamp = new Date();
+                      nowTimestamp.setUTCDate(8);
+                      var compare1 = doorlockedTimestamp.getMinutes();
+                      var compare2 = nowTimestamp.getMinutes();
+                      console.log(compare1);
+                      console.log(compare2);
+                      console.log(compare2>compare1);
+                      console.log(changedDoors.locked ==0);
+                      console.log(changedDoors.workerName === processWorkerName);
+                      var updRef = doorRef.child(key);
                       
-                      email.send(
-                          snapshot.val().email,
-                          `${changedDoors.name} is OPEN`,
-                          `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
-                          timeZone: "Asia/Singapore"
-                          })}. Please follow up with an inspection</p>`);
+                      if(await changedDoors.locked == 0){
+                        await updRef.update({
+                          locked: 1
+                        });
+                        let sms = new notification.SMS();
+                        let email = new notification.Email();
+                        sms.send(`ALERT ! ${
+                            changedDoors.name
+                        } is open. Please follow up with an inspection. ${new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"
+                          })}`,snapshot2.val().mobileNo);
+                        console.log("SEND SMS" + processWorkerName);
+                        email.send(
+                            snapshot2.val().email,
+                            `${changedDoors.name} is OPEN`,
+                            `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                            timeZone: "Asia/Singapore"
+                            })}. Please follow up with an inspection</p>`);
+                        console.log("SEND EMAIL" + processWorkerName);
+                        await updRef.update({
+                          locked: 0
+                        });
+                      }
                   }
               }
             });
@@ -325,14 +375,19 @@ function checkDoorSensors(done, door, workerName){
                           console.log(">>> doorRefVal.lockedDate ?" + (lockedtimstamp - doorRefVal.lockedDate));  
                           if(doorRefVal.lockedDate < lockedtimstamp){
                             updRef.update({
-                              lockedDate: admin.database.ServerValue.TIMESTAMP,
                               workerName: workerName
                             });
+                            setTimeout(function() {
+                              console.log("delaying ...")
+                            }, 1000);
                             console.log(">>> IS NOT LOCK !" + doorRefVal.locked+ ' ' + door.key);
                             let [pollStat1, pollStat2] = await Promise.all([
                                 pollVirtualPort1(door),
                                 pollVirtualPort2(door)
                             ]);
+                            await updRef.update({
+                              lockedDate: admin.database.ServerValue.TIMESTAMP
+                            });
                           }else{
                             console.log(">>> IS LOCKED !!" + doorRefVal.locked + ' '+ door.key);
                           }

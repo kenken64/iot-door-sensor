@@ -1,5 +1,5 @@
 <mat-list>
-  <h3 mat-subheader>&nbsp;&nbsp;Doors</h3>
+  <h3 mat-subheader>&nbsp;&nbsp;Doors/Window</h3>
   <mat-list-item *ngFor="let c of doors" [routerLink]="['guard', c.key]">
     <div *ngIf="c.status == 'Closed'">
       <mat-icon svgIcon="door_closed"></mat-icon>
