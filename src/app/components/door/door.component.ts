@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DoorService } from '../../services/door.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatIconRegistry} from '@angular/material';
 import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import {Howl, Howler} from 'howler';
 
 @Component({
@@ -10,8 +11,9 @@ import {Howl, Howler} from 'howler';
   templateUrl: "./door.component.html",
   styleUrls: ["./door.component.css"]
 })
-export class DoorComponent implements OnInit {
+export class DoorComponent implements OnInit, OnDestroy {
   doors: any;
+  private allguardsSub: Subscription;
 
   constructor(
     private doorSvc: DoorService,
@@ -38,9 +40,13 @@ export class DoorComponent implements OnInit {
     this.getDoorList();
   }
 
+  ngOnDestroy(){
+    this.allguardsSub.unsubscribe();
+  }
+
   getDoorList() {
     // Use snapshotChanges().map() to store the key
-    this.doorSvc
+    this.allguardsSub = this.doorSvc
       .getAllDoor()
       .snapshotChanges()
       .pipe(

@@ -1,9 +1,10 @@
 'use strict';
-require('events').EventEmitter.defaultMaxListeners = 0
+require('events').EventEmitter.defaultMaxListeners = 100
 require("dotenv").config();
 const admin = require("firebase-admin"),
       urlExists = require('./util/url-exists-deep'),
       kue = require('kue'),
+      async = require("async"),
       Agent = require('agentkeepalive'),
       _ = require("lodash");
 
@@ -20,7 +21,6 @@ admin.initializeApp({
 });
 
 var db = admin.database();
-var doorRef = db.ref("door");
 
 const keepaliveAgent = new Agent({
   maxSockets: 100,
@@ -33,6 +33,7 @@ const keepaliveAgent = new Agent({
 var options = {agent: false};
 
 function createQueueJob(){
+  let doorRef = db.ref("door");
   urlExists(`${BLYNK_API_URL}`, options)
     .then(function(response){
       if (response) {
@@ -49,30 +50,63 @@ function createQueueJob(){
                 };
                 arrOfDoors.push(d);
               }
-              arrOfDoors.forEach((door, index) => {
+              
+              async.eachLimit(arrOfDoors, arrOfDoors.length, (door,callback) => {
+                const used = process.memoryUsage().heapUsed / 1024 / 1024;
+                console.log(`Server uses approximately ${Math.round(used * 100) / 100} MB`);
                 const queue = kue.createQueue();
                 //console.log('CHECK DOOR SENSORS CONNECTED');
                 const job = queue.create('checkSensor', {
                   title: 'checkSensor',
                   door: JSON.stringify(door),
-                  index: index
+                  index: arrOfDoors.indexOf(door)
                 })
                 .removeOnComplete(true)
                 .save((err) => {
                   if (err) {
                     console.log('CHECK DOOR SENSORS JOB SAVE FAILED');
+                    clearInterval(intervalJob);
+                    doorRef = null;
+                    forceGC();
                     return;
                   }
                   job.on('complete', (result) => {
-                    //console.log('CHECK DOOR SENSORS JOB COMPLETE');
+                    console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
                     //console.log(result);
+                    clearInterval(intervalJob);
+                    intervalJob = null;
+                    if(indicator == 0){
+                      if(intervalValue > 12000){
+                        indicator = 1;
+                      }
+                      intervalValue = intervalValue + 1000;
+                    }else if(indicator == 1){
+                      if(intervalValue < 3000){
+                        indicator = 0;
+                      }
+                      intervalValue = intervalValue - 1000;
+                    }
+                    console.log("intervalValue > " + intervalValue);
+                    counter++;
+                    console.log("counter > " + counter);
+                    var intervalJob = setInterval(createQueueJob,intervalValue);
+                    doorRef = null;
+                    arrOfDoors = null;
+                    forceGC();
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
                     console.log(errorMessage);
+                    clearInterval(intervalJob);
+                    doorRef = null;
+                    forceGC();
+                    return;
                   });
                 });
-              });
+              }, (err) => {
+                console.warn(err);
+                forceGC();
+              }); 
             }
           },
           function(errorObject) {
@@ -83,23 +117,16 @@ function createQueueJob(){
         console.log("Blynk does not exists!");
       }
     }).catch(error=> console.warn(error));
-
-  if(indicator == 0){
-    if(intervalValue > 12000){
-      indicator = 1;
-    }
-    intervalValue = intervalValue + 1000;
-  }else if(indicator == 1){
-    if(intervalValue < 3000){
-      indicator = 0;
-    }
-    intervalValue = intervalValue - 1000;
-  }
-  console.log("intervalValue > " + intervalValue);
-  counter++;
-  console.log("counter > " + counter);
-  setInterval(createQueueJob,intervalValue);
+    
 }
 
 createQueueJob();
 //var intervalObj = setInterval(createQueueJob, parseInt(process.env.JOB_INTERVAL));
+
+function forceGC(){
+   if(global.gc){
+      global.gc();
+   } else {
+      console.warn('No GC hook! Start your program as `node --expose-gc file.js`.');
+   }
+}

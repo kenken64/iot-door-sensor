@@ -1,10 +1,12 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ViewChild,
   ElementRef,
   QueryList
 } from "@angular/core";
+import { Subscription } from 'rxjs';
 import { GuardService } from "../../services/guard.service";
 import { Guard } from "../../model/guard";
 import { DoorService } from "../../services/door.service";
@@ -19,7 +21,7 @@ import { map } from "rxjs/operators";
   templateUrl: "./guard.component.html",
   styleUrls: ["./guard.component.css"]
 })
-export class GuardComponent implements OnInit {
+export class GuardComponent implements OnInit, OnDestroy {
   guards: any;
   @ViewChild("guardz")
   guardz: QueryList<ElementRef>;
@@ -33,6 +35,9 @@ export class GuardComponent implements OnInit {
   removable = true;
   addOnBlur = true;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+  
+  private doorsSub: Subscription;
+  private allguardsSub: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -42,16 +47,22 @@ export class GuardComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
+  ngOnDestroy(){
+    this.doorsSub.unsubscribe();
+    this.allguardsSub.unsubscribe();
+  }
+
   ngOnInit() {
     this.roomId = this.activatedRoute.snapshot.params.key;
     console.log("roomId" + this.roomId);
-    this.doorSvc.getDoor(this.roomId).subscribe(result => {
+    this.doorsSub = this.doorSvc.getDoor(this.roomId).subscribe(result => {
       console.log(">>> result " + JSON.stringify(result));
       console.log(">>> ID ??? " + this.roomId);
       this.doorName = result.name;
       this.doorId = this.roomId;
       this.doorBatteryValue = result.battery;
       if (typeof result.guards !== "undefined") {
+        this.selectedGuard = [];
         result.guards.forEach(value => {
           console.log(value);
           this.guardSvc.getGuard(value).subscribe(guardVal => {
@@ -62,7 +73,7 @@ export class GuardComponent implements OnInit {
       }
     });
 
-    this.guardSvc
+    this.allguardsSub = this.guardSvc
       .getAllGuard()
       .snapshotChanges()
       .pipe(

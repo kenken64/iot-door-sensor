@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "agentkeepalive": "^4.0.2",
+    "async": "^2.6.2",
     "dotenv": "^6.2.0",
     "firebase-admin": "^7.0.0",
     "kue": "^0.11.6",

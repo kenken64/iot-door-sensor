@@ -7,7 +7,6 @@ const http = require("http"),
       Agent = require('agentkeepalive'),
       kue = require('kue'),
       fs = require('fs'),
-      nano = require('nanoseconds'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -44,10 +43,10 @@ var eventsRef = db.ref("events");
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
 var options = {agent: false};
 
-function pollVirtualPort2(value) {
+async function pollVirtualPort2(value) {
   try{
     console.log(pollVirtualPort2);
-    let req = http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
+    let req = await http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V2`, options, resp => {
         let data = "";
 
         // A chunk of data has been recieved.
@@ -94,10 +93,12 @@ function pollVirtualPort2(value) {
     }
 }
 
-function pollVirtualPort1(value) {
+async function pollVirtualPort1(value) {
   try{
     console.log("pollVirtualPort1");
-    let req = http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
+    console.log("pollVirtualPort1" + value.data.sensor_auth);
+    console.log(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`);
+    let req = await http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -111,6 +112,7 @@ function pollVirtualPort1(value) {
           if (data === "Invalid token.") return;
           if(typeof(doorRef) !=='undefined'){
             var updRef = doorRef.child(value.key);
+            console.log(JSON.parse(data));
             console.log(JSON.parse(data));
             updRef.once(
               "value",
@@ -216,9 +218,6 @@ doorRef.on("child_changed", async function(snapshot) {
                           timeZone: "Asia/Singapore"
                       })}</p>`);
                       console.log("SEND EMAIL" + processWorkerName);
-                      setTimeout(function() {
-                        console.log("delaying ...")
-                      }, 2500);
                       await updRef.update({
                         locked: 0
                       });
@@ -362,6 +361,7 @@ function checkDoorSensors(done, door, workerName){
           resp.on("end", () => {
               try {
                   if(data === 'true'){
+                    console.log("door.data.sensor_auth"+door.data.sensor_auth);
                     var updRef = doorRef.child(door.key);
                     updRef.once(
                       "value",
@@ -377,10 +377,9 @@ function checkDoorSensors(done, door, workerName){
                             updRef.update({
                               workerName: workerName
                             });
-                            setTimeout(function() {
-                              console.log("delaying ...")
-                            }, 1000);
                             console.log(">>> IS NOT LOCK !" + doorRefVal.locked+ ' ' + door.key);
+                            console.log(">>> IS NOT LOCK !" + door.data.sensor_auth);
+                            
                             let [pollStat1, pollStat2] = await Promise.all([
                                 pollVirtualPort1(door),
                                 pollVirtualPort2(door)
@@ -413,7 +412,7 @@ function checkDoorSensors(done, door, workerName){
                   console.warn(error);
                   done();
               }
-              //console.log("done ...");
+              console.log("done ...");
               done();
           });
         });
@@ -439,18 +438,24 @@ queue.process('checkSensor', (job, done) => {
     let rawdata = fs.readFileSync('./worker-config.json');  
     let workerConfig = JSON.parse(rawdata);
     workerConfig.forEach((data)=>{
-        let workername = data.workerName;
-        
-        if(processWorkerName === workername){
-            let doorsInWorker = data.doors;
-            let doorObj = JSON.parse(door);
-            if(doorsInWorker.includes(doorObj.data.sensor_auth)){
-                console.log("WORKER NAME ??" + processWorkerName);
-                console.log("DOOR AUTH ??" + doorObj.data.sensor_auth);
-                checkDoorSensors(done, doorObj, processWorkerName); 
-            }else{
-                done();
-            }
-        }
+      let workername = data.workerName;
+      console.log("WORKER NAME ??" + workername);
+      if(processWorkerName === workername){
+          console.log("MATCH !??" + workername);
+          let doorsInWorker = data.doors;
+          let doorObj = JSON.parse(door);
+          console.log("MATCH !??" + doorsInWorker);
+          console.log("MATCH !??" + doorsInWorker.includes(doorObj.data.sensor_auth));
+          if(doorsInWorker.includes(doorObj.data.sensor_auth)){
+              console.log("WORKER NAME ??" + processWorkerName);
+              console.log("DOOR AUTH ??" + doorObj.data.sensor_auth);
+              checkDoorSensors(done, doorObj, processWorkerName);
+          }else{
+              done();
+          }
+      }
     });
+    //global.gc();
+    const used = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`Worker uses approximately ${Math.round(used * 100) / 100} MB`);
 });
