@@ -126,7 +126,12 @@ async function pollVirtualPort1(value) {
                     } else {
                       statusOfNightMare = doorRefVal.status;
                     }
-    
+                    console.log("SDFDSFDSFDSDSDFSFSF");
+                    console.log("SDFDSFDSFDSDSDFSFSF");
+                    console.log(statusOfNightMare);
+                    console.log(JSON.parse(data));
+                    console.log("SDFDSFDSFDSDSDFSFSF");
+                    console.log("SDFDSFDSFDSDSDFSFSF");
                     if (parseInt(JSON.parse(data)) == 1) {
                       updRef.update({
                         status: "Open",

@@ -75,21 +75,6 @@ function createQueueJob(){
                     //console.log(result);
                     clearInterval(intervalJob);
                     intervalJob = null;
-                    if(indicator == 0){
-                      if(intervalValue > 12000){
-                        indicator = 1;
-                      }
-                      intervalValue = intervalValue + 1000;
-                    }else if(indicator == 1){
-                      if(intervalValue < 3000){
-                        indicator = 0;
-                      }
-                      intervalValue = intervalValue - 1000;
-                    }
-                    console.log("intervalValue > " + intervalValue);
-                    counter++;
-                    console.log("counter > " + counter);
-                    var intervalJob = setInterval(createQueueJob,intervalValue);
                     doorRef = null;
                     arrOfDoors = null;
                     forceGC();
@@ -117,7 +102,21 @@ function createQueueJob(){
         console.log("Blynk does not exists!");
       }
     }).catch(error=> console.warn(error));
-    
+    if(indicator == 0){
+      if(intervalValue > 22000){
+        indicator = 1;
+      }
+      intervalValue = intervalValue + 1000;
+    }else if(indicator == 1){
+      if(intervalValue < 9000){
+        indicator = 0;
+      }
+      intervalValue = intervalValue - 1000;
+    }
+    console.log("intervalValue > " + intervalValue);
+    counter++;
+    console.log("counter > " + counter);
+    var intervalJob = setInterval(createQueueJob,intervalValue);
 }
 
 createQueueJob();
