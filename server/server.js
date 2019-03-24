@@ -54,6 +54,15 @@ function createQueueJob(){
               async.eachLimit(arrOfDoors, arrOfDoors.length, (door,callback) => {
                 const used = process.memoryUsage().heapUsed / 1024 / 1024;
                 console.log(`Server uses approximately ${Math.round(used * 100) / 100} MB`);
+                counter++;
+                console.log("counter > " + counter);
+                if(counter == 100){
+                  console.log("counter >> " + counter);
+                  setTimeout(function(){
+                    console.log("delaying .... before resume...")
+                  },30000);
+                  counter = 0;
+                }
                 const queue = kue.createQueue();
                 //console.log('CHECK DOOR SENSORS CONNECTED');
                 const job = queue.create('checkSensor', {
@@ -72,7 +81,21 @@ function createQueueJob(){
                   job.on('complete', (result) => {
                     console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
                     //console.log(result);
-                    intervalJob = null;
+                    if(indicator == 0){
+                      if(intervalValue >= 14000){
+                        indicator = 1;
+                      }
+                      intervalValue = intervalValue + 4000;
+                    }else if(indicator == 1){
+                      if(intervalValue <= 3000){
+                        indicator = 0;
+                      }
+                      intervalValue = intervalValue - 4000;
+                    }
+                    console.log("intervalValue > " + intervalValue);
+                    if(intervalValue > 0){
+                      setTimeout(createQueueJob,intervalValue);
+                    }
                     doorRef = null;
                     arrOfDoors = null;
                     forceGC();
@@ -102,24 +125,7 @@ function createQueueJob(){
     }).catch(error=> console.warn(error));
 }
 
-//createQueueJob();
-if(indicator == 0){
-  if(intervalValue >= 14000){
-    indicator = 1;
-  }
-  intervalValue = intervalValue + 4000;
-}else if(indicator == 1){
-  if(intervalValue <= 3000){
-    indicator = 0;
-  }
-  intervalValue = intervalValue - 4000;
-}
-console.log("intervalValue > " + intervalValue);
-counter++;
-console.log("counter > " + counter);
-if(intervalValue > 0){
-  var intervalJob = setInterval(createQueueJob,intervalValue);
-}
+createQueueJob();
 //var intervalObj = setInterval(createQueueJob, parseInt(process.env.JOB_INTERVAL));
 
 function forceGC(){
