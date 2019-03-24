@@ -79,7 +79,7 @@ function createQueueJob(){
                     arrOfDoors = null;
                     forceGC();
                     if(indicator == 0){
-                      if(intervalValue >= 22000){
+                      if(intervalValue >= 14000){
                         indicator = 1;
                       }
                       intervalValue = intervalValue + 4000;
