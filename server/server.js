@@ -92,7 +92,9 @@ function createQueueJob(){
                     console.log("intervalValue > " + intervalValue);
                     counter++;
                     console.log("counter > " + counter);
-                    var intervalJob = setInterval(createQueueJob,intervalValue);
+                    if(intervalValue > 0){
+                      var intervalJob = setInterval(createQueueJob,intervalValue);
+                    }
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
