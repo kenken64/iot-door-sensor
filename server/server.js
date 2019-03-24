@@ -111,7 +111,8 @@ function createQueueJob(){
                 });
               }, (err) => {
                 console.warn(err);
-                forceGC();
+                //forceGC();
+                return;
               }); 
             }
           },
