@@ -65,7 +65,6 @@ function createQueueJob(){
                 .save((err) => {
                   if (err) {
                     console.log('CHECK DOOR SENSORS JOB SAVE FAILED');
-                    clearInterval(intervalJob);
                     doorRef = null;
                     forceGC();
                     return;
@@ -73,33 +72,15 @@ function createQueueJob(){
                   job.on('complete', (result) => {
                     console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
                     //console.log(result);
-                    clearInterval(intervalJob);
                     intervalJob = null;
                     doorRef = null;
                     arrOfDoors = null;
                     forceGC();
-                    if(indicator == 0){
-                      if(intervalValue >= 14000){
-                        indicator = 1;
-                      }
-                      intervalValue = intervalValue + 4000;
-                    }else if(indicator == 1){
-                      if(intervalValue <= 3000){
-                        indicator = 0;
-                      }
-                      intervalValue = intervalValue - 4000;
-                    }
-                    console.log("intervalValue > " + intervalValue);
-                    counter++;
-                    console.log("counter > " + counter);
-                    if(intervalValue > 0){
-                      var intervalJob = setInterval(createQueueJob,intervalValue);
-                    }
+                    
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
                     console.log(errorMessage);
-                    clearInterval(intervalJob);
                     doorRef = null;
                     forceGC();
                     return;
@@ -121,7 +102,24 @@ function createQueueJob(){
     }).catch(error=> console.warn(error));
 }
 
-createQueueJob();
+//createQueueJob();
+if(indicator == 0){
+  if(intervalValue >= 14000){
+    indicator = 1;
+  }
+  intervalValue = intervalValue + 4000;
+}else if(indicator == 1){
+  if(intervalValue <= 3000){
+    indicator = 0;
+  }
+  intervalValue = intervalValue - 4000;
+}
+console.log("intervalValue > " + intervalValue);
+counter++;
+console.log("counter > " + counter);
+if(intervalValue > 0){
+  var intervalJob = setInterval(createQueueJob,intervalValue);
+}
 //var intervalObj = setInterval(createQueueJob, parseInt(process.env.JOB_INTERVAL));
 
 function forceGC(){
