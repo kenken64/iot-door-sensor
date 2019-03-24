@@ -78,6 +78,21 @@ function createQueueJob(){
                     doorRef = null;
                     arrOfDoors = null;
                     forceGC();
+                    if(indicator == 0){
+                      if(intervalValue >= 22000){
+                        indicator = 1;
+                      }
+                      intervalValue = intervalValue + 4000;
+                    }else if(indicator == 1){
+                      if(intervalValue <= 3000){
+                        indicator = 0;
+                      }
+                      intervalValue = intervalValue - 4000;
+                    }
+                    console.log("intervalValue > " + intervalValue);
+                    counter++;
+                    console.log("counter > " + counter);
+                    var intervalJob = setInterval(createQueueJob,intervalValue);
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
@@ -102,21 +117,6 @@ function createQueueJob(){
         console.log("Blynk does not exists!");
       }
     }).catch(error=> console.warn(error));
-    if(indicator == 0){
-      if(intervalValue > 22000){
-        indicator = 1;
-      }
-      intervalValue = intervalValue + 1000;
-    }else if(indicator == 1){
-      if(intervalValue < 9000){
-        indicator = 0;
-      }
-      intervalValue = intervalValue - 1000;
-    }
-    console.log("intervalValue > " + intervalValue);
-    counter++;
-    console.log("counter > " + counter);
-    var intervalJob = setInterval(createQueueJob,intervalValue);
 }
 
 createQueueJob();
