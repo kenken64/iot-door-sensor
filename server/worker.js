@@ -215,7 +215,8 @@ doorRef.on("child_changed", async function(snapshot) {
                       });
                       await updRef.update({
                         locked: 1,
-                        readytoSend: 0
+                        readytoSend: 0,
+                        confirmToSend: 0
                       });
                       let sms = new notification.SMS();
                       let email = new notification.Email();
@@ -286,7 +287,8 @@ doorRef.on("child_changed", async function(snapshot) {
                         });
                         await updRef.update({
                           locked: 1,
-                          readytoSend: 0
+                          readytoSend: 0,
+                          confirmToSend: 0
                         });
                         let sms = new notification.SMS();
                         let email = new notification.Email();
