@@ -172,7 +172,7 @@ doorRef.on("child_changed", async function(snapshot) {
   var changedDoors = snapshot.val();
   if(await changedDoors.workerName === processWorkerName){
     console.log("CORRECT SAME WORKER ! > " + processWorkerName);
-    if ((changedDoors.status === "Closed" && changedDoors.prev_status === "Open") || changedDoors.status === "Closed" && changedDoors.prev_status === "Closed") {
+    if ((changedDoors.status === "Closed" && changedDoors.prev_status === "Open")) {
       if (
         typeof changedDoors.guards !== "undefined" &&
         changedDoors.guards.length > 0
@@ -245,7 +245,7 @@ doorRef.on("child_changed", async function(snapshot) {
       }  
     } //status closed
   
-    if ((changedDoors.status === "Open" && changedDoors.prev_status === "Closed") || changedDoors.status === "Open" && changedDoors.prev_status === "Open") {
+    if ((changedDoors.status === "Open" && changedDoors.prev_status === "Closed")) {
       if (
         typeof changedDoors.guards !== "undefined" &&
         changedDoors.guards.length > 0
