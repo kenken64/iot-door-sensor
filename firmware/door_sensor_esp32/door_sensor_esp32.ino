@@ -70,7 +70,7 @@ void loop()
       Serial.println("Door Closed");
       Blynk.virtualWrite(V1, 0);
       digitalWrite(greenLED, LOW);
-      delay(800);
+      delay(2000);
       esp_wifi_stop();
       esp_bt_controller_disable();
       esp_deep_sleep_start();

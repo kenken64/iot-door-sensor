@@ -188,8 +188,8 @@ doorRef.on("child_changed", async function(snapshot) {
                     doorlockedTimestamp.setUTCDate(8);
                     var nowTimestamp = new Date();
                     nowTimestamp.setUTCDate(8);
-                    let compare1 = doorlockedTimestamp.getSeconds();
-                    let compare2 = nowTimestamp.getSeconds();
+                    let compare1 = doorlockedTimestamp.getMinutes();
+                    let compare2 = nowTimestamp.getMinutes();
                     console.log(compare1);
                     console.log(compare2);
                     console.log(compare2>compare1);
@@ -260,8 +260,8 @@ doorRef.on("child_changed", async function(snapshot) {
                       doorlockedTimestamp.setUTCDate(8);
                       let nowTimestamp = new Date();
                       nowTimestamp.setUTCDate(8);
-                      let compare1 = doorlockedTimestamp.getSeconds();
-                      let compare2 = nowTimestamp.getSeconds();
+                      let compare1 = doorlockedTimestamp.getMinutes();
+                      let compare2 = nowTimestamp.getMinutes();
                       console.log(compare1);
                       console.log(compare2);
                       console.log(compare2>compare1);
