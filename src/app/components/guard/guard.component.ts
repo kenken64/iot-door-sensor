@@ -14,7 +14,7 @@ import { MatSnackBar } from "@angular/material";
 import { ActivatedRoute, Router } from "@angular/router";
 import * as _ from "lodash";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
-import { map } from "rxjs/operators";
+import { map, take } from "rxjs/operators";
 
 @Component({
   selector: "app-guard",
@@ -38,6 +38,8 @@ export class GuardComponent implements OnInit, OnDestroy {
   
   private doorsSub: Subscription;
   private allguardsSub: Subscription;
+  counterGuards = 0;
+  totalGuards: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -48,27 +50,34 @@ export class GuardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnDestroy(){
-    this.doorsSub.unsubscribe();
     this.allguardsSub.unsubscribe();
   }
 
   ngOnInit() {
     this.roomId = this.activatedRoute.snapshot.params.key;
     console.log("roomId" + this.roomId);
-    this.doorsSub = this.doorSvc.getDoor(this.roomId).subscribe(result => {
+    this.selectedGuard = [];
+    this.counterGuards = 0;
+    this.doorsSub = this.doorSvc.getDoor(this.roomId).pipe(take(1)).subscribe(result => {
       console.log(">>> result " + JSON.stringify(result));
       console.log(">>> ID ??? " + this.roomId);
       this.doorName = result.name;
       this.doorId = this.roomId;
       this.doorBatteryValue = result.battery;
       if (typeof result.guards !== "undefined") {
-        this.selectedGuard = [];
+        this.totalGuards = result.guards;
+        
+        if(this.counterGuards == this.totalGuards){
+          this.doorsSub.unsubscribe();
+        }
         result.guards.forEach(value => {
-          console.log(value);
-          this.guardSvc.getGuard(value).subscribe(guardVal => {
-            console.log(guardVal);
+          console.log("guard ...." + value);
+          this.guardSvc.getGuard(value).pipe(take(1)).subscribe(guardVal => {
+            console.log(">>>>" + guardVal);
             this.selectedGuard.push(guardVal);
+            console.log("LENGTH >" + this.selectedGuard.length);
           });
+          this.counterGuards++;
         });
       }
     });
