@@ -1,6 +1,6 @@
-<mat-list>
+<mat-nav-list>
   <h3 mat-subheader>&nbsp;&nbsp;Doors/Window</h3>
-  <mat-list-item *ngFor="let c of doors" [routerLink]="['guard', c.key]">
+  <a mat-list-item *ngFor="let c of doors" [routerLink]="['guard', c.key]">
     <div *ngIf="c.status == 'Closed'">
       <mat-icon svgIcon="door_closed"></mat-icon>
     </div>
@@ -23,5 +23,5 @@
       </mat-chip-list>
     </p>
     <mat-divider></mat-divider>
-  </mat-list-item>
-</mat-list>
+  </a>
+</mat-nav-list>

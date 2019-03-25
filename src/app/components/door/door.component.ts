@@ -5,6 +5,7 @@ import {MatIconRegistry} from '@angular/material';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import {Howl, Howler} from 'howler';
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-door",
@@ -18,6 +19,7 @@ export class DoorComponent implements OnInit, OnDestroy {
   constructor(
     private doorSvc: DoorService,
     iconRegistry: MatIconRegistry,
+    private router: Router,
     sanitizer: DomSanitizer
   ) {
     iconRegistry.addSvgIcon(
