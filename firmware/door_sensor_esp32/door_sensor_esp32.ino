@@ -4,6 +4,8 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
+#include <esp_wifi.h>
+#include <esp_bt.h>
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
@@ -68,9 +70,12 @@ void loop()
       Serial.println("Door Closed");
       Blynk.virtualWrite(V1, 0);
       digitalWrite(greenLED, LOW);
-      delay(1500);
+      delay(800);
+      esp_wifi_stop();
+      esp_bt_controller_disable();
       esp_deep_sleep_start();
     }else{
+      Serial.println("Door Open");
       digitalWrite(greenLED, HIGH);
       Blynk.virtualWrite(V1, 1);
     }

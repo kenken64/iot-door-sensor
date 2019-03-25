@@ -93,12 +93,12 @@ async function pollVirtualPort2(value) {
     }
 }
 
-async function pollVirtualPort1(value) {
+function pollVirtualPort1(value) {
   try{
     console.log("pollVirtualPort1");
     console.log("pollVirtualPort1" + value.data.sensor_auth);
     console.log(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`);
-    let req = await http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
+    let req = http.get(`${BLYNK_API_URL}${value.data.sensor_auth}/get/V1`, options,resp => {
       let data = "";
 
       // A chunk of data has been recieved.
@@ -116,7 +116,7 @@ async function pollVirtualPort1(value) {
             console.log(JSON.parse(data));
             updRef.once(
               "value",
-              function(snapshot) {
+              async function(snapshot) {
                 if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
                   let doorRefVal = snapshot.val();
                   if(!(_.isNil(doorRefVal))){
@@ -130,15 +130,16 @@ async function pollVirtualPort1(value) {
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log(statusOfNightMare);
                     console.log(JSON.parse(data));
+                    console.log(value.data.sensor_auth);
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     if (parseInt(JSON.parse(data)) == 1) {
-                      updRef.update({
+                      await updRef.update({
                         status: "Open",
                         prev_status: statusOfNightMare
                       });
                     } else {
-                      updRef.update({
+                      await updRef.update({
                         status: "Closed",
                         prev_status: statusOfNightMare
                       });
@@ -190,23 +191,32 @@ doorRef.on("child_changed", async function(snapshot) {
             .then(async function(snapshot2) {
               if (sendOk) {
                   if (changedDoors.status !== changedDoors.prev_status) {
-                    var key = snapshot.key;
-                    var doorlockedTimestamp = new Date(changedDoors.lockedDate);
+                    let key = snapshot.key;
+                    let updRef = doorRef.child(key);
+                    let doorlockedTimestamp = new Date(changedDoors.lockedDate);
                     doorlockedTimestamp.setUTCDate(8);
                     var nowTimestamp = new Date();
                     nowTimestamp.setUTCDate(8);
-                    var compare1 = doorlockedTimestamp.getMinutes();
-                    var compare2 = nowTimestamp.getMinutes();
+                    let compare1 = doorlockedTimestamp.getSeconds();
+                    let compare2 = nowTimestamp.getSeconds();
                     console.log(compare1);
                     console.log(compare2);
                     console.log(compare2>compare1);
                     console.log(changedDoors.locked ==0);
                     console.log(changedDoors.workerName === processWorkerName);
-                    var updRef = doorRef.child(key);
-                    
-                    if(await changedDoors.locked == 0){
+                    await updRef.update({
+                      readytoSend: 1
+                    });
+                    if(compare2>compare1){
                       await updRef.update({
-                        locked: 1
+                        confirmToSend: 1
+                      });
+                    }
+                    
+                    if(await changedDoors.locked == 0 && changedDoors.readytoSend == 1 && changedDoors.confirmToSend == 1){
+                      await updRef.update({
+                        locked: 1,
+                        readytoSend: 0
                       });
                       let sms = new notification.SMS();
                       let email = new notification.Email();
@@ -253,23 +263,31 @@ doorRef.on("child_changed", async function(snapshot) {
             .then(async function(snapshot2) {
               if (sendOk) {
                   if (changedDoors.status !== changedDoors.prev_status) {
-                      var key = snapshot.key;
-                      var doorlockedTimestamp = new Date(changedDoors.lockedDate);
+                      let key = snapshot.key;
+                      let doorlockedTimestamp = new Date(changedDoors.lockedDate);
                       doorlockedTimestamp.setUTCDate(8);
-                      var nowTimestamp = new Date();
+                      let nowTimestamp = new Date();
                       nowTimestamp.setUTCDate(8);
-                      var compare1 = doorlockedTimestamp.getMinutes();
-                      var compare2 = nowTimestamp.getMinutes();
+                      let compare1 = doorlockedTimestamp.getSeconds();
+                      let compare2 = nowTimestamp.getSeconds();
                       console.log(compare1);
                       console.log(compare2);
                       console.log(compare2>compare1);
                       console.log(changedDoors.locked ==0);
                       console.log(changedDoors.workerName === processWorkerName);
-                      var updRef = doorRef.child(key);
-                      
-                      if(await changedDoors.locked == 0){
+                      let updRef = doorRef.child(key);
+                      await updRef.update({
+                        readytoSend: 1
+                      });
+                      if(compare2>compare1){
                         await updRef.update({
-                          locked: 1
+                          confirmToSend: 1
+                        });
+                      }
+                      if(await changedDoors.locked == 0 && changedDoors.readytoSend == 1 && changedDoors.confirmToSend == 1){
+                        await updRef.update({
+                          locked: 1,
+                          readytoSend: 0
                         });
                         let sms = new notification.SMS();
                         let email = new notification.Email();
