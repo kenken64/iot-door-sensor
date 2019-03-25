@@ -134,16 +134,16 @@ function pollVirtualPort1(value) {
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     if (parseInt(JSON.parse(data)) == 1) {
-                      if(status !== prev_status){
-                        await updRef.update({
+                      if(status !== statusOfNightMare){
+                        updRef.update({
                           status: "Open",
                           prev_status: statusOfNightMare
                         });
                       }
                       
                     } else {
-                      if(status !== prev_status){
-                        await updRef.update({
+                      if(status !== statusOfNightMare){
+                        updRef.update({
                           status: "Closed",
                           prev_status: statusOfNightMare
                         });
