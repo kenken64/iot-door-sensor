@@ -1,5 +1,5 @@
 #define BLYNK_PRINT Serial
-#define timeSeconds 10
+#define DEBUG 1
 
 #include <WiFi.h>
 #include <WiFiClient.h>
