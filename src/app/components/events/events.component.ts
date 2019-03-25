@@ -56,7 +56,9 @@ export class EventsComponent implements OnInit , OnDestroy{
 
   ngOnDestroy(){
     this.alleventsSub.unsubscribe();
-    this.allhistoricalEvtSub.unsubscribe();
+    if(typeof(this.allhistoricalEvtSub) !== 'undefined'){
+      this.allhistoricalEvtSub.unsubscribe();
+    }
   }
 
   sortByEventDateTime(events){
