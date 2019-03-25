@@ -75,7 +75,7 @@ function createQueueJob(){
                   if (err) {
                     console.log('CHECK DOOR SENSORS JOB SAVE FAILED');
                     doorRef = null;
-                    forceGC();
+                    //forceGC();
                     return;
                   }
                   job.on('complete', (result) => {
@@ -98,20 +98,21 @@ function createQueueJob(){
                     }
                     doorRef = null;
                     arrOfDoors = null;
-                    forceGC();
+                    //forceGC();
                     
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
                     console.log(errorMessage);
                     doorRef = null;
-                    forceGC();
+                    //forceGC();
                     return;
                   });
                 });
               }, (err) => {
                 console.warn(err);
-                forceGC();
+                //forceGC();
+                return;
               }); 
             }
           },
