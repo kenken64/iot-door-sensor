@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { ExcelService } from "../../services/excel-service";
 import { Router } from "@angular/router";
 import { EventsService } from "../../services/events.service";
@@ -6,6 +6,7 @@ import { map } from "rxjs/operators";
 import * as _ from "lodash";
 import { InfiniteScrollDirective } from "ngx-infinite-scroll";
 import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'filterstatus',
@@ -28,7 +29,7 @@ export class BottomSheetFilterStatusSheet {
   templateUrl: "./events.component.html",
   styleUrls: ["./events.component.css"]
 })
-export class EventsComponent implements OnInit {
+export class EventsComponent implements OnInit , OnDestroy{
   @ViewChild(InfiniteScrollDirective) infiniteScroll: InfiniteScrollDirective;
   events: any;
   allevents: any;
@@ -39,6 +40,8 @@ export class EventsComponent implements OnInit {
   prevKeys: any[] = []; // for prev button
   indicator: string;
   userTriggerExport: boolean;
+  private alleventsSub: Subscription;
+  private allhistoricalEvtSub: Subscription;
 
   constructor(
     private excelService: ExcelService,
@@ -51,6 +54,10 @@ export class EventsComponent implements OnInit {
     this.bottomSheet.open(BottomSheetFilterStatusSheet);
   }
 
+  ngOnDestroy(){
+    this.alleventsSub.unsubscribe();
+    this.allhistoricalEvtSub.unsubscribe();
+  }
 
   sortByEventDateTime(events){
     events.sort((n1, n2) => {
@@ -66,7 +73,7 @@ export class EventsComponent implements OnInit {
 
   ngOnInit() {
     this.userTriggerExport = false;
-    this.svc
+    this.alleventsSub = this.svc
       .getAllEvents()
       .snapshotChanges()
       .pipe(
@@ -80,8 +87,7 @@ export class EventsComponent implements OnInit {
         this.sortByEventDateTime(this.events);
         this.svc.filterEvt.subscribe(indicator => {
           this.indicator = indicator;
-          console.log(">>>>>" + indicator);
-          console.log(">>>>>" + this.indicator);
+          console.log("Indicator >" + this.indicator);
           if(this.indicator === 'A'){
             this.events = Object.assign([], this.allevents);
           }else if(this.indicator === 'C'){
@@ -102,7 +108,7 @@ export class EventsComponent implements OnInit {
   exportToExcel() {
     this.userTriggerExport = true;
     
-      this.svc
+      this.allhistoricalEvtSub = this.svc
       .getAllHistoricalEvents()
       .snapshotChanges()
       .pipe(
@@ -137,7 +143,7 @@ export class EventsComponent implements OnInit {
     console.log("this.nextKey!!" + this.nextKey);
     console.log("this.batch!!" + this.batch);
 
-    this.svc
+    this.alleventsSub = this.svc
       .getAllEvents()
       .snapshotChanges()
       .pipe(

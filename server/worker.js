@@ -173,14 +173,6 @@ doorRef.on("child_changed", async function(snapshot) {
   if(await changedDoors.workerName === processWorkerName){
     console.log("CORRECT SAME WORKER ! > " + processWorkerName);
     if (changedDoors.status === "Closed" && changedDoors.prev_status === "Open") {
-      
-      eventsRef.push({
-        doorName: changedDoors.name,
-        device: changedDoors.sensor_auth,
-        type: "DoorClosed",
-        message: "Door is closed",
-        eventDatetime: new Date().getTime()
-      });
       if (
         typeof changedDoors.guards !== "undefined" &&
         changedDoors.guards.length > 0
@@ -214,6 +206,13 @@ doorRef.on("child_changed", async function(snapshot) {
                     }
                     
                     if(await changedDoors.locked == 0 && changedDoors.readytoSend == 1 && changedDoors.confirmToSend == 1){
+                      eventsRef.push({
+                        doorName: changedDoors.name,
+                        device: changedDoors.sensor_auth,
+                        type: "DoorClosed",
+                        message: "Door is closed",
+                        eventDatetime: new Date().getTime()
+                      });
                       await updRef.update({
                         locked: 1,
                         readytoSend: 0
@@ -246,13 +245,6 @@ doorRef.on("child_changed", async function(snapshot) {
     } //status closed
   
     if (changedDoors.status === "Open" && changedDoors.prev_status === "Closed") {
-      eventsRef.push({
-        doorName: changedDoors.name,
-        device: changedDoors.sensor_auth,
-        type: "DoorOpen",
-        message: "Door is open",
-        eventDatetime: new Date().getTime()
-      });
       if (
         typeof changedDoors.guards !== "undefined" &&
         changedDoors.guards.length > 0
@@ -285,6 +277,13 @@ doorRef.on("child_changed", async function(snapshot) {
                         });
                       }
                       if(await changedDoors.locked == 0 && changedDoors.readytoSend == 1 && changedDoors.confirmToSend == 1){
+                        eventsRef.push({
+                          doorName: changedDoors.name,
+                          device: changedDoors.sensor_auth,
+                          type: "DoorOpen",
+                          message: "Door is open",
+                          eventDatetime: new Date().getTime()
+                        });
                         await updRef.update({
                           locked: 1,
                           readytoSend: 0
@@ -323,6 +322,7 @@ doorRef.on("child_changed", async function(snapshot) {
       changedDoors.battery == 2 ||
       changedDoors.battery == 1 )
     ) {
+      console.log("Bettery health check ....")
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,

@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService } from '../../../services/events.service';
 import { map } from "rxjs/operators";
-import { AuthService } from '../../../services/auth.service';
-
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.css']
 })
-export class FeedbackComponent implements OnInit {
+export class FeedbackComponent implements OnInit, OnDestroy {
   eventId: String;
   feedbacks: any;
+  private alleventsSub: Subscription;
   
   constructor(private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -21,7 +21,7 @@ export class FeedbackComponent implements OnInit {
   ngOnInit() {
     this.eventId = this.activatedRoute.snapshot.params.key;
     console.log(this.eventId);
-    this.eventsSvc
+    this.alleventsSub = this.eventsSvc
       .getAllFeedback(this.eventId)
       .snapshotChanges()
       .pipe(
@@ -42,6 +42,10 @@ export class FeedbackComponent implements OnInit {
           return 0;
         });
       });
+  }
+
+  ngOnDestroy(){
+    this.alleventsSub.unsubscribe();
   }
 
   back(){

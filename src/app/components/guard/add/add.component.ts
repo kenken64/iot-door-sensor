@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GuardService } from '../../../services/guard.service';
 import  { Guard } from '../../../model/guard';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add',
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
-export class AddGuardComponent implements OnInit {
+export class AddGuardComponent implements OnInit, OnDestroy {
   guardForm :FormGroup;
   SG_MOBILE_NO = /(6|8|9)\d{7}/g;
-
+  private saveGuardSub: Subscription;
+  
   constructor(private fb: FormBuilder,
     private guardSvc: GuardService,
     private snackSvc:  MatSnackBar) { 
@@ -25,6 +27,10 @@ export class AddGuardComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy(){
+    this.saveGuardSub.unsubscribe();
   }
 
   onSave(){
@@ -40,8 +46,7 @@ export class AddGuardComponent implements OnInit {
     }
     //first hash to the server side
     if(this.guardForm.valid){
-      console.log(">>>?")
-      this.guardSvc.saveGuard(guardValue).subscribe((result)=>{
+      this.saveGuardSub = this.guardSvc.saveGuard(guardValue).subscribe((result)=>{
         console.log(result);
         let snackBarRef = this.snackSvc.open("Guard added!", 'Done', {
           duration: 3000

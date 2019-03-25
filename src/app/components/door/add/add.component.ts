@@ -1,17 +1,19 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { DoorService } from "../../../services/door.service";
 import { Door } from "../../../model/door";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { MatSnackBar } from "@angular/material";
 import { map } from "rxjs/operators";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: "app-add",
   templateUrl: "./add.component.html",
   styleUrls: ["./add.component.css"]
 })
-export class AddDoorComponent implements OnInit {
+export class AddDoorComponent implements OnInit, OnDestroy {
   constructor(private svc: DoorService, private snackBar: MatSnackBar) {}
+  private doorSub: Subscription;
 
   doorForm = new FormGroup({
     name: new FormControl("", Validators.required),
@@ -20,6 +22,10 @@ export class AddDoorComponent implements OnInit {
   });
 
   ngOnInit() {}
+
+  ngOnDestroy(){
+    this.doorSub.unsubscribe();
+  }
 
   saveDoor() {
     let name = this.doorForm.get("name").value;
@@ -34,7 +40,7 @@ export class AddDoorComponent implements OnInit {
       battery: "0"
     };
 
-    let unsub = this.svc
+    this.doorSub = this.svc
       .getDoorBySensorAuth(sensorAuth)
       .snapshotChanges()
       .pipe(
@@ -49,7 +55,6 @@ export class AddDoorComponent implements OnInit {
             let snackBarRef = this.snackBar.open("Door Added", "Done", {
               duration: 3000
             });
-            unsub.unsubscribe();
           });
         } else {
           let snackBarRef = this.snackBar.open("Door already exist.", "Done", {

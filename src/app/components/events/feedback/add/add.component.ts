@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { EventsService } from '../../../../services/events.service';
 import  { Feedback } from '../../../../model/feedback';
@@ -6,6 +6,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add',
@@ -13,12 +14,14 @@ import { AuthService } from '../../../../services/auth.service';
   styleUrls: ['./add.component.css'],
   providers: [Location, {provide: LocationStrategy, useClass: PathLocationStrategy}]
 })
-export class AddFeedbackComponent implements OnInit {
+export class AddFeedbackComponent implements OnInit, OnDestroy {
   feedbackForm :FormGroup;
   doorName: String;
   eventId: String;
   device: String;
   data: any;
+  private saveFeedbackSub: Subscription;
+  private geteFeedbackSub: Subscription;
 
   constructor(private location: Location,
     private fb: FormBuilder,
@@ -52,7 +55,7 @@ export class AddFeedbackComponent implements OnInit {
   ngOnInit() {
     this.data = this.activatedRoute.snapshot.data;
     this.eventId = this.activatedRoute.snapshot.params.key;
-    this.eventsSvc.getEvents(this.eventId).subscribe((result)=>{
+    this.geteFeedbackSub = this.eventsSvc.getEvents(this.eventId).subscribe((result)=>{
       this.feedbackForm.patchValue({
         eventId: this.eventId,
         doorName: result.doorName,
@@ -64,6 +67,11 @@ export class AddFeedbackComponent implements OnInit {
       this.feedbackForm.get('doorName').disable();
       this.feedbackForm.get('device').disable();
     })
+  }
+
+  ngOnDestroy(){
+    this.saveFeedbackSub.unsubscribe();
+    this.geteFeedbackSub.unsubscribe();
   }
 
   onSave(){
@@ -102,7 +110,7 @@ export class AddFeedbackComponent implements OnInit {
     //first hash to the server side
     if(this.feedbackForm.valid){
       console.log(">>>?feedbackDate "  +  feedbackValue.feedbackDate);
-      this.eventsSvc.saveFeedback(feedbackValue).subscribe((result)=>{
+      this.saveFeedbackSub = this.eventsSvc.saveFeedback(feedbackValue).subscribe((result)=>{
         console.log(result);
         this.eventsSvc.updateFeedbackCount(eventId ,feedbackcnt);
         let snackBarRef = this.snackSvc.open("Feedback added!", 'Done', {

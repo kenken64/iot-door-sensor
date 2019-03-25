@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { DoorService } from "../../../services/door.service";
 import { Door } from "../../../model/door";
 import { MatSnackBar } from "@angular/material";
+import { Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-edit',
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.css']
 })
-export class EditDoorComponent implements OnInit {
+export class EditDoorComponent implements OnInit, OnDestroy {
   doorId: any;
   doorName: string;
+  private doorSub: Subscription;
 
   editDoorForm = new FormGroup({
     name: new FormControl("", Validators.required),
@@ -22,11 +25,15 @@ export class EditDoorComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute,
     private svc: DoorService, private snackBar: MatSnackBar) { }
 
+  ngOnDestroy(){
+    this.doorSub.unsubscribe();
+  }
+
   ngOnInit() {
     console.log("EditDoorComponent >>")
     this.doorId = this.activatedRoute.snapshot.params.value;
     this.doorName = this.activatedRoute.snapshot.params.name;
-    this.svc.getDoor(this.doorId).subscribe((result)=>{
+    this.doorSub = this.svc.getDoor(this.doorId).subscribe((result)=>{
       console.log(result);
       this.editDoorForm.get('name').setValue(result.name);
       this.editDoorForm.get('sensorAuth').setValue(result.sensor_auth);
