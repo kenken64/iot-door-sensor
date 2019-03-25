@@ -28,7 +28,9 @@ export class AppComponent implements OnDestroy{
   }
 
   ngOnDestroy(){
-    this.loginWithEmailSub.unsubscribe();
+    if(typeof(this.loginWithEmailSub) !== 'undefined'){
+      this.loginWithEmailSub.unsubscribe();
+    }
   }
 
   loginWithEmail(){

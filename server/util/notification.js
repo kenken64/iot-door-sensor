@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
   });
 const accountSid = process.env.TWILIO_SSID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+const whatsAppNumber = process.env.TWILIO_WHATSAPP_NO;
 
 const client = new twilio(accountSid, authToken);
 class Email {
@@ -44,7 +45,7 @@ class SMS {
     }
 
     send(body, toMobile){
-        console.log("Send SMS..." + toMobile);
+        console.log("Send SMS & WhatsApp..." + toMobile);
         if(typeof(toMobile) !== 'undefined'){
             client.messages
             .create({
@@ -56,6 +57,15 @@ class SMS {
             }).catch((error)=>{
                 console.warn(error);
             });
+
+            client.messages
+            .create({
+                body: body,
+                from: `whatsapp:${whatsAppNumber}`,
+                to: `whatsapp:${toMobile}`
+            })
+            .then(message => console.log(message.sid))
+            .done();
         }
         
     }

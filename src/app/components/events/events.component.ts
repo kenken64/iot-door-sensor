@@ -55,7 +55,10 @@ export class EventsComponent implements OnInit , OnDestroy{
   }
 
   ngOnDestroy(){
-    this.alleventsSub.unsubscribe();
+    if(typeof(this.alleventsSub) !== 'undefined'){
+      this.alleventsSub.unsubscribe();
+    }
+    
     if(typeof(this.allhistoricalEvtSub) !== 'undefined'){
       this.allhistoricalEvtSub.unsubscribe();
     }

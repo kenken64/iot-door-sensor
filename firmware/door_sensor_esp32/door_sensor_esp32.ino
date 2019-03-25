@@ -32,6 +32,7 @@ void IRAM_ATTR detectsDoorState() {
 
 void setup()
 {
+  esp_log_level_set("*", ESP_LOG_VERBOSE);
   // Debug console
   Serial.begin(115200);
   pinMode(doorSensor,INPUT_PULLUP);
@@ -41,8 +42,7 @@ void setup()
   WiFi.persistent(false); 
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Connecting to WiFi..");
-    delay(300);
+    Serial.print("l");
   }
   Serial.println("Connected to the WiFi network");
   Blynk.config(auth);

@@ -43,7 +43,9 @@ export class DoorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.allguardsSub.unsubscribe();
+    if(typeof(this.allguardsSub) !== 'undefined'){
+      this.allguardsSub.unsubscribe();
+    }
   }
 
   getDoorList() {

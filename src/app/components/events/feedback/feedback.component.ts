@@ -45,7 +45,9 @@ export class FeedbackComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.alleventsSub.unsubscribe();
+    if(typeof(this.alleventsSub) !== 'undefined'){
+      this.alleventsSub.unsubscribe();
+    }
   }
 
   back(){

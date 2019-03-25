@@ -70,8 +70,13 @@ export class AddFeedbackComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.saveFeedbackSub.unsubscribe();
-    this.geteFeedbackSub.unsubscribe();
+    if(typeof(this.saveFeedbackSub) !== 'undefined'){
+      this.saveFeedbackSub.unsubscribe();
+    }
+
+    if(typeof(this.geteFeedbackSub) !== 'undefined'){
+      this.geteFeedbackSub.unsubscribe();
+    }
   }
 
   onSave(){

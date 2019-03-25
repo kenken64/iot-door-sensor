@@ -24,7 +24,9 @@ export class AddDoorComponent implements OnInit, OnDestroy {
   ngOnInit() {}
 
   ngOnDestroy(){
-    this.doorSub.unsubscribe();
+    if(typeof(this.doorSub) !== 'undefined'){
+      this.doorSub.unsubscribe();
+    } 
   }
 
   saveDoor() {
