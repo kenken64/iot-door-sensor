@@ -123,9 +123,7 @@ function pollVirtualPort1(value) {
                     let statusOfNightMare = "";
                     if (typeof doorRefVal.status === "undefined") {
                       statusOfNightMare = "Closed";
-                    } else {
-                      statusOfNightMare = doorRefVal.status;
-                    }
+                    } 
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log(statusOfNightMare);
@@ -134,20 +132,16 @@ function pollVirtualPort1(value) {
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     if (parseInt(JSON.parse(data)) == 1) {
-                      if(doorRefVal.prev_status !== statusOfNightMare){
                         await updRef.update({
                           status: "Open",
-                          prev_status: statusOfNightMare
+                          prev_status: "Closed"
                         });
-                      }
                       
                     } else {
-                      if(doorRefVal.prev_status !== statusOfNightMare){
-                        await updRef.update({
-                          status: "Closed",
-                          prev_status: statusOfNightMare
-                        });
-                      }
+                      await updRef.update({
+                        status: "Closed",
+                        prev_status: "Open"
+                      });
                     }  
                   }
                 }
