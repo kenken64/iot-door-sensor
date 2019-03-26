@@ -136,17 +136,12 @@ function pollVirtualPort1(value) {
                     console.log("--ssssssssss------".bgCyan);
                     console.log(doorRefVal.status);
                     console.log(doorRefVal.prev_status);
-                    console.log("--openToClosedSent------".bgCyan);
-                    console.log(doorRefVal.openToClosedSent);
-                    console.log("--closedToOpenSent------".bgCyan);
-                    console.log(doorRefVal.closedToOpenSent);
                     console.log("--ssssssssss------".bgCyan);
                     console.log(parseInt(JSON.parse(data)));
                     if (parseInt(JSON.parse(data)) == 1) {
                       if(doorRefVal.status == 'Closed' 
                       && doorRefVal.prev_status == 'Open' 
                       ){
-                        console.log("Open <----> Closed".bgMagenta);
                         setTimeout(()=>console.log(""),3000);
                         updRef.update({
                           status: "Open",
@@ -157,12 +152,10 @@ function pollVirtualPort1(value) {
                       if(doorRefVal.status == 'Open' 
                       && doorRefVal.prev_status == 'Closed' 
                       ){
-                        console.log("!!!!Closed <----> Open".bgMagenta);
                         setTimeout(()=>console.log(""),3000);
                         updRef.update({
                           status: "Closed",
                           prev_status: "Open",
-                          
                         });
                       }
                       
@@ -405,7 +398,6 @@ function checkDoorSensors(done, door, workerName){
                               pollVirtualPort1(door),
                               pollVirtualPort2(door)
                           ]);
-                          
                         }
                       }
                     );
