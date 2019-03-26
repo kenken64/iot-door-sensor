@@ -50,8 +50,8 @@ function createQueueJob(){
                 };
                 arrOfDoors.push(d);
               }
-              
-              async.eachLimit(arrOfDoors, arrOfDoors.length, (door,callback) => {
+              async.forEachOf(arrOfDoors, function (door, key, callback) {
+                console.log(key);
                 const used = process.memoryUsage().heapUsed / 1024 / 1024;
                 console.log(`Server uses approximately ${Math.round(used * 100) / 100} MB`);
                 counter++;
@@ -75,7 +75,6 @@ function createQueueJob(){
                   if (err) {
                     console.log('CHECK DOOR SENSORS JOB SAVE FAILED');
                     doorRef = null;
-                    //forceGC();
                     return;
                   }
                   job.on('complete', (result) => {
@@ -98,21 +97,17 @@ function createQueueJob(){
                     }
                     doorRef = null;
                     arrOfDoors = null;
-                    //forceGC();
-                    
                   });
                   job.on('failed', (errorMessage) => {
                     console.log('CHECK DOOR SENSORS JOB FAILED');
                     console.log(errorMessage);
                     doorRef = null;
-                    //forceGC();
                     return;
                   });
                 });
               }, (err) => {
                 console.warn(err);
-                //forceGC();
-                return;
+                return; 
               }); 
             }
           },
