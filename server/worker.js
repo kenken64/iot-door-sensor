@@ -200,12 +200,11 @@ doorRef.once("child_changed", async function(snapshot) {
               message: "Door is closed",
               eventDatetime: new Date().getTime()
             });
-            if (typeof changedDoors.guards !== "undefined") {
+            if (typeof changedDoors.guards !== "undefined" ||
+            (changedDoors.guards.length ||
+            changedDoors.guards.length > 0)) {
               console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
               console.log(changedDoors.guards.length);
-              if(changedDoors.guards.length < 0){
-                return;
-              }
               changedDoors.guards.forEach(guardVal => {
                 db.ref("guard/" + guardVal)
                   .once("value")
@@ -213,12 +212,12 @@ doorRef.once("child_changed", async function(snapshot) {
                     if (sendOk) {
                         console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
                         if (await changedDoors.status !== changedDoors.prev_status) {
-                          if(await changedDoors.locked == 0){
+                          if(changedDoors.locked == 0){
                             setTimeout(()=>console.log(""),1000);
                             console.log(`CORRECT SAME WORKER ! 112211> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
                             let key = snapshot.key;
                             let updRef = doorRef.child(key);
-                            await updRef.update({
+                            updRef.update({
                               locked: 1
                             });
                             let sms = new notification.SMS();
@@ -239,7 +238,7 @@ doorRef.once("child_changed", async function(snapshot) {
                                 timeZone: "Asia/Singapore"
                             })}</p>`);
                             console.log(`SEND EMAIL ${processWorkerName} ${changedDoors.sensor_auth}`.blue);
-                            await updRef.update({
+                            updRef.update({
                               locked: 0,
                             }); 
                           }
