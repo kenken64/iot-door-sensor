@@ -50,7 +50,7 @@ function createQueueJob(){
                 };
                 arrOfDoors.push(d);
               }
-              async.forEachOf(arrOfDoors, function (door, key, callback) {
+              arrOfDoors.forEach(function (door, key) {
                 console.log(key);
                 const used = process.memoryUsage().heapUsed / 1024 / 1024;
                 console.log(`Server uses approximately ${Math.round(used * 100) / 100} MB`);
