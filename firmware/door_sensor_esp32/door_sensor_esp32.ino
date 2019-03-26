@@ -42,7 +42,7 @@ void setup()
   WiFi.persistent(false); 
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.print("l");
+    Serial.println("Connecting to WIFI ...");
   }
   Serial.println("Connected to the WiFi network");
   Blynk.config(auth);
@@ -71,7 +71,6 @@ void loop()
       Blynk.virtualWrite(V1, 0);
       digitalWrite(greenLED, LOW);
       delay(2000);
-      esp_wifi_stop();
       esp_bt_controller_disable();
       esp_deep_sleep_start();
     }else{
