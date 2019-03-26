@@ -123,11 +123,15 @@ export class GuardComponent implements OnInit, OnDestroy {
     this.router.navigate(["/editDoor", this.doorId, this.doorName]);
   }
 
-  add($event) {}
+  add($event) {
+    console.log("Token added!");
+  }
 
   getValue($event) {
+    console.log(">>>??" + $event.key);
+    console.log(">>>??" + this.selectedGuard);
+    console.log(this.selectedGuard.indexOf($event.key));
     console.log(">>>" + $event.email);
-    console.log(this.selectedGuard.indexOf($event));
     let guard = this.selectedGuard.find(x => x.email == $event.email);
     console.log("???" + guard);
     console.log("???" + JSON.stringify(guard));
@@ -144,19 +148,22 @@ export class GuardComponent implements OnInit, OnDestroy {
 
   save() {
     let updateGuards = [];
+    let updateGuardsUI = [];
     let selectedGuardCloned = _.cloneDeep(this.selectedGuard);
     selectedGuardCloned.forEach(value => {
       console.log(value.email);
-      let guard = this.guards.find(x => x.email == value.email);
+      let guard = this.guards.find(x => x.mobileNo == value.mobileNo);
       if (typeof guard === "undefined") {
         console.log("guard is undefined");
       }
       console.log("GUARD ID > ?" + guard.key);
       updateGuards.push(guard.key);
+      updateGuardsUI.push(guard);
     });
     console.log(updateGuards);
     console.log(this.doorId);
-    this.selectedGuard = [];
+    this.selectedGuard = updateGuardsUI;
+    console.log(this.selectedGuard);
     this.doorSvc.updateDoorWithGuards(this.doorId, updateGuards);
     let snackBarRef = this.snackBar.open(
       "Guard added to door sensor.",
@@ -164,7 +171,7 @@ export class GuardComponent implements OnInit, OnDestroy {
       {
         duration: 3000
       }
-    );
+    )
   }
 
   remove(i) {

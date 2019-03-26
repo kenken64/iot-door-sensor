@@ -57,7 +57,7 @@ class SMS {
             }).catch((error)=>{
                 console.warn(error);
             });
-
+            console.log(">>> "  +whatsAppNumber);
             client.messages
             .create({
                 body: body,

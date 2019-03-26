@@ -7,6 +7,8 @@ const http = require("http"),
       Agent = require('agentkeepalive'),
       kue = require('kue'),
       fs = require('fs'),
+      colors = require('colors'),
+      async = require('async'),
       _ = require("lodash");
 
 const BLYNK_API_URL = process.env.BLYNK_API_URL;
@@ -131,17 +133,39 @@ function pollVirtualPort1(value) {
                     console.log(value.data.sensor_auth);
                     console.log("SDFDSFDSFDSDSDFSFSF");
                     console.log("SDFDSFDSFDSDSDFSFSF");
+                    console.log("--ssssssssss------".bgCyan);
+                    console.log(doorRefVal.status);
+                    console.log(doorRefVal.prev_status);
+                    console.log("--openToClosedSent------".bgCyan);
+                    console.log(doorRefVal.openToClosedSent);
+                    console.log("--closedToOpenSent------".bgCyan);
+                    console.log(doorRefVal.closedToOpenSent);
+                    console.log("--ssssssssss------".bgCyan);
+                    console.log(parseInt(JSON.parse(data)));
                     if (parseInt(JSON.parse(data)) == 1) {
-                        await updRef.update({
+                      if(doorRefVal.status == 'Closed' 
+                      && doorRefVal.prev_status == 'Open' 
+                      ){
+                        console.log("Open <----> Closed".bgMagenta);
+                        setTimeout(()=>console.log(""),3000);
+                        updRef.update({
                           status: "Open",
-                          prev_status: "Closed"
+                          prev_status: "Closed",
                         });
-                      
+                      }
                     } else {
-                      await updRef.update({
-                        status: "Closed",
-                        prev_status: "Open"
-                      });
+                      if(doorRefVal.status == 'Open' 
+                      && doorRefVal.prev_status == 'Closed' 
+                      ){
+                        console.log("!!!!Closed <----> Open".bgMagenta);
+                        setTimeout(()=>console.log(""),3000);
+                        updRef.update({
+                          status: "Closed",
+                          prev_status: "Open",
+                          
+                        });
+                      }
+                      
                     }  
                   }
                 }
@@ -167,203 +191,188 @@ function pollVirtualPort1(value) {
   }
 }
 
-doorRef.on("child_changed", async function(snapshot) {
-  var changedDoors = snapshot.val();
-  if(await changedDoors.workerName === processWorkerName){
-    console.log("CORRECT SAME WORKER ! > " + processWorkerName);
-    if ((changedDoors.status === "Closed" && changedDoors.prev_status === "Open")) {
-      if (
-        typeof changedDoors.guards !== "undefined" &&
-        changedDoors.guards.length > 0
-      ) {
-        changedDoors.guards.forEach(guardVal => {
-          db.ref("guard/" + guardVal)
-            .once("value")
-            .then(async function(snapshot2) {
-              if (sendOk) {
-                  if (changedDoors.status !== changedDoors.prev_status) {
-                    let key = snapshot.key;
-                    let updRef = doorRef.child(key);
-                    let doorlockedTimestamp = new Date(changedDoors.lockedDate);
-                    doorlockedTimestamp.setUTCDate(8);
-                    var nowTimestamp = new Date();
-                    nowTimestamp.setUTCDate(8);
-                    let compare1 = doorlockedTimestamp.getMinutes();
-                    let compare2 = nowTimestamp.getMinutes();
-                    console.log(compare1);
-                    console.log(compare2);
-                    console.log(compare2>compare1);
-                    console.log(changedDoors.locked ==0);
-                    console.log(changedDoors.workerName === processWorkerName);
-                    await updRef.update({
-                      readytoSend: 1
-                    });
-                    if(compare2>compare1){
-                      await updRef.update({
-                        confirmToSend: 1
-                      });
+doorRef.once("child_changed", async function(snapshot) {
+  await async.waterfall([
+      function(callback) {
+        var changedDoors = snapshot.val();
+        if(changedDoors.workerName === processWorkerName){
+          console.log(`CORRECT SAME WORKER 11! > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+          if ((changedDoors.status === "Closed" && changedDoors.prev_status === "Open")) {
+            console.log(`CORRECT SAME WORKER !111 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+            console.log(`CORRECT SAME WORKER !1111111 > ${changedDoors.guards}`.bgRed);
+            eventsRef.push({
+              doorName: changedDoors.name,
+              device: changedDoors.sensor_auth,
+              type: "DoorClosed",
+              message: "Door is closed",
+              eventDatetime: new Date().getTime()
+            });
+            if (typeof changedDoors.guards !== "undefined") {
+              console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+              console.log(changedDoors.guards.length);
+              if(changedDoors.guards.length < 0){
+                return;
+              }
+              changedDoors.guards.forEach(guardVal => {
+                db.ref("guard/" + guardVal)
+                  .once("value")
+                  .then(async function(snapshot2) {
+                    if (sendOk) {
+                        console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+                        if (await changedDoors.status !== changedDoors.prev_status) {
+                          if(await changedDoors.locked == 0){
+                            setTimeout(()=>console.log(""),1000);
+                            console.log(`CORRECT SAME WORKER ! 112211> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+                            let key = snapshot.key;
+                            let updRef = doorRef.child(key);
+                            await updRef.update({
+                              locked: 1
+                            });
+                            let sms = new notification.SMS();
+                            let email = new notification.Email();
+                            console.log(`Closed - Open`.rainbow);
+                            console.log(`${snapshot2.val().mobileNo}`.rainbow);
+                            console.log(`${snapshot2.val().email}`.rainbow);
+                            sms.send(`INFO ! ${
+                                changedDoors.name
+                            } is closed on ${new Date().toLocaleString("en-US", {
+                                timeZone: "Asia/Singapore"
+                            })}`,snapshot2.val().mobileNo);
+                            console.log("SEND SMS" + processWorkerName);
+                            email.send(
+                                snapshot2.val().email,
+                                `${changedDoors.name} is CLOSED`,
+                                `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
+                                timeZone: "Asia/Singapore"
+                            })}</p>`);
+                            console.log(`SEND EMAIL ${processWorkerName} ${changedDoors.sensor_auth}`.blue);
+                            await updRef.update({
+                              locked: 0,
+                            }); 
+                          }
+                        }
+                      }
+                  });
+              });
+            }  
+          } //status closed
+        
+          if ((changedDoors.status === "Open" && changedDoors.prev_status === "Closed")) {
+            eventsRef.push({
+              doorName: changedDoors.name,
+              device: changedDoors.sensor_auth,
+              type: "DoorOpen",
+              message: "Door is open",
+              eventDatetime: new Date().getTime()
+            });
+            if (
+              typeof changedDoors.guards !== "undefined" ||
+              (changedDoors.guards.length ||
+              changedDoors.guards.length > 0)
+            ) {
+              console.log(`CORRECT SAME WORKER !2 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+              changedDoors.guards.forEach(guardVal => {
+                db.ref("guard/" + guardVal)
+                  .once("value")
+                  .then(async function(snapshot2) {
+                    if (sendOk) {
+                        if (await changedDoors.status !== changedDoors.prev_status) {
+                            if(changedDoors.locked == 0 ){
+                              let key = snapshot.key;
+                              let updRef = doorRef.child(key);
+                              console.log(`CORRECT SAME WORKER !332223 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+                              console.log(`CORRECT SAME WORKER !333 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
+          
+                              updRef.update({
+                                locked: 1
+                              });
+                              let sms = new notification.SMS();
+                              let email = new notification.Email();
+                              console.log(`Open - Closed`.rainbow);
+                              console.log(`${snapshot2.val().mobileNo}`.rainbow);
+                              console.log(`${snapshot2.val().email}`.rainbow);
+                              sms.send(`ALERT ! ${
+                                  changedDoors.name
+                              } is open. Please follow up with an inspection. ${new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"
+                                })}`,snapshot2.val().mobileNo);
+                              console.log("SEND SMS" + processWorkerName);
+                              email.send(
+                                  snapshot2.val().email,
+                                  `${changedDoors.name} is OPEN`,
+                                  `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
+                                  timeZone: "Asia/Singapore"
+                                  })}. Please follow up with an inspection</p>`);
+                              console.log("SEND EMAIL" + processWorkerName);
+                              updRef.update({
+                                locked: 0,
+                              });
+                            }
+                        }
                     }
-                    
-                    if(await changedDoors.locked == 0 && changedDoors.readytoSend == 1 && changedDoors.confirmToSend == 1){
-                      eventsRef.push({
-                        doorName: changedDoors.name,
-                        device: changedDoors.sensor_auth,
-                        type: "DoorClosed",
-                        message: "Door is closed",
-                        eventDatetime: new Date().getTime()
-                      });
-                      await updRef.update({
-                        locked: 1,
-                        readytoSend: 0,
-                        confirmToSend: 0
-                      });
+                  });
+              });
+            }
+            
+          }
+          // check battery section
+          if (
+            (changedDoors.battery == 50 ||
+            changedDoors.battery == 49 ||
+            changedDoors.battery == 20 ||
+            changedDoors.battery == 19 ||
+            changedDoors.battery == 2 ||
+            changedDoors.battery == 1 )
+          ) {
+            console.log("Bettery health check ....")
+            eventsRef.push({
+              doorName: changedDoors.name,
+              device: changedDoors.sensor_auth,
+              type: "Battery",
+              message: "Battery level : " + changedDoors.battery + "%",
+              eventDatetime: new Date().getTime()
+            });
+            if (
+              typeof changedDoors.guards !== "undefined" &&
+              changedDoors.guards.length > 0
+            ) {
+              changedDoors.guards.forEach(guardVal => {
+                db.ref("guard/" + guardVal)
+                  .once("value")
+                  .then(function(snapshot) {
+                    if (sendOk) {
                       let sms = new notification.SMS();
                       let email = new notification.Email();
-                      sms.send(`INFO ! ${
-                          changedDoors.name
-                      } is closed on ${new Date().toLocaleString("en-US", {
+                      sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
+                          changedDoors.battery
+                      }%). on ${new Date().toLocaleString("en-US", {
                           timeZone: "Asia/Singapore"
-                      })}`,snapshot2.val().mobileNo);
-                      console.log("SEND SMS" + processWorkerName);
-                      email.send(
-                           snapshot2.val().email,
-                          `${changedDoors.name} is CLOSED`,
-                          `<p>${changedDoors.name} is CLOSED on ${new Date().toLocaleString("en-US", {
-                          timeZone: "Asia/Singapore"
-                      })}</p>`);
-                      console.log("SEND EMAIL" + processWorkerName);
-                      await updRef.update({
-                        locked: 0
-                      });
+                      })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
                       
+                      email.send(
+                          snapshot.val().email,
+                          `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
+                          timeZone: "Asia/Singapore"
+                          })}`,
+                          `<p>Device battery is running low (${
+                          changedDoors.battery
+                          }%). ${UndefinedToEmptyStr(
+                          changedDoors.additionalMessage
+                          )}</p>`);
                     }
-                  }
-                }
-            });
-        });
-      }  
-    } //status closed
+                  });
+              });
+            }
+          }
+        }
+        callback(null, 'send notification');
+      }
+  ],
+  // optional callback
+  function(err, results) {
+      // results is now equal to ['one', 'two']
+  });
+
   
-    if ((changedDoors.status === "Open" && changedDoors.prev_status === "Closed")) {
-      if (
-        typeof changedDoors.guards !== "undefined" &&
-        changedDoors.guards.length > 0
-      ) {
-        changedDoors.guards.forEach(guardVal => {
-          db.ref("guard/" + guardVal)
-            .once("value")
-            .then(async function(snapshot2) {
-              if (sendOk) {
-                  if (changedDoors.status !== changedDoors.prev_status) {
-                      let key = snapshot.key;
-                      let doorlockedTimestamp = new Date(changedDoors.lockedDate);
-                      doorlockedTimestamp.setUTCDate(8);
-                      let nowTimestamp = new Date();
-                      nowTimestamp.setUTCDate(8);
-                      let compare1 = doorlockedTimestamp.getSeconds();
-                      let compare2 = nowTimestamp.getSeconds();
-                      console.log(compare1);
-                      console.log(compare2);
-                      console.log(compare2>compare1);
-                      console.log(changedDoors.locked ==0);
-                      console.log(changedDoors.workerName === processWorkerName);
-                      let updRef = doorRef.child(key);
-                      await updRef.update({
-                        readytoSend: 1
-                      });
-                      if(compare2>compare1){
-                        await updRef.update({
-                          confirmToSend: 1
-                        });
-                      }
-                      if(await changedDoors.locked == 0 && changedDoors.readytoSend == 1 && changedDoors.confirmToSend == 1){
-                        eventsRef.push({
-                          doorName: changedDoors.name,
-                          device: changedDoors.sensor_auth,
-                          type: "DoorOpen",
-                          message: "Door is open",
-                          eventDatetime: new Date().getTime()
-                        });
-                        await updRef.update({
-                          locked: 1,
-                          readytoSend: 0,
-                          confirmToSend: 0
-                        });
-                        let sms = new notification.SMS();
-                        let email = new notification.Email();
-                        sms.send(`ALERT ! ${
-                            changedDoors.name
-                        } is open. Please follow up with an inspection. ${new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"
-                          })}`,snapshot2.val().mobileNo);
-                        console.log("SEND SMS" + processWorkerName);
-                        email.send(
-                            snapshot2.val().email,
-                            `${changedDoors.name} is OPEN`,
-                            `<p>${changedDoors.name} is OPEN on ${new Date().toLocaleString("en-US", {
-                            timeZone: "Asia/Singapore"
-                            })}. Please follow up with an inspection</p>`);
-                        console.log("SEND EMAIL" + processWorkerName);
-                        await updRef.update({
-                          locked: 0
-                        });
-                      }
-                  }
-              }
-            });
-        });
-      }
-      
-    }
-    // check battery section
-    if (
-      (changedDoors.battery == 50 ||
-      changedDoors.battery == 49 ||
-      changedDoors.battery == 20 ||
-      changedDoors.battery == 19 ||
-      changedDoors.battery == 2 ||
-      changedDoors.battery == 1 )
-    ) {
-      console.log("Bettery health check ....")
-      eventsRef.push({
-        doorName: changedDoors.name,
-        device: changedDoors.sensor_auth,
-        type: "Battery",
-        message: "Battery level : " + changedDoors.battery + "%",
-        eventDatetime: new Date().getTime()
-      });
-      if (
-        typeof changedDoors.guards !== "undefined" &&
-        changedDoors.guards.length > 0
-      ) {
-        changedDoors.guards.forEach(guardVal => {
-          db.ref("guard/" + guardVal)
-            .once("value")
-            .then(function(snapshot) {
-              if (sendOk) {
-                let sms = new notification.SMS();
-                let email = new notification.Email();
-                sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
-                    changedDoors.battery
-                }%). on ${new Date().toLocaleString("en-US", {
-                    timeZone: "Asia/Singapore"
-                })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
-                
-                email.send(
-                    snapshot.val().email,
-                    `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
-                    timeZone: "Asia/Singapore"
-                    })}`,
-                    `<p>Device battery is running low (${
-                    changedDoors.battery
-                    }%). ${UndefinedToEmptyStr(
-                    changedDoors.additionalMessage
-                    )}</p>`);
-              }
-            });
-        });
-      }
-    }
-  }
 });
 
 function UndefinedToEmptyStr(val) {
@@ -392,28 +401,11 @@ function checkDoorSensors(done, door, workerName){
                       async function(snapshot) {
                         if(!(_.isNil(snapshot)) && !(_.isNil(snapshot.val()))){
                           let doorRefVal = snapshot.val();
-                          let lockedtimstamp = new Date().getTime();
-                          console.log(">>> lockedtimstamp !" + lockedtimstamp);
-                          console.log(">>> doorRefVal.lockedDate !" + doorRefVal.lockedDate);
-                          console.log(">>> doorRefVal.lockedDate ?" + (doorRefVal.lockedDate < lockedtimstamp));
-                          console.log(">>> doorRefVal.lockedDate ?" + (lockedtimstamp - doorRefVal.lockedDate));  
-                          if(doorRefVal.lockedDate < lockedtimstamp){
-                            updRef.update({
-                              workerName: workerName
-                            });
-                            console.log(">>> IS NOT LOCK !" + doorRefVal.locked+ ' ' + door.key);
-                            console.log(">>> IS NOT LOCK !" + door.data.sensor_auth);
-                            
-                            let [pollStat1, pollStat2] = await Promise.all([
-                                pollVirtualPort1(door),
-                                pollVirtualPort2(door)
-                            ]);
-                            await updRef.update({
-                              lockedDate: admin.database.ServerValue.TIMESTAMP
-                            });
-                          }else{
-                            console.log(">>> IS LOCKED !!" + doorRefVal.locked + ' '+ door.key);
-                          }
+                          let [pollStat1, pollStat2] = await Promise.all([
+                              pollVirtualPort1(door),
+                              pollVirtualPort2(door)
+                          ]);
+                          
                         }
                       }
                     );
