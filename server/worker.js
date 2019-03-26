@@ -360,7 +360,7 @@ function checkDoorBattery(snapshot){
 }
 
 doorRef.once("child_changed", async function(snapshot) {
-  await async.waterfall([
+  await async.parallel([
       function(callback) {
         console.log(`CHECK CHECK DOOR CLOSE OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
         console.log(`CHECK CHECK DOOR CLOSE OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
