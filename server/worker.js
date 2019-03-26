@@ -213,7 +213,6 @@ doorRef.once("child_changed", async function(snapshot) {
                         console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
                         if (await changedDoors.status !== changedDoors.prev_status) {
                           if(changedDoors.locked == 0){
-                            setTimeout(()=>console.log(""),1000);
                             console.log(`CORRECT SAME WORKER ! 112211> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
                             let key = snapshot.key;
                             let updRef = doorRef.child(key);
