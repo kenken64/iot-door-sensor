@@ -360,30 +360,9 @@ function checkDoorBattery(snapshot){
 }
 
 doorRef.once("child_changed", async function(snapshot) {
-  await async.parallel([
-      function(callback) {
-        console.log(`CHECK CHECK DOOR CLOSE OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
-        console.log(`CHECK CHECK DOOR CLOSE OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
-        checkDoorClosed(snapshot);
-        callback(null, 'checkDoorClosed');
-      },
-      function(callback) {
-        console.log(`CHECK CHECK DOOR OPEN OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
-        console.log(`CHECK CHECK DOOR OPEN OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
-        checkDoorOpen(snapshot); 
-        callback(null, 'checkDoorOpen');
-      },
-      function(callback) {
-        console.log(`CHECK CHECK DOOR BATTERY OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
-        console.log(`CHECK CHECK DOOR BATTERY OR NOT>>>>>>>>>>>>>>>>`.rainbow.bgCyan);
-        checkDoorBattery(snapshot); 
-        callback(null, 'checkDoorBattery');
-      }
-  ],
-  function(err, results) {
-      console.warn(err);
-      console.log(results);
-  });
+  await checkDoorClosed(snapshot);
+  await checkDoorOpen(snapshot); 
+  await checkDoorBattery(snapshot); 
 });
 
 function UndefinedToEmptyStr(val) {
