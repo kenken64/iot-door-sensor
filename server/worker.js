@@ -142,7 +142,6 @@ function pollVirtualPort1(value) {
                       if(doorRefVal.status == 'Closed' 
                       && doorRefVal.prev_status == 'Open' 
                       ){
-                        setTimeout(()=>console.log(""),3000);
                         updRef.update({
                           status: "Open",
                           prev_status: "Closed",
@@ -152,13 +151,11 @@ function pollVirtualPort1(value) {
                       if(doorRefVal.status == 'Open' 
                       && doorRefVal.prev_status == 'Closed' 
                       ){
-                        setTimeout(()=>console.log(""),3000);
                         updRef.update({
                           status: "Closed",
                           prev_status: "Open",
                         });
                       }
-                      
                     }  
                   }
                 }
