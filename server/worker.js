@@ -359,10 +359,10 @@ function checkDoorBattery(snapshot){
 }
 }
 
-doorRef.once("child_changed", async function(snapshot) {
-  await checkDoorClosed(snapshot);
-  await checkDoorOpen(snapshot); 
-  await checkDoorBattery(snapshot); 
+doorRef.once("child_changed", function(snapshot) {
+  checkDoorClosed(snapshot);
+  checkDoorOpen(snapshot); 
+  checkDoorBattery(snapshot); 
 });
 
 function UndefinedToEmptyStr(val) {
