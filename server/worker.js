@@ -143,9 +143,10 @@ function pollVirtualPort1(value) {
                       && doorRefVal.prev_status == 'Open' 
                       ){
                         setTimeout(()=>console.log(""),3000);
-                        updRef.transaction({
-                          status: "Open",
-                          prev_status: "Closed",
+                        updRef.transaction(function(current){
+                          current.status = "Open";
+                          current.prev_status = "Closed";
+                          return current;
                         });
                       }
                     } else {
@@ -153,9 +154,10 @@ function pollVirtualPort1(value) {
                       && doorRefVal.prev_status == 'Closed' 
                       ){
                         setTimeout(()=>console.log(""),3000);
-                        updRef.transaction({
-                          status: "Closed",
-                          prev_status: "Open",
+                        updRef.transaction(function(current){
+                          current.status = "Closed";
+                          current.prev_status = "Open";
+                          return current;
                         });
                       }
                       
