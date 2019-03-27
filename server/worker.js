@@ -147,6 +147,10 @@ function pollVirtualPort1(value) {
                         doorRefVal.status = "Open";
                         doorRefVal.prev_status = "Closed";
                         notificationRef.push(doorRefVal);
+                        updRef.update({
+                          status : "Open",
+                          prev_status : "Closed"
+                        });
                       }
                     } else {
                       if(doorRefVal.status == 'Open' 
@@ -156,7 +160,12 @@ function pollVirtualPort1(value) {
                         doorRefVal.status = "Closed";
                         doorRefVal.prev_status = "Open";
                         notificationRef.push(doorRefVal);
+                        updRef.update({
+                          status : "Closed",
+                          prev_status : "Open"
+                        });
                       }
+                      
                     }  
                   }
                 }
