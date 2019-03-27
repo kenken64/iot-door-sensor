@@ -193,7 +193,7 @@ function pollVirtualPort1(value) {
   }
 }
 
-notificationRef.once("child_added", async function(snapshot) {
+notificationRef.on("child_added", async function(snapshot) {
   console.log(`notificationRef${processWorkerName}`.bgGreen);
   console.log(`notificationRef${processWorkerName}`.bgGreen);
   console.log(`notificationRef${processWorkerName}`.bgGreen);
