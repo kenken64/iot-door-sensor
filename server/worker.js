@@ -15,14 +15,6 @@ const BLYNK_API_URL = process.env.BLYNK_API_URL;
 const credFile = process.env.FIREBASE_SVC_ACC_FILE || "./iot-door-sensor.json";
 var serviceAccount = require(credFile);
 
-const keepaliveAgent = new Agent({
-  maxSockets: 100,
-  maxFreeSockets: 10,
-  timeout: 60000, // active socket keepalive for 60 seconds
-  freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
-  forever: true
-});
-
 var processWorkerName = "";
 
 process.argv.forEach((val, index) => {
@@ -146,8 +138,7 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Open";
                         doorRefVal.prev_status = "Closed";
-                        var notificationOpenRef = db.ref("notification/open");
-                        notificationOpenRef.push(doorRefVal);
+                        notificationRef.push(doorRefVal);
                         updRef.update({
                           status : "Open",
                           prev_status : "Closed"
@@ -160,8 +151,7 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Closed";
                         doorRefVal.prev_status = "Open";
-                        var notificationClosedRef = db.ref("notification/closed");
-                        notificationClosedRef.push(doorRefVal);
+                        notificationRef.push(doorRefVal);
                         updRef.update({
                           status : "Closed",
                           prev_status : "Open"
