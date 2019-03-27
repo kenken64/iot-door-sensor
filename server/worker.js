@@ -184,6 +184,15 @@ function pollVirtualPort1(value) {
   }
 }
 
+
+
+doorRef.once("child_changed", function(snapshot) {
+  checkDoorClosed(snapshot);
+  checkDoorOpen(snapshot); 
+  checkDoorBattery(snapshot); 
+});
+
+
 function checkDoorClosed (snapshot){
   var changedDoors = snapshot.val();
   if(changedDoors.workerName === processWorkerName){
@@ -311,54 +320,48 @@ function checkDoorBattery(snapshot){
     changedDoors.battery == 19 ||
     changedDoors.battery == 2 ||
     changedDoors.battery == 1 )
-  ) {
-      console.log("Bettery health check ....")
-      eventsRef.push({
-        doorName: changedDoors.name,
-        device: changedDoors.sensor_auth,
-        type: "Battery",
-        message: "Battery level : " + changedDoors.battery + "%",
-        eventDatetime: new Date().getTime()
-      });
-      if (
-        typeof changedDoors.guards !== "undefined"
-      ) {
-        changedDoors.guards.forEach(guardVal => {
-          db.ref("guard/" + guardVal)
-          .once("value")
-          .then(function(snapshot) {
-            if (sendOk) {
-              let sms = new notification.SMS();
-              let email = new notification.Email();
-              sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
-                  changedDoors.battery
-              }%). on ${new Date().toLocaleString("en-US", {
-                  timeZone: "Asia/Singapore"
-              })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
-              
-              email.send(
-                  snapshot.val().email,
-                  `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
-                  timeZone: "Asia/Singapore"
-                  })}`,
-                  `<p>Device battery is running low (${
-                  changedDoors.battery
-                  }%). ${UndefinedToEmptyStr(
-                  changedDoors.additionalMessage
-                  )}</p>`);
-            }
-          });
-      });
+    ) {
+        console.log("Bettery health check ....")
+        eventsRef.push({
+          doorName: changedDoors.name,
+          device: changedDoors.sensor_auth,
+          type: "Battery",
+          message: "Battery level : " + changedDoors.battery + "%",
+          eventDatetime: new Date().getTime()
+        });
+        if (
+          typeof changedDoors.guards !== "undefined"
+        ) {
+          changedDoors.guards.forEach(guardVal => {
+            db.ref("guard/" + guardVal)
+            .once("value")
+            .then(function(snapshot) {
+              if (sendOk) {
+                let sms = new notification.SMS();
+                let email = new notification.Email();
+                sms.send(`ALERT ! ${changedDoors.name} device battery is running low (${
+                    changedDoors.battery
+                }%). on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                })} ${UndefinedToEmptyStr(changedDoors.additionalMessage)}`,snapshot.val().mobileNo);
+                
+                email.send(
+                    snapshot.val().email,
+                    `${value.name} battery is running low on ${new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Singapore"
+                    })}`,
+                    `<p>Device battery is running low (${
+                    changedDoors.battery
+                    }%). ${UndefinedToEmptyStr(
+                    changedDoors.additionalMessage
+                    )}</p>`);
+              }
+            });
+        });
+      }
     }
   }
 }
-}
-
-doorRef.once("child_changed", function(snapshot) {
-  checkDoorClosed(snapshot);
-  checkDoorOpen(snapshot); 
-  checkDoorBattery(snapshot); 
-});
 
 function UndefinedToEmptyStr(val) {
   if (typeof val === "undefined") {
