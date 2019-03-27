@@ -186,7 +186,7 @@ function pollVirtualPort1(value) {
   }
 }
 
-doorRef.on("child_changed", async function(snapshot) {
+doorRef.once("child_changed", async function(snapshot) {
   await async.waterfall([
       function(callback) {
         var changedDoors = snapshot.val();
