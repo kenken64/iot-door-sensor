@@ -40,6 +40,7 @@ admin.initializeApp({
 
 var db = admin.database();
 var doorRef = db.ref("door");
+var notificationRef = db.ref("notification");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
