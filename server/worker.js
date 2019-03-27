@@ -40,7 +40,6 @@ admin.initializeApp({
 
 var db = admin.database();
 var doorRef = db.ref("door");
-var notificationRef = db.ref("notification");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
@@ -146,7 +145,8 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Open";
                         doorRefVal.prev_status = "Closed";
-                        notificationRef.update(doorRefVal);
+                        let notificationOpenRef = db.ref("notification/open");
+                        notificationOpenRef.push(doorRefVal);
                         updRef.update({
                           status : "Open",
                           prev_status : "Closed"
@@ -159,7 +159,8 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Closed";
                         doorRefVal.prev_status = "Open";
-                        notificationRef.update(doorRefVal);
+                        let notificationClosedRef = db.ref("notification/closed");
+                        notificationClosedRef.push(doorRefVal);
                         updRef.update({
                           status : "Closed",
                           prev_status : "Open"
