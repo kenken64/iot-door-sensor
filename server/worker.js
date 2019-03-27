@@ -139,7 +139,11 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Open";
                         doorRefVal.prev_status = "Closed";
-                        const copied = clonedeep(doorRefVal);
+                        const copied = {
+                          door: doorRefVal.name,
+                          status: doorRefVal.status,
+                          prev_status: doorRefVal.prev_status
+                        };
                         notificationRef.push(copied);
                         updRef.update({
                           status : "Open",
@@ -153,7 +157,11 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Closed";
                         doorRefVal.prev_status = "Open";
-                        const copied = clonedeep(doorRefVal);
+                        const copied = {
+                          door: doorRefVal.name,
+                          status: doorRefVal.status,
+                          prev_status: doorRefVal.prev_status
+                        };
                         notificationRef.push(copied);
                         updRef.update({
                           status : "Closed",
