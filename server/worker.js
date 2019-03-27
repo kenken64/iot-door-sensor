@@ -143,7 +143,7 @@ function pollVirtualPort1(value) {
                       && doorRefVal.prev_status == 'Open' 
                       ){
                         setTimeout(()=>console.log(""),3000);
-                        updRef.update({
+                        updRef.transaction({
                           status: "Open",
                           prev_status: "Closed",
                         });
@@ -153,7 +153,7 @@ function pollVirtualPort1(value) {
                       && doorRefVal.prev_status == 'Closed' 
                       ){
                         setTimeout(()=>console.log(""),3000);
-                        updRef.update({
+                        updRef.transaction({
                           status: "Closed",
                           prev_status: "Open",
                         });
@@ -184,7 +184,7 @@ function pollVirtualPort1(value) {
   }
 }
 
-doorRef.once("child_changed", async function(snapshot) {
+doorRef.on("child_changed", async function(snapshot) {
   await async.waterfall([
       function(callback) {
         var changedDoors = snapshot.val();
