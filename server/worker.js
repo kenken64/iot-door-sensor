@@ -242,6 +242,7 @@ doorRef.once("child_changed", function(snapshot) {
     } //status closed
 
     if ((changedDoors.status === "Open" && changedDoors.prev_status === "Closed")) {
+      console.log(`ITS OPEN update evt > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
       eventsRef.push({
         doorName: changedDoors.name,
         device: changedDoors.sensor_auth,
