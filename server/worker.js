@@ -195,6 +195,14 @@ function pollVirtualPort1(value) {
 }
 
 notificationRef.on("child_added", async function(snapshot) {
+  console.log(`%c ________________________________________
+< mooooooooooooooooooooooooooooooooooooo >
+ ----------------------------------------
+        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+|| ||`, "font-family:monospace".bgCyan);
   console.log(`notificationRef${processWorkerName}`.bgGreen);
   console.log(`notificationRef${processWorkerName}`.bgGreen);
   console.log(`notificationRef${processWorkerName}`.bgGreen);
