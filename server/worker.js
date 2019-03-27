@@ -145,7 +145,7 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Open";
                         doorRefVal.prev_status = "Closed";
-                        let notificationOpenRef = db.ref("notification/open");
+                        var notificationOpenRef = db.ref("notification/open");
                         notificationOpenRef.push(doorRefVal);
                         updRef.update({
                           status : "Open",
@@ -159,7 +159,7 @@ function pollVirtualPort1(value) {
                         setTimeout(()=>console.log(""),3000);
                         doorRefVal.status = "Closed";
                         doorRefVal.prev_status = "Open";
-                        let notificationClosedRef = db.ref("notification/closed");
+                        var notificationClosedRef = db.ref("notification/closed");
                         notificationClosedRef.push(doorRefVal);
                         updRef.update({
                           status : "Closed",
