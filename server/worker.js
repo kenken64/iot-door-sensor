@@ -40,6 +40,7 @@ admin.initializeApp({
 
 var db = admin.database();
 var doorRef = db.ref("door");
+var notificationRef = db.ref("notification");
 var eventsRef = db.ref("events");
 
 var sendOk = process.env.NOTIFICATION_ENABLE == "true";
@@ -143,24 +144,19 @@ function pollVirtualPort1(value) {
                       && doorRefVal.prev_status == 'Open' 
                       ){
                         setTimeout(()=>console.log(""),3000);
-                        updRef.transaction(function(current){
-                          current.status = "Open";
-                          current.prev_status = "Closed";
-                          return current;
-                        });
+                        doorRefVal.status = "Open";
+                        doorRefVal.prev_status = "Closed";
+                        notificationRef.push(doorRefVal);
                       }
                     } else {
                       if(doorRefVal.status == 'Open' 
                       && doorRefVal.prev_status == 'Closed' 
                       ){
                         setTimeout(()=>console.log(""),3000);
-                        updRef.transaction(function(current){
-                          current.status = "Closed";
-                          current.prev_status = "Open";
-                          return current;
-                        });
+                        doorRefVal.status = "Closed";
+                        doorRefVal.prev_status = "Open";
+                        notificationRef.push(doorRefVal);
                       }
-                      
                     }  
                   }
                 }
@@ -186,7 +182,7 @@ function pollVirtualPort1(value) {
   }
 }
 
-doorRef.once("child_changed", async function(snapshot) {
+notificationRef.once("child_added", async function(snapshot) {
   await async.waterfall([
       function(callback) {
         var changedDoors = snapshot.val();
