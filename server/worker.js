@@ -198,18 +198,16 @@ function checkDoorClosed (snapshot){
         message: "Door is closed",
         eventDatetime: new Date().getTime()
       });
-      if (typeof changedDoors.guards !== "undefined" ||
-      (changedDoors.guards.length ||
-      changedDoors.guards.length > 0)) {
+      if (typeof changedDoors.guards !== "undefined") {
         console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
         console.log(changedDoors.guards.length);
         changedDoors.guards.forEach(guardVal => {
           db.ref("guard/" + guardVal)
             .once("value")
-            .then(async function(snapshot2) {
+            .then(function(snapshot2) {
               if (sendOk) {
                   console.log(`CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
-                  if (await changedDoors.status !== changedDoors.prev_status) {
+                  if (changedDoors.status !== changedDoors.prev_status) {
                     if(changedDoors.locked == 0){
                       console.log(`CORRECT SAME WORKER ! 112211> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
                       let key = snapshot.key;
@@ -257,17 +255,15 @@ function checkDoorOpen(snapshot){
       eventDatetime: new Date().getTime()
     });
     if (
-      typeof changedDoors.guards !== "undefined" ||
-      (changedDoors.guards.length ||
-      changedDoors.guards.length > 0)
+      typeof changedDoors.guards !== "undefined"
     ) {
       console.log(`CORRECT SAME WORKER !2 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
       changedDoors.guards.forEach(guardVal => {
         db.ref("guard/" + guardVal)
           .once("value")
-          .then(async function(snapshot2) {
+          .then(function(snapshot2) {
             if (sendOk) {
-                if (await changedDoors.status !== changedDoors.prev_status) {
+                if (changedDoors.status !== changedDoors.prev_status) {
                     if(changedDoors.locked == 0 ){
                       let key = snapshot.key;
                       let updRef = doorRef.child(key);
@@ -325,8 +321,7 @@ function checkDoorBattery(snapshot){
         eventDatetime: new Date().getTime()
       });
       if (
-        typeof changedDoors.guards !== "undefined" &&
-        changedDoors.guards.length > 0
+        typeof changedDoors.guards !== "undefined"
       ) {
         changedDoors.guards.forEach(guardVal => {
           db.ref("guard/" + guardVal)
