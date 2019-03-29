@@ -44,27 +44,27 @@ class SMS {
         //console.log("SMS");
     }
 
-    send(body, toMobile){
+    async send(body, toMobile){
         console.log("Send SMS & WhatsApp..." + toMobile);
         if(typeof(toMobile) !== 'undefined'){
-            client.messages
+            await client.messages
             .create({
                 body: body,
                 to: toMobile, // Text this number
                 from: process.env.TWILIO_NUMBER // From a valid Twilio number
             }).then((message)=>{
-                console.info(message);
+                //console.info(message);
             }).catch((error)=>{
                 console.warn(error);
             });
-            console.log(">>> "  +whatsAppNumber);
-            client.messages
+            console.log("WHATSAPP !!>>> "  +whatsAppNumber);
+            await client.messages
             .create({
                 body: body,
                 from: `whatsapp:${whatsAppNumber}`,
                 to: `whatsapp:${toMobile}`
             })
-            .then(message => console.log(message.sid))
+            .then(message => console.log("WHATSAPP !!!" + message.sid))
             .done();
         }
         
