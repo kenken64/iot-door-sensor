@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DoorService } from '../../services/door.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatIconRegistry} from '@angular/material';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import {Howl, Howler} from 'howler';
 import { Router } from "@angular/router";
@@ -54,6 +54,7 @@ export class DoorComponent implements OnInit, OnDestroy {
       .getAllDoor()
       .snapshotChanges()
       .pipe(
+        map(changes => changes.filter(change => typeof(change.payload.val().name) !== 'undefined')),
         map(changes =>
           changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
         )

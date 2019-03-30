@@ -55,7 +55,7 @@ function pollVirtualPort2(value) {
           resp.on("end", () => {
             if (typeof data !== "undefined") {
               if (data === "Invalid token.") return;
-              var updRef = doorRef.child(value.key);
+              let updRef = doorRef.child(value.key);
               let additionalMessage = "";
               if (parseInt(JSON.parse(data)) == 2) {
                 additionalMessage = "Device probably went offline";
@@ -112,7 +112,7 @@ function pollVirtualPort1(value) {
           if (typeof data !== "undefined") {
             if (data === "Invalid token.") return;
             if(typeof(doorRef) !=='undefined'){
-              var updRef = doorRef.child(value.key);
+              let updRef = doorRef.child(value.key);
               updRef.once(
                 "value",
                 async function(snapshot) {
@@ -126,21 +126,16 @@ function pollVirtualPort1(value) {
                           setTimeout(()=>console.log(""),3000);
                           doorRefVal.status = "Open";
                           doorRefVal.prev_status = "Closed";
-                          /*
-                          const copied = {
-                            name: doorRefVal.name,
-                            sensor_auth: doorRefVal.sensor_auth,
-                            battery: doorRefVal.battery,
-                            locked: doorRefVal.locked,
-                            additionalMessage: doorRefVal.additionalMessage,
-                            guards: doorRefVal.guards,
-                            status: doorRefVal.status,
-                            prev_status: doorRefVal.prev_status,
-                            workerName: doorRefVal.workerName
-                          };*/
-                          let newObj = {};
+                          
+                          let newObj = new Object();
                           let copied = Object.assign(newObj, doorRefVal);
-                          notificationRef.push(copied);
+                          let newNotificationRef = notificationRef.push().set(copied);
+                          let notificationId = newNotificationRef.key;
+                          console.log(notificationId);
+                          console.log(notificationId);
+                          console.log(notificationId);
+                          console.log(doorRefVal === newNotificationRef);
+                          console.log(notificationId);
                           updRef.update({
                             status : "Open",
                             prev_status : "Closed"
@@ -154,21 +149,16 @@ function pollVirtualPort1(value) {
                           setTimeout(()=>console.log(""),3000);
                           doorRefVal.status = "Closed";
                           doorRefVal.prev_status = "Open";
-                          /*
-                          const copied = {
-                            name: doorRefVal.name,
-                            status: doorRefVal.status,
-                            sensor_auth: doorRefVal.sensor_auth,
-                            battery: doorRefVal.battery,
-                            locked: doorRefVal.locked,
-                            additionalMessage: doorRefVal.additionalMessage,
-                            guards: doorRefVal.guards,
-                            prev_status: doorRefVal.prev_status,
-                            workerName: doorRefVal.workerName
-                          };*/
-                          let newObj = {};
-                          let copied = Object.assign(newObj, doorRefVal);
-                          notificationRef.push(copied);
+                          let newObj = new Object();
+                           let copied = Object.assign(newObj, doorRefVal);
+                          let newNotificationRef = notificationRef.push().set(copied);
+                          let notificationId = newNotificationRef.key;
+                          console.log(notificationId);
+                          console.log(notificationId);
+                          console.log(notificationId);
+                          console.log(doorRefVal === newNotificationRef);
+                          console.log(notificationId);
+                          
                           updRef.update({
                             status : "Closed",
                             prev_status : "Open"
@@ -438,7 +428,7 @@ function checkDoorSensors(door, done){
           resp.on("end", () => {
               try {
                   if(data === 'true'){
-                    var updRef = doorRef.child(door.key);
+                    let updRef = doorRef.child(door.key);
                     updRef.once(
                       "value",
                       async function(snapshot) {
@@ -515,7 +505,8 @@ queue.process('checkSensor', (job, done) => {
                 console.log(result);
               }).catch(err=>console.warn(err));
           }else{
-              done();
+            console.log("done ..")
+            done();
           }
       }
     });
