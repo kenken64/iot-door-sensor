@@ -95,8 +95,8 @@ function createQueueJob(){
             arrOfDoors.forEach(function (door, key) {
               //console.log(key);
               const used = process.memoryUsage().heapUsed / 1024 / 1024;
-              console.log(`Server uses approximately ${Math.round(used * 100) / 100} MB`);
-              console.log("datetime > " + new Date());
+              //console.log(`Server uses approximately ${Math.round(used * 100) / 100} MB`);
+              //console.log("datetime > " + new Date());
               //console.log("counter >>>>> " + (arrOfDoors.length-1));
               if(counter == (arrOfDoors.length-1)){
                 counter = 0;
@@ -113,28 +113,28 @@ function createQueueJob(){
                   .removeOnComplete(true)
                   .save((err) => {
                     if (err) {
-                      console.log('CHECK DOOR SENSORS JOB SAVE FAILED');
+                //      console.log('CHECK DOOR SENSORS JOB SAVE FAILED');
                       doorRef = null;
                       return;
                     }
                     job.on('complete', (result) => {
-                      console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
-                      console.log(result);
-                      console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
+                  //    console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
+                    //  console.log(result);
+                      //console.log('<CHECK DOOR SENSORS JOB COMPLETE>');
                       doorRef = null;
                       arrOfDoors = null;
                     });
                     job.on('failed', (errorMessage) => {
-                      console.log('CHECK DOOR SENSORS JOB FAILED');
-                      console.log(errorMessage);
+                      //console.log('CHECK DOOR SENSORS JOB FAILED');
+                      //console.log(errorMessage);
                       doorRef = null;
                       return;
                     });
                   });
               }
             }, (err) => {
-              console.warn("1ERROR ERROR !!!!!");
-              console.warn(err);
+              //console.warn("1ERROR ERROR !!!!!");
+              //console.warn(err);
               startPoll();
               reject(err);
             }); 
@@ -143,18 +143,18 @@ function createQueueJob(){
           resolve(1);
         },
         function(errorObject) {
-          console.warn("2ERROR ERROR !!!!!");
-          console.warn("3ERROR ERROR !!!!!");
-          console.error("The read failed: " + errorObject.code);
+          //console.warn("2ERROR ERROR !!!!!");
+          //console.warn("3ERROR ERROR !!!!!");
+          //console.error("The read failed: " + errorObject.code);
           startPoll();
           reject(errorObject);
         }
       );   
     }).on('error', function(e){
-        console.warn("4ERROR ERROR !!!!!");
-        console.warn("5ERROR ERROR !!!!!");
-        console.warn("6ERROR ERROR !!!!!");
-        console.log(e);
+        //console.warn("4ERROR ERROR !!!!!");
+        //console.warn("5ERROR ERROR !!!!!");
+        //console.warn("6ERROR ERROR !!!!!");
+        //console.log(e);
         startPoll();
     }).end();
   });

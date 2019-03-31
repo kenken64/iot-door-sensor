@@ -61,7 +61,8 @@ export class DoorComponent implements OnInit, OnDestroy {
       )
     .subscribe(doors => {
       this.doors = doors;
-      console.log("door data changed !")
+      console.log("door data changed !");
+      console.log(this.doors);
       let item1 = this.doors.find(i => i.status === 'Open');
       console.log("at least one door is open");
       console.log(item1);

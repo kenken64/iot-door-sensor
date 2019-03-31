@@ -67,17 +67,13 @@ function checkDoorSensors(result){
                   });*/
                   resp.removeAllListeners('data');
                 }else{
-                  console.log("Other protocol door!");
                   // TODO
-                  console.log(door.data.sensor_auth);
                   let statusOfNightMare = "";
-                  console.log(door.data.status);
                   if (typeof door.data.status === "undefined") {
                     statusOfNightMare = "Closed";
                   } else {
                     statusOfNightMare = door.data.status;
                   }
-                  console.log("SIGFOX DOOR STATE !!! " + result.dor);
                   if (parseInt(JSON.parse(result.dor)) == 0) {
                     updRef.update({
                       status: "Open",
@@ -161,24 +157,17 @@ function checkDoorSensors(result){
 }
 
 router.post("/sigfox-callback-data", (req, res, next) => {
-  console.log("/sigfox-callback-data");
-  //console.log(req);
-  console.log(req.body.data);
   if (!req.body || !req.body.data)
     res.status(500).json(Object.assign({}, req.body));
   try {
     const decodedData = structuredMessage.decodeMessage(req.body.data);
-    console.log(decodedData);
     const result = Object.assign({}, req.body, decodedData);
-    console.log(">>>>" + result.id);
-    console.log(">>>>" + JSON.stringify(result));
     checkDoorSensors(result);
     res.status(200).json(result);
   } catch (error) {
     //  In case of error, return the original message.
     res.status(500).json(req.body);
   }
-  console.log("------------------------");
 });
 
 router.post("/sigfox-error", (req, res, next) => {
@@ -192,7 +181,9 @@ router.post("/sigfox-service", (req, res, next) => {
   console.log(req.body);
   res.json({});
 });
+
 const PORT_NUMBER=process.env.SIGFOX_SERVER_PORT;
+
 app.listen(PORT_NUMBER, function() {
   console.log(`Sigfox Callback Server is running on port ${PORT_NUMBER}`);
 });

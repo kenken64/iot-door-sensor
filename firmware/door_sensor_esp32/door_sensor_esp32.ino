@@ -6,6 +6,8 @@
 #include <BlynkSimpleEsp32.h>
 #include <esp_wifi.h>
 #include <esp_bt.h>
+#include <nvs.h>
+#include <nvs_flash.h>
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
@@ -30,8 +32,17 @@ void IRAM_ATTR detectsDoorState() {
   lastTrigger = millis();
 }
 
+void clearNVS() {
+  int err;
+  err=nvs_flash_init();
+  Serial.println("nvs_flash_init: " + err);
+  err=nvs_flash_erase();
+  Serial.println("nvs_flash_erase: " + err);
+}
+
 void setup()
 {
+  //clearNVS();
   esp_log_level_set("*", ESP_LOG_VERBOSE);
   // Debug console
   Serial.begin(115200);
@@ -42,7 +53,7 @@ void setup()
   WiFi.persistent(false); 
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Connecting to WIFI ...");
+    //Serial.println("Connecting to WIFI ...");
   }
   Serial.println("Connected to the WiFi network");
   Blynk.config(auth);
@@ -67,14 +78,12 @@ void loop()
       return;
     }
     if(state == LOW){
-      Serial.println("Door Closed");
       Blynk.virtualWrite(V1, 0);
       digitalWrite(greenLED, LOW);
       delay(2000);
       esp_bt_controller_disable();
       esp_deep_sleep_start();
     }else{
-      Serial.println("Door Open");
       digitalWrite(greenLED, HIGH);
       Blynk.virtualWrite(V1, 1);
     }
