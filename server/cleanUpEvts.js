@@ -28,3 +28,17 @@ var j = schedule.scheduleJob(process.env.CLEAN_UP_SCHEDULE, function(){
         });
     });
 });
+
+var rule = new schedule.RecurrenceRule();
+rule.minute = new schedule.Range(0, 59, 5);
+var jj = schedule.scheduleJob(rule, function(){
+    console.log("clean up doors..")
+    doorRef.orderByValue().once('value', (snapshot) => {
+        snapshot.forEach((child) => {
+            if(typeof(child.val().name) === 'undefined'){
+                console.log("remove > "+ child.val().name);
+                child.ref.set(null);
+            }
+        });
+    });
+});
