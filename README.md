@@ -1,14 +1,14 @@
-# Internet of Things  - Window/Door Sensor
+# Internet of Things  - Door/Window/Luggage Sensor
 
-Nothing spells security than being notified or alerted if somebody has entered your premises without your permission. It also helps when even before someone can gain entry, you already know who he or she is. The main idea of this door sensor is to simply provide you information if someone has gone through any of your property entry points.
+Nothing spells security than being notified or alerted if somebody has entered your premises without your permission. It also helps when even before someone can gain entry, you already know who he or she is. The main idea of this door/window sensor is to simply provide you information if someone has gone through any of your property entry points.
 
 ## Works with Many Entry Points
 
-The door sensor is primarily used to detect people or objects that have passed through the doors, but it’s also compatible to windows and any enclosures that could be opened.
+The door/window sensor is primarily used to detect people or objects that have passed through the doors, but it’s also compatible to windows and any enclosures that could be opened.
 
 ## Small to Notice
 
-The door sensor is a very unassuming device so it blends well with the rest of the commonly found items or appliances in your home. It is also quite small you can easily hide it well, away from the prying eyes of potential intruders, and it doesn’t get in the way with the actual functions of the entry points.
+The door/window sensor is a very unassuming device so it blends well with the rest of the commonly found items or appliances in your home. It is also quite small you can easily hide it well, away from the prying eyes of potential intruders, and it doesn’t get in the way with the actual functions of the entry points.
 
 The device is a magnetic switch that allows it to accurately determine location and direction. In other words, there are no false alarms and leads.
 
@@ -34,20 +34,29 @@ IoT powers the connected home by bringing new features and capabilities to smart
 
 
 # Pre-requisite microcontroller and parts
-- Adafruit Huzzah ESP8266
+- Adafruit Huzzah ESP8266/TTGO ESP32 Wifi/Arduino UNO
+- 2-way connector
 - LED
 - 47k Ohm Resistor
 - 10k Ohm Resistor
 - 220 Ohm Resistor
 - Magnetic Door Sensor
 - Jumper
-- Custom made PCB by me
-- Lipo Battery
-- Headers
+- Custom made PCB by kenken64
+- Lipo Battery/ 18650 battery
+- Headers 
+- UNAShield Sigfox for Arduino UNO
+
+## 3D printed Casing/Housing
+- ESP8266 STL 3d Design
+- ESP32 STL 3d Design
+- Sigfox STL 3d Design
+
 
 # PCB Design (Eagle and Fritzing)
-- Version 1
-- Version 2
+- WIFI Version 1
+- WIFI Version 2
+- Sigfox version
 
 # Pre-requisite software & library
 
@@ -57,18 +66,21 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Arduino IDE
 - ESPBattery
 - ESP 8266/32 Arduino library
+- Unashield Sigfox library
 
 # Pre-requisite Cloud account
 
-- Twilio (require your own credit to send out SMS)
-- Gmail
-- Google Firebase Realtime Database
-- Blynk
+- Twilio (require your own credit to send out SMS/WhatsApp)
+- Gmail https://mail.google.com/mail/u/0/
+- Google Firebase Realtime Database https://console.firebase.google.com/u/0/?pli=1
+- Blynk Server 
 
-# Twilio - SMS Notification
+# Twilio - SMS and WhatsApp Notification
 
 - Create a twilio account and top up with the credits.
 - Note down the twilio SSID and AUTH TOKEN.
+- Purchase a number from Twilio
+- Also note down the WhatsApp from number
 
 ![Image of Twilio](docs/twilio.png)
 
@@ -96,10 +108,15 @@ IoT powers the connected home by bringing new features and capabilities to smart
 | TWILIO_NUMBER | You need a twilio phone number in order to send SMS to the receipient      | 
 | FIREBASE_DB_URL | NoSQL Database url     | 
 | JOB_INTERVAL | Interval period where the job poll for the changes from firebase and the blynk APIs      | 
+| JOB_TIMEOUT | Tiemout period where the job poll for the changes from firebase and the blynk APIs      | 
 | NOTIFICATION_ENABLE | Disable and enable notification when door is open and closed      | 
 | FIREBASE_SVC_ACC_FILE | Firebase credential file to perform admin operations     | 
+| CLEAN_UP_SCHEDULE | Schedule timing to cleanup events logs     | 
+| BLYNK_API_URL | Blynk IOT API URL     | 
+| SIGFOX_SERVER_PORT | Sigfox callback backend server port number     |
+| TWILIO_WHATSAPP_NO | Twilio WhatsApp from number     |
 
-# Window/Door sensor Web App
+# Door/Window sensor Web App
 
 ## List of door/window installed with sensor
 
@@ -139,7 +156,7 @@ How to start the sms and email backend server that poll the devices.
 
 ```
 cd server/
-pm2 start server.js
+pm2 start server.js --name server --max-memory-restart 1G --restart-delay 10000 --node-args="--expose-gc --max-old-space-size=4096"
 ```
 
 ## Start Worker for the engine
@@ -147,9 +164,17 @@ Worker consumes the job from the delegator to check the door sensors and send ou
 
 ```
 cd server/
-pm2 start --name worker worker.js -- --workername=worker1
-pm2 start --name worker2 worker.js -- --workername=worker2
-pm2 start --name worker3 worker.js -- --workername=worker3
-pm2 start --name worker4 worker.js -- --workername=worker4
-
+pm2 start worker.js --name worker --max-memory-restart 500M -- --workername=worker1 --node-args="--expose-gc
+pm2 start worker.js --name worker2 --max-memory-restart 500M -- --workername=worker2 --node-args="--expose-gc
+pm2 start worker.js --name worker3 --max-memory-restart 500M -- --workername=worker3 --node-args="--expose-gc
+pm2 start worker.js --name worker4 --max-memory-restart 500M -- --workername=worker4 --node-args="--expose-gc
 ```
+
+## Check the health of all processes
+```
+pm2 list
+```
+TODO add image
+
+## Debug memory leakage
+- Use ChromeDev Tools

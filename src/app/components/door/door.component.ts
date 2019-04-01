@@ -39,6 +39,8 @@ export class DoorComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit() {
+    this.doors = [];
+    this.sound.stop();
     this.getDoorList();
   }
 
@@ -46,6 +48,7 @@ export class DoorComponent implements OnInit, OnDestroy {
     if(typeof(this.allguardsSub) !== 'undefined'){
       this.allguardsSub.unsubscribe();
     }
+    this.sound.stop();
   }
 
   getDoorList() {
