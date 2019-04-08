@@ -291,8 +291,10 @@ notificationRef.on("child_added", function(snapshot) {
               eventDatetime: new Date().getTime()
             });
             console.log(changedDoors.guards);
-            console.log(changedDoors.guards.length);
-            
+            if(changedDoors.guards.length == null || typeof(changedDoors.guards.length) === 'undefined'){
+              console.log("return ... no guards");
+              return;
+            }
             if (
               typeof changedDoors.guards !== "undefined" ||
               (changedDoors.guards.length ||
