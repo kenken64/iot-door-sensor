@@ -223,9 +223,7 @@ notificationRef.on("child_added", function(snapshot) {
               eventDatetime: new Date().getTime()
             });
             if (
-              typeof changedDoors.guards !== "undefined" ||
-              (changedDoors.guards.length ||
-              changedDoors.guards.length > 0)
+              typeof changedDoors.guards !== "undefined" 
               ) {
               //console.log(`GUARDS ! CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
               //console.log(changedDoors.guards.length);
@@ -291,14 +289,9 @@ notificationRef.on("child_added", function(snapshot) {
               eventDatetime: new Date().getTime()
             });
             console.log(changedDoors.guards);
-            if(changedDoors.guards.length == null || typeof(changedDoors.guards.length) === 'undefined'){
-              console.log("return ... no guards");
-              return;
-            }
+            
             if (
-              typeof changedDoors.guards !== "undefined" ||
-              (changedDoors.guards.length ||
-              changedDoors.guards.length > 0)
+              typeof changedDoors.guards !== "undefined"
             ) {
               //console.log(`CORRECT SAME WORKER !2 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
               changedDoors.guards.forEach(guardVal => {
