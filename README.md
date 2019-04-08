@@ -1,8 +1,9 @@
 # Internet of Things  - Door/Window/Luggage Sensor
 
+
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/pYRvByaGBP0/0.jpg)](https://www.youtube.com/watch?v=pYRvByaGBP0)
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/HDfW9AHzuwk/0.jpg)](https://www.youtube.com/watch?v=HDfW9AHzuwk)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/cuYwMgwrSvQ/0.jpg)](https://youtu.be/cuYwMgwrSvQ)
 
 Nothing spells security than being notified or alerted if somebody has entered your premises without your permission. It also helps when even before someone can gain entry, you already know who he or she is. The main idea of this door/window sensor is to simply provide you information if someone has gone through any of your property entry points.
 
@@ -36,7 +37,6 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Use the raspi-config tool (with sudo raspi-config) to enable SPI on the Raspberry Pi
 - Install wiringpi (sudo apt-get install wiringpi)
 
-
 # Pre-requisite microcontroller and parts
 - Adafruit Huzzah ESP8266/TTGO ESP32 Wifi/Arduino UNO
 - 2-way connector
@@ -61,6 +61,9 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - WIFI Version 1
 - WIFI Version 2
 - Sigfox version
+
+![PCB Design 1](docs/pcb_design.png)
+![PCB Design 2](docs/pcb_design2.png)
 
 # Pre-requisite software & library
 
@@ -126,7 +129,32 @@ IoT powers the connected home by bringing new features and capabilities to smart
 
 ![List of doors](docs/list.png)
 
+## Add new door/window sensor
+![Add new door](docs/add_new_door_sensor.png)
 
+## Add new security personel to the system
+![Add guard to the system](docs/associate_guard_to_sensor.png)
+
+## Associate multiple security guard to the sensors
+![Associate guard to the door sensors](docs/configure_guard_door.png)
+
+
+## Provide feedback on door/window events
+![feedback on events](docs/feedback_door_closed.png)
+
+## SMS Notification
+![sms](docs/screenshot_7.png)
+
+## Email Notification
+![email](docs/screenshot_8.png)
+
+## WhatsApp Notification
+![whatsapp](docs/twilio_whatsapp.png)
+
+## Export as Excel Spreadsheet
+![excel](docs/spreadsheet.png)
+
+# Instructions 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
 # PWA Web Application
@@ -178,7 +206,10 @@ pm2 start worker.js --name worker4 --max-memory-restart 500M -- --workername=wor
 ```
 pm2 list
 ```
-TODO add image
+![pm2 list](docs/pm2list.png)
 
 ## Debug memory leakage
 - Use ChromeDev Tools
+
+## EM lock integration
+https://shopee.sg/Hot-DC-DC-Converter-Output-Power-Adapter-24V-12V-To-5V-USB-Step-Down-Module-i.10885840.691201434?gclid=Cj0KCQjwnKHlBRDLARIsAMtMHDFC6E65QBD9bycE3Slw0D0tBNxFKR-Vn5mH1KITMRHCil_hmbI2bzYaAmgOEALw_wcB
