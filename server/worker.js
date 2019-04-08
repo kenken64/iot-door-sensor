@@ -290,6 +290,9 @@ notificationRef.on("child_added", function(snapshot) {
               message: "Door is open",
               eventDatetime: new Date().getTime()
             });
+            console.log(changedDoors.guards);
+            console.log(changedDoors.guards.length);
+            
             if (
               typeof changedDoors.guards !== "undefined" ||
               (changedDoors.guards.length ||
