@@ -222,9 +222,7 @@ notificationRef.on("child_added", function(snapshot) {
               message: "Door is closed",
               eventDatetime: new Date().getTime()
             });
-            if (
-              typeof changedDoors.guards !== "undefined" 
-              ) {
+            if (!changedDoors.guards) {
               //console.log(`GUARDS ! CORRECT SAME WORKER ! 1111> ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
               //console.log(changedDoors.guards.length);
               changedDoors.guards.forEach(guardVal => {
@@ -289,10 +287,7 @@ notificationRef.on("child_added", function(snapshot) {
               eventDatetime: new Date().getTime()
             });
             console.log(changedDoors.guards);
-            
-            if (
-              typeof changedDoors.guards !== "undefined"
-            ) {
+            if (!changedDoors.guards) {
               //console.log(`CORRECT SAME WORKER !2 > ${processWorkerName} ${changedDoors.sensor_auth}`.bgRed);
               changedDoors.guards.forEach(guardVal => {
                 db.ref("guard/" + guardVal)
