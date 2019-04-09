@@ -53,13 +53,17 @@ function pollVirtualPort2(value) {
   
           // The whole response has been received. Print out the result.
           resp.on("end", () => {
+            console.log("CHECKBAT !");
             if (typeof data !== "undefined") {
               if (data === "Invalid token.") return;
               let updRef = doorRef.child(value.key);
               let additionalMessage = "";
+              console.log(parseInt(JSON.parse(data)));
+              console.log(parseInt(JSON.parse(data)));
               if (parseInt(JSON.parse(data)) == 2) {
                 additionalMessage = "Device probably went offline";
               }
+              console.log(parseInt(JSON.parse(data)));
               if(typeof(JSON.parse(data)) !== 'number'){
                 updRef.update({
                   battery: 100,
