@@ -190,11 +190,13 @@ function pollVirtualPort1(value) {
 
 
 doorRef.on("child_changed", function(snapshot) {
+  console.log("DOOR REF CHANGES ! Bettery health check ....")
   async.waterfall([
       function(callback) {
         var changedDoors = snapshot.val();
         if(changedDoors.workerName === processWorkerName){
           // check battery section
+          console.log("Bettery health check .... " + changedDoors.battery)
           if (
             (changedDoors.battery == 50 ||
             changedDoors.battery == 49 ||
