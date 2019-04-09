@@ -69,6 +69,7 @@ function pollVirtualPort2(value) {
               }else{
                 console.log("Update battery level ...");
                 console.log(parseInt(JSON.parse(data)));
+                console.log("UPDATE battery level ...");
                 updRef.update({
                   battery: parseInt(JSON.parse(data)),
                   locked: 0,
@@ -195,8 +196,10 @@ doorRef.on("child_changed", function(snapshot) {
             changedDoors.battery == 49 ||
             changedDoors.battery == 20 ||
             changedDoors.battery == 19 ||
+            changedDoors.battery == 10 ||
+            changedDoors.battery == 3 ||
             changedDoors.battery == 2 ||
-            changedDoors.battery == 1 )
+            changedDoors.battery == 1)
           ) {
             console.log("Bettery health check ....")
             eventsRef.push({
@@ -264,7 +267,7 @@ notificationRef.on("child_added", function(snapshot) {
               message: "Door is closed",
               eventDatetime: new Date().getTime()
             });
-            console.log("GUARDS ???" + _.has(changedDoors, ['guards']));
+            //console.log("GUARDS ???" + _.has(changedDoors, ['guards']));
             if (
               typeof changedDoors.guards !== "undefined" ||
               (_.has(changedDoors, ['guards']) && (changedDoors.guards.length ||
@@ -320,7 +323,7 @@ notificationRef.on("child_added", function(snapshot) {
               message: "Door is open",
               eventDatetime: new Date().getTime()
             });
-            console.log("GUARDS ???" + _.has(changedDoors, ['guards']));
+            //console.log("GUARDS ???" + _.has(changedDoors, ['guards']));
             if (
               typeof changedDoors.guards !== "undefined" ||
               (_.has(changedDoors, ['guards']) && (changedDoors.guards.length ||
