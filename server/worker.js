@@ -216,8 +216,9 @@ doorRef.on("child_changed", function(snapshot) {
               eventDatetime: new Date().getTime()
             });
             if (
-              typeof changedDoors.guards !== "undefined" &&
-              changedDoors.guards.length > 0
+              typeof changedDoors.guards !== "undefined" ||
+              (_.has(changedDoors, ['guards']) && (changedDoors.guards.length ||
+              changedDoors.guards.length > 0))
             ) {
               changedDoors.guards.forEach(guardVal => {
                 db.ref("guard/" + guardVal)
