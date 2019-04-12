@@ -30,7 +30,7 @@ const int sleepTimeS = 10;
 
 BlynkTimer timer;
 ESPBattery battery = ESPBattery();
-const char* fwUrlBase = "http://ota-firmware.kennethphang.asia/firmware/";
+const char* fwUrlBase = "https://ota-firmware.kennethphang.asia/firmware/";
 const int FW_VERSION = 106;
 
 //callback notifying us of the need to save config
@@ -133,7 +133,7 @@ void checkForUpdates() {
 
   HTTPClient httpClient;
   
-  httpClient.begin( fwVersionURL );
+  httpClient.begin( fwVersionURL, "49 4A 1D 7E F2 CD 58 36 2D BE 59 A3 0B 92 74 5A 90 FE 21 4E" );
   int httpCode = httpClient.GET();
   Serial.println( httpCode );
   if( httpCode == 200 ) {
