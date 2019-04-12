@@ -11,6 +11,8 @@ import { AddFeedbackComponent } from "./components/events/feedback/add/add.compo
 
 import { GuardComponent } from "./components/guard/guard.component";
 import { BatteryComponent } from "./components/battery/battery.component";
+import { OtaComponent } from "./components/ota/ota.component";
+
 import { FeedbackSolver } from './components/events/feedback/add/feedback.resolver';
 
 const routes: Routes = [
@@ -21,6 +23,7 @@ const routes: Routes = [
   { path: "feedback/:key", component: FeedbackComponent },
   { path: "addFeedback/:key", component: AddFeedbackComponent, resolve: { email: FeedbackSolver } },
   { path: "battery/:value/:name", component: BatteryComponent },
+  { path: "ota/:value/:name", component: OtaComponent },
   { path: "addDoor", component: AddDoorComponent },
   { path: "addGuard", component: AddGuardComponent },
   { path: "guard/:key", component: GuardComponent },

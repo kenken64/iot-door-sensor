@@ -3,6 +3,8 @@
 #define BLYNK_PRINT Serial
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
+#include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
 
 //needed for library
 #include <DNSServer.h>
@@ -29,6 +31,8 @@ const int sleepTimeS = 10;
 //WidgetLED led1(V3);
 BlynkTimer timer;
 ESPBattery battery = ESPBattery();
+const char* fwUrlBase = "http://63744d23.ngrok.io/firmware/";
+const int FW_VERSION = 101;
 
 //callback notifying us of the need to save config
 void saveConfigCallback () {
@@ -36,6 +40,19 @@ void saveConfigCallback () {
   shouldSaveConfig = true;
 }
 
+BLYNK_CONNECTED() {
+  Blynk.syncAll();
+}
+
+BLYNK_WRITE(V0) //Button Widget is writing to pin V0
+{
+  int pinData = param.asInt();
+  Serial.println("nothing to flash >> firmware " + pinData);
+  if(pinData == 1){
+    Serial.println("flash firmware...is 1");
+    checkForUpdates();
+  }
+}
 
 void doorSensorWidget()
 {
@@ -62,6 +79,7 @@ void doorSensorWidget()
     Blynk.virtualWrite(V1, 0);
     Blynk.virtualWrite(V2, battery.getPercentage());
     Blynk.virtualWrite(V3, battery.getLevel());
+    Blynk.virtualWrite(V4, FW_VERSION);
     Serial.println("ESP8266 in sleep mode");
     ESP.deepSleep(10e6, WAKE_RF_DEFAULT);
   }else {
@@ -72,9 +90,10 @@ void doorSensorWidget()
     Blynk.virtualWrite(V1, 1);
     Blynk.virtualWrite(V2, battery.getPercentage());
     Blynk.virtualWrite(V3, battery.getLevel());
+    Blynk.virtualWrite(V4, FW_VERSION);
     delay(30);
   }
-
+  
   /*
    if(state == HIGH){
     Serial.println("Door Open");
@@ -84,6 +103,7 @@ void doorSensorWidget()
     Blynk.virtualWrite(V1, 1);
     Blynk.virtualWrite(V2, battery.getPercentage());
     Blynk.virtualWrite(V3, battery.getLevel());
+    Blynk.virtualWrite(V4, FW_VERSION);
     delay(30);
   }else {
     Serial.println("Door Closed");
@@ -93,10 +113,58 @@ void doorSensorWidget()
     Blynk.virtualWrite(V2, battery.getPercentage());
     Blynk.virtualWrite(V3, battery.getLevel());
     Serial.println("ESP8266 in sleep mode");
+    Blynk.virtualWrite(V4, FW_VERSION);
     ESP.deepSleep(10e6, WAKE_RF_DEFAULT);
   }*/
 }
 
+void checkForUpdates() {
+  String mac = getMAC();
+  String fwURL = String( fwUrlBase );
+  String fwVersionURL = fwURL;
+  fwVersionURL.concat( blynk_token );
+
+  Serial.println( "Checking for firmware updates." );
+  Serial.print( "MAC address: " );
+  Serial.println( mac );
+  Serial.print( "Firmware version URL: " );
+  fwVersionURL.concat( ".bin" );
+  Serial.println( fwVersionURL );
+
+  HTTPClient httpClient;
+  
+  httpClient.begin( fwVersionURL );
+  int httpCode = httpClient.GET();
+  Serial.println( httpCode );
+  if( httpCode == 200 ) {
+    Serial.println( "Preparing to update" );
+    t_httpUpdate_return ret = ESPhttpUpdate.update( fwVersionURL );
+    Serial.println( ret );
+    switch(ret) {
+      case HTTP_UPDATE_FAILED:
+        Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+        break;
+
+      case HTTP_UPDATE_NO_UPDATES:
+        Serial.println("HTTP_UPDATE_NO_UPDATES");
+        break;
+    }
+  }
+  else {
+    Serial.print( "Firmware version check failed, got HTTP response code " );
+    Serial.println( httpCode );
+  }
+  httpClient.end();
+}
+
+
+String getMAC()
+{
+  uint8_t mac[6];
+  char result[14];
+  snprintf( result, sizeof( result ), "%02x%02x%02x%02x%02x%02x", mac[ 0 ], mac[ 1 ], mac[ 2 ], mac[ 3 ], mac[ 4 ], mac[ 5 ] );
+  return String( result );
+}
 
 void setup() {
   Serial.begin(9600);
@@ -181,7 +249,9 @@ void setup() {
     configFile.close();
     //end save
   }
-
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Connecting to WIFI ...");
+  }
   Serial.println("local ip");
   Serial.println(WiFi.localIP());
   Serial.println(WiFi.gatewayIP());

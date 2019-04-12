@@ -20,7 +20,8 @@ export class EditDoorComponent implements OnInit, OnDestroy {
     name: new FormControl("", Validators.required),
     sensorAuth: new FormControl("", Validators.required),
     triggerAuth: new FormControl(""),
-    rechargeableBat: new FormControl("")
+    rechargeableBat: new FormControl(""),
+    workerName: new FormControl("")
   });
   constructor(private activatedRoute: ActivatedRoute,
     private svc: DoorService, private snackBar: MatSnackBar) { }
@@ -39,6 +40,7 @@ export class EditDoorComponent implements OnInit, OnDestroy {
       this.editDoorForm.get('sensorAuth').setValue(result.sensor_auth);
       this.editDoorForm.get('triggerAuth').setValue(result.trigger_auth);
       this.editDoorForm.get('rechargeableBat').setValue(result.rechargeableBat);
+      this.editDoorForm.get('workerName').setValue(result.workerName);
     });
   }
 
@@ -47,12 +49,13 @@ export class EditDoorComponent implements OnInit, OnDestroy {
     let sensorAuth = this.editDoorForm.get("sensorAuth").value;
     let triggerAuth = this.editDoorForm.get("triggerAuth").value;
     let rechargeableBat = this.editDoorForm.get("rechargeableBat").value;
-
+    let workerName = this.editDoorForm.get("workerName").value;
     let d: Door = {
       name: name,
       sensor_auth: sensorAuth,
       trigger_auth: triggerAuth,
-      rechargeableBat: rechargeableBat
+      rechargeableBat: rechargeableBat,
+      workerName: workerName
     };
     this.svc.updateDoor(this.doorId, d);
     let snackBarRef = this.snackBar.open(

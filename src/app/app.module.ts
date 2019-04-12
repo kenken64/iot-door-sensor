@@ -19,6 +19,7 @@ import { EventsComponent, BottomSheetFilterStatusSheet } from "./components/even
 import { AddDoorComponent } from "./components/door/add/add.component";
 import { AddGuardComponent } from "./components/guard/add/add.component";
 import { BatteryComponent } from "./components/battery/battery.component";
+import { OtaComponent } from "./components/ota/ota.component";
 import { FeedbackComponent } from "./components/events/feedback/feedback.component";
 import { AddFeedbackComponent } from "./components/events/feedback/add/add.component";
 import { EditDoorComponent } from "./components/door/edit/edit.component";
@@ -49,6 +50,7 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     AddGuardComponent,
     EventsComponent,
     BatteryComponent,
+    OtaComponent,
     FeedbackComponent,
     AddFeedbackComponent,
     BottomSheetFilterStatusSheet,

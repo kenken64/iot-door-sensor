@@ -117,6 +117,10 @@ export class GuardComponent implements OnInit, OnDestroy {
     this.router.navigate(["/battery", this.doorBatteryValue, this.doorName]);
   }
 
+  showOTA(){
+    this.router.navigate(["/ota", this.doorBatteryValue, this.doorName]);
+  }
+
   editDoor() {
     console.log(this.doorId);
     console.log(this.doorName);

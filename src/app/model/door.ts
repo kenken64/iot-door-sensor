@@ -9,4 +9,5 @@ export interface Door {
   closedDatetime?: Date;
   guards?: any[];
   battery?: string;
+  workerName?: string;
 }
