@@ -15,7 +15,7 @@ export class OTAService {
   
   getFirmwareVersion(sensorAuth): Promise<any> {
     return (
-        this.http.get<Firmware>(`http://blynk-cloud.com/${sensorAuth}/get/V4`)
+        this.http.get<Firmware>(`https://blynk-cloud.com/${sensorAuth}/get/V4`)
             .pipe(
                 map((v: any) => {
                     return (<Firmware>{ version: v });
@@ -27,7 +27,7 @@ export class OTAService {
 
   flashDevice(sensorAuth, flag): Promise<any> {
     return (
-        this.http.get<Firmware>(`http://blynk-cloud.com/${sensorAuth}/update/V0?value=${flag}`)
+        this.http.get<Firmware>(`https://blynk-cloud.com/${sensorAuth}/update/V0?value=${flag}`)
             .toPromise()
     )
   }
