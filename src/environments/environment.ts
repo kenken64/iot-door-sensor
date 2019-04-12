@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  firmware_api_url: 'http://localhost:3005/api/',
   firebase: {
     apiKey: "AIzaSyB1GiFDJas7GgftbAuFgkNAajm4e0DLoMM",
     authDomain: "door-sensor-proj.firebaseapp.com",

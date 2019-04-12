@@ -28,11 +28,10 @@ const int greenLED = 2;
 // Time to sleep (in seconds):
 const int sleepTimeS = 10;
 
-//WidgetLED led1(V3);
 BlynkTimer timer;
 ESPBattery battery = ESPBattery();
-const char* fwUrlBase = "http://63744d23.ngrok.io/firmware/";
-const int FW_VERSION = 101;
+const char* fwUrlBase = "http://ota-firmware.kennethphang.asia/firmware/";
+const int FW_VERSION = 106;
 
 //callback notifying us of the need to save config
 void saveConfigCallback () {
@@ -51,6 +50,7 @@ BLYNK_WRITE(V0) //Button Widget is writing to pin V0
   if(pinData == 1){
     Serial.println("flash firmware...is 1");
     checkForUpdates();
+    Blynk.virtualWrite(V4, FW_VERSION);
   }
 }
 

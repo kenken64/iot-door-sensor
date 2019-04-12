@@ -23,6 +23,7 @@ import { OtaComponent } from "./components/ota/ota.component";
 import { FeedbackComponent } from "./components/events/feedback/feedback.component";
 import { AddFeedbackComponent } from "./components/events/feedback/add/add.component";
 import { EditDoorComponent } from "./components/door/edit/edit.component";
+
 import { AngularFontAwesomeModule } from "angular-font-awesome";
 // firebase dependencies
 import { AngularFirestore } from "@angular/fire/firestore";
@@ -39,6 +40,7 @@ import * as more from "highcharts/highcharts-more.src";
 import * as solidGauge from "highcharts/modules/solid-gauge.src";
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { MatFileUploadModule } from './shared/matfileUpload/matFileUpload.module';
 
 @NgModule({
   entryComponents: [EventsComponent, BottomSheetFilterStatusSheet],
@@ -74,7 +76,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     ReactiveFormsModule,
     ChartModule,
     InfiniteScrollModule,
-    NgxMaterialTimepickerModule.forRoot()
+    NgxMaterialTimepickerModule.forRoot(),
+    MatFileUploadModule
   ],
   providers: [
     AngularFirestore,

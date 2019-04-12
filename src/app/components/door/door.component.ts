@@ -15,7 +15,7 @@ import { Router } from "@angular/router";
 export class DoorComponent implements OnInit, OnDestroy {
   doors: any;
   private allguardsSub: Subscription;
-
+  
   constructor(
     private doorSvc: DoorService,
     iconRegistry: MatIconRegistry,

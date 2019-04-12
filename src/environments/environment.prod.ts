@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  firmware_api_url: 'http://ota-firmware.kennethphang.asia/api/',
   firebase: {
     apiKey: "AIzaSyB1GiFDJas7GgftbAuFgkNAajm4e0DLoMM",
     authDomain: "door-sensor-proj.firebaseapp.com",

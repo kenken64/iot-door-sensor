@@ -28,6 +28,7 @@ export class GuardComponent implements OnInit, OnDestroy {
   selectedGuard: Guard[] = [];
   doorName: String = "";
   doorId: String = "";
+  sensor_auth: String = "";
   doorBatteryValue: String = "";
   roomId: String;
   visible = true;
@@ -63,8 +64,10 @@ export class GuardComponent implements OnInit, OnDestroy {
     this.doorsSub = this.doorSvc.getDoor(this.roomId).pipe(take(1)).subscribe(result => {
       console.log(">>> result " + JSON.stringify(result));
       console.log(">>> ID ??? " + this.roomId);
+      console.log(">>> result.sensor_auth ??? " + result.sensor_auth);
       this.doorName = result.name;
       this.doorId = this.roomId;
+      this.sensor_auth = result.sensor_auth;
       this.doorBatteryValue = result.battery;
       if (typeof result.guards !== "undefined") {
         this.totalGuards = result.guards;
@@ -118,7 +121,7 @@ export class GuardComponent implements OnInit, OnDestroy {
   }
 
   showOTA(){
-    this.router.navigate(["/ota", this.doorBatteryValue, this.doorName]);
+    this.router.navigate(["/ota", this.sensor_auth, this.doorName]);
   }
 
   editDoor() {
