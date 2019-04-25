@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: kennethphang.asia
+Token: 7494b01965a9f60f8fc21ac621da497478accf858eb153be7b62adedd2a01510

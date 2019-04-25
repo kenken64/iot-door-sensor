@@ -31,7 +31,7 @@ const int sleepTimeS = 10;
 BlynkTimer timer;
 ESPBattery battery = ESPBattery();
 const char* fwUrlBase = "https://ota-firmware.kennethphang.asia/firmware/";
-const int FW_VERSION = 106;
+const int FW_VERSION = 107;
 
 //callback notifying us of the need to save config
 void saveConfigCallback () {
