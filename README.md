@@ -227,3 +227,17 @@ pm2 list
 Most of the EM lock in the market uses 12v AC we need a step down.
 
 https://shopee.sg/Hot-DC-DC-Converter-Output-Power-Adapter-24V-12V-To-5V-USB-Step-Down-Module-i.10885840.691201434?gclid=Cj0KCQjwnKHlBRDLARIsAMtMHDFC6E65QBD9bycE3Slw0D0tBNxFKR-Vn5mH1KITMRHCil_hmbI2bzYaAmgOEALw_wcB
+
+## Blynk Configuration
+
+Restful API for Blynk
+
+https://blynkapi.docs.apiary.io/#
+
+<img src="docs/blynk1.png" width="400px" height="600px">
+
+
+<img src="docs/blynk2.png" width="400px" height="600px">
+
+
+<img src="docs/blynk3.png" width="400px" height="600px">
