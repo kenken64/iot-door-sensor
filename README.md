@@ -1,4 +1,4 @@
-# Internet of Things  - Door/Window/Luggage Sensor
+# Door/Window/Luggage Sensor - Internet of Things
 
 ## Tindie Store - https://bit.ly/2L2vBSy 
 
@@ -32,7 +32,7 @@ IoT powers the connected home by bringing new features and capabilities to smart
 # Multiple version
 - Wifi version
 - Sigfox version
-- Lorawan version require an existing lorawan gateway
+- Lorawan version require an existing lorawan gateway (Prototype, too expensive)
 
 # Pre-requisite Lora Gateway
 - Use the raspi-config tool (with sudo raspi-config) to enable SPI on the Raspberry Pi
@@ -102,7 +102,7 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Create gmail account. Please do not use personal gmail account for this.
 - Enable unsecure access to this account [Gmail API setting](https://support.google.com/accounts/answer/6010255?hl=en)
 
-# Server side (AWS IOT)
+# Server side (AWS Lightsail)
 - Detect door is open and closed.
 - Send SMS using twilio to the configure recipient mobile number
 - Send notification email to the configure recipient email address
