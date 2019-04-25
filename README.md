@@ -49,21 +49,23 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Custom made PCB by kenken64
 - Lipo Battery/ 18650 battery
 - Headers 
-- UNAShield Sigfox for Arduino UNO
+- UnaShield Sigfox for Arduino UNO
 
 ## 3D printed Casing/Housing
-- ESP8266 STL 3d Design
-- ESP32 STL 3d Design
+- ESP8266/ESP32 STL 3d Design
 - Sigfox STL 3d Design
 
 
 # PCB Design (Eagle and Fritzing)
-- WIFI Version 1
-- WIFI Version 2
-- Sigfox version
+- WIFI Version 1 (Custom made PCB)
+![PCB Design 1](docs/pcb_design3.png)
 
+- WIFI Version 2 (Custom made PCB)
 ![PCB Design 1](docs/pcb_design.png)
 ![PCB Design 2](docs/pcb_design2.png)
+
+- Sigfox version (Shield from UnaBiz)
+
 
 # Pre-requisite software & library
 
