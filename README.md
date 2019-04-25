@@ -237,7 +237,7 @@ https://blynkapi.docs.apiary.io/#
 <img src="docs/blynk1.png" width="400px" height="600px">
 
 
-<img src="docs/blynk2.png" width="400px" height="600px">
+<img src="docs/blynk2.png" width="400px" height="700px">
 
 
 <img src="docs/blynk3.png" width="400px" height="600px">
