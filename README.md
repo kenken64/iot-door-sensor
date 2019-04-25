@@ -1,5 +1,6 @@
 # Internet of Things  - Door/Window/Luggage Sensor
 
+## Tindie Store - https://bit.ly/2L2vBSy 
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/pYRvByaGBP0/0.jpg)](https://www.youtube.com/watch?v=pYRvByaGBP0)
 
@@ -58,11 +59,14 @@ IoT powers the connected home by bringing new features and capabilities to smart
 
 # PCB Design (Eagle and Fritzing)
 - WIFI Version 1 (Custom made PCB)
-![PCB Design 1](docs/pcb_design3.png)
+<br>
+<img src="docs/pcb3.jpg" width="300px" height="300px">
 
 - WIFI Version 2 (Custom made PCB)
-![PCB Design 1](docs/pcb_design.png)
-![PCB Design 2](docs/pcb_design2.png)
+<br>
+<img src="docs/pcb_design.png" width="300px" height="400px">
+
+<img src="docs/pcb_design2.png" width="500px" height="400px">
 
 - Sigfox version (Shield from UnaBiz)
 
@@ -132,7 +136,7 @@ IoT powers the connected home by bringing new features and capabilities to smart
 ![List of doors](docs/list.png)
 
 ## Add new door/window sensor
-![Add new door](docs/add_new_door_sensor.png)
+<img src="docs/add_new_door_sensor.png" width="400px" height="600px">
 
 ## Add new security personel to the system
 ![Add guard to the system](docs/associate_guard_to_sensor.png)
@@ -145,16 +149,16 @@ IoT powers the connected home by bringing new features and capabilities to smart
 ![feedback on events](docs/feedback_door_closed.png)
 
 ## SMS Notification
-![sms](docs/screenshot_7.png)
+<img src="docs/screenshot_7.png" width="400px" height="600px">
 
 ## Email Notification
-![email](docs/screenshot_8.png)
+<img src="docs/screenshot_8.png" width="400px" height="600px">
 
 ## WhatsApp Notification
-![whatsapp](docs/twilio_whatsapp.png)
+<img src="docs/twilio_whatsapp.png" width="400px" height="600px">
 
 ## Export as Excel Spreadsheet
-![excel](docs/spreadsheet.png)
+<img src="docs/spreadsheet.png" width="400px" height="600px">
 
 # Instructions 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
@@ -194,7 +198,10 @@ pm2 start server.js --name server --max-memory-restart 1G --restart-delay 10000 
 ```
 
 ## Start Worker for the engine
-Worker consumes the job from the delegator to check the door sensors and send out notification.
+Worker consumes the job from the delegator to check the door sensors and send out notification via SMS/WhatsApp/Email.
+
+Each worker is configured with its own designated door sensor. Refer to the server/worker-config.json
+
 
 ```
 cd server/
@@ -212,6 +219,11 @@ pm2 list
 
 ## Debug memory leakage
 - Use ChromeDev Tools
+- Dynatrace (https://www.dynatrace.com/)
+- Sentry io (https://sentry.io/welcome/)
 
-## EM lock integration
+## ElectricMagnetic lock integration
+
+Most of the EM lock in the market uses 12v AC we need a step down.
+
 https://shopee.sg/Hot-DC-DC-Converter-Output-Power-Adapter-24V-12V-To-5V-USB-Step-Down-Module-i.10885840.691201434?gclid=Cj0KCQjwnKHlBRDLARIsAMtMHDFC6E65QBD9bycE3Slw0D0tBNxFKR-Vn5mH1KITMRHCil_hmbI2bzYaAmgOEALw_wcB
