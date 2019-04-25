@@ -189,6 +189,28 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
+## Google Firebase
+1. Create a firebase real time database project
+
+## Install and start redis server
+
+1. sudo apt-get install redis
+2. Start Redis server
+
+```
+sudo service redis-server start
+```
+3. Check redis server status
+```
+sudo service redis-server status
+```
+
+4. if only there is a crash on the worker process then run flush
+
+```
+redis-cli FLUSHALL
+```
+
 ## Start Backend server
 How to start the sms and email backend server that poll the devices.
 
