@@ -163,7 +163,14 @@ IoT powers the connected home by bringing new features and capabilities to smart
 
 # Setup Instructions for the PWA Web App and Backend
 
-Kindly create a Azure/AWS/Google Cloud account to deploy all this component on a Ubuntu distribution
+Kindly create a Azure/AWS/Google Cloud account to deploy all this component on a Ubuntu 18.04 distribution
+
+After creating a cloud instance, ssh/login into the instance install git software and node js. Please follow the links below with all the installation steps 
+
+https://www.digitalocean.com/community/tutorials/how-to-install-git-on-ubuntu-18-04-quickstart
+
+https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
@@ -204,7 +211,10 @@ https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-
 Lastly, copy all the files from the angular app /dist directory to the nginx web server root directory e.g. /var/www/html
 
 ## Google Firebase
-1. Create a firebase real time database project
+
+Its must to have Google account 
+
+1. Create a firebase real time database project following this link https://firebase.google.com/
 
 ## Install and start redis server
 
