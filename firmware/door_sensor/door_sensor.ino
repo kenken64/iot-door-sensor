@@ -15,9 +15,6 @@
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-//166fff24ab4f4a52a31a936369d0a1cc
-// b40605f4f5d5484bbe7b9a3cb78f1976
-// 166fff24ab4f4a52a31a936369d0a1cc
 char blynk_token[33] = "166fff24ab4f4a52a31a936369d0a1cc";
 
 //flag for saving data

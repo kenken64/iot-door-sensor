@@ -87,7 +87,7 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Twilio (require your own credit to send out SMS/WhatsApp)
 - Gmail https://mail.google.com/mail/u/0/
 - Google Firebase Realtime Database https://console.firebase.google.com/u/0/?pli=1
-- Blynk Server 
+- Blynk Cloud Service ( Mobile App) 
 
 # Twilio - SMS and WhatsApp Notification
 
@@ -103,7 +103,7 @@ IoT powers the connected home by bringing new features and capabilities to smart
 - Create gmail account. Please do not use personal gmail account for this.
 - Enable unsecure access to this account [Gmail API setting](https://support.google.com/accounts/answer/6010255?hl=en)
 
-# Server side (AWS Lightsail)
+# Backend Server Side (AWS Lightsail/ DO / Azure / Google Cloud)
 - Detect door is open and closed.
 - Send SMS using twilio to the configure recipient mobile number
 - Send notification email to the configure recipient email address
@@ -212,7 +212,7 @@ Lastly, copy all the files from the angular app /dist directory to the nginx web
 
 ## Google Firebase
 
-Its must to have Google account 
+It is must to have Google account in order to create a firebase account for this project
 
 1. Create a firebase real time database project following this link https://firebase.google.com/
 
@@ -266,6 +266,17 @@ Register an account with Blynk
 Create a new project, choose device as ESP8266 WIFI send the auth key to your email address
 Restful API for Blynk
 
+<img src="docs/blynk2.jpg" width="400px" height="600px">
+
+<img src="docs/blynk3.jpg" width="400px" height="600px">
+
+<img src="docs/blynk4.jpg" width="400px" height="600px">
+
+<img src="docs/blynk5.jpg" width="400px" height="600px">
+
+<img src="docs/blynk6.jpg" width="400px" height="600px">
+
+
 https://blynkapi.docs.apiary.io/#
 
 <img src="docs/blynk1.png" width="400px" height="600px">
@@ -275,6 +286,44 @@ https://blynkapi.docs.apiary.io/#
 
 
 <img src="docs/blynk3.png" width="400px" height="600px">
+
+
+
+## Install firmware to the ESP8266
+
+1. Plug the ESP8266 to your computer
+2. Launch Arduino IDE , open up the Arduino sketch from the directory /firmware/door_sensor/door_sensor.ino
+3. Search for the codes, replace the double quote values according to the auth code from the blynk email from your mailbox
+```
+char blynk_token[33] = "166fff24ab4f4a52a31a936369d0a1cc";
+```
+4. Make sure ESP8266 board are installed using the board manager.
+
+![arduino board](docs/arduino_1.jpg)
+
+5. Select the configuration properly before compiling and flashing the ESP8266. Take note the flash size and port.
+
+![config](docs/arduino_3.jpg)
+
+5. The following libraries is amust to be installed before sync the firmware to the ESP8266 board
+  - ArduinoJson (Take note do not use the latest version)
+  ![arduino Json](docs/arduino_6.jpg)
+
+  - FS
+  ![SPI Flash](docs/arduino_4.jpg)
+  ![unified sensor](docs/arduino_5.jpg)
+
+  - ESPBattery (https://github.com/LennartHennigs/ESPBattery)
+  - Blynk
+  ![blynk](docs/arduino_7.jpg)
+
+  - WifiManager
+  ![wifimanager](docs/arduino_8.jpg)  
+
+
+6. Compile and sync the firmware to the microcontroller board
+
+![compile sync](docs/arduino_2.jpg)
 
 
 ## Check the health of all processes
