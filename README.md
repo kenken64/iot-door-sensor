@@ -75,6 +75,7 @@ IoT powers the connected home by bringing new features and capabilities to smart
 
 - Microsoft Visual Studio Code
 - Node JS
+- Ubuntu/Windows 10 ( 2 CPU and 2GB ram )
 - Angular 7 Cli
 - Arduino IDE
 - ESPBattery
@@ -123,9 +124,9 @@ IoT powers the connected home by bringing new features and capabilities to smart
 | JOB_INTERVAL | Interval period where the job poll for the changes from firebase and the blynk APIs      | 
 | JOB_TIMEOUT | Tiemout period where the job poll for the changes from firebase and the blynk APIs      | 
 | NOTIFICATION_ENABLE | Disable and enable notification when door is open and closed      | 
-| FIREBASE_SVC_ACC_FILE | Firebase credential file to perform admin operations     | 
+| FIREBASE_SVC_ACC_FILE | Firebase credential file to perform admin operations e.g.  https://door-sensor-proj.firebaseio.com  | 
 | CLEAN_UP_SCHEDULE | Schedule timing to cleanup events logs     | 
-| BLYNK_API_URL | Blynk IOT API URL     | 
+| BLYNK_API_URL | Blynk IOT API URL  e.g. http://blynk-cloud.com/   | 
 | SIGFOX_SERVER_PORT | Sigfox callback backend server port number     |
 | TWILIO_WHATSAPP_NO | Twilio WhatsApp from number     |
 
@@ -160,10 +161,11 @@ IoT powers the connected home by bringing new features and capabilities to smart
 ## Export as Excel Spreadsheet
 <img src="docs/spreadsheet.png" width="400px" height="600px">
 
-# Instructions 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+# Setup Instructions for the PWA Web App and Backend
 
-# PWA Web Application
+Kindly create a Azure/AWS/Google Cloud account to deploy all this component on a Ubuntu distribution
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
 ## Development server
 
@@ -188,6 +190,18 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Install PWA from dist directory to Nginx 
+
+Use the link below for the nginx installation
+
+https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04
+
+Right after the web server is installed, install free SSL certificate using Let's Encrypt 
+
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04
+
+Lastly, copy all the files from the angular app /dist directory to the nginx web server root directory e.g. /var/www/html
 
 ## Google Firebase
 1. Create a firebase real time database project
@@ -233,25 +247,13 @@ pm2 start worker.js --name worker3 --max-memory-restart 500M -- --workername=wor
 pm2 start worker.js --name worker4 --max-memory-restart 500M -- --workername=worker4 --node-args="--expose-gc
 ```
 
-## Check the health of all processes
-```
-pm2 list
-```
-![pm2 list](docs/pm2list.png)
-
-## Debug memory leakage
-- Use ChromeDev Tools
-- Dynatrace (https://www.dynatrace.com/)
-- Sentry io (https://sentry.io/welcome/)
-
-## ElectricMagnetic lock integration
-
-Most of the EM lock in the market uses 12v AC we need a step down.
-
-https://shopee.sg/Hot-DC-DC-Converter-Output-Power-Adapter-24V-12V-To-5V-USB-Step-Down-Module-i.10885840.691201434?gclid=Cj0KCQjwnKHlBRDLARIsAMtMHDFC6E65QBD9bycE3Slw0D0tBNxFKR-Vn5mH1KITMRHCil_hmbI2bzYaAmgOEALw_wcB
-
 ## Blynk Configuration
 
+Go to your Google App Store/Apple store search for Blynk, install it
+
+Register an account with Blynk
+
+Create a new project, choose device as ESP8266 WIFI send the auth key to your email address
 Restful API for Blynk
 
 https://blynkapi.docs.apiary.io/#
@@ -263,3 +265,21 @@ https://blynkapi.docs.apiary.io/#
 
 
 <img src="docs/blynk3.png" width="400px" height="600px">
+
+
+## Check the health of all processes
+```
+pm2 list
+```
+![pm2 list](docs/pm2list.png)
+
+## Debug memory leakage
+- Use ChromeDev Tools
+- Dynatrace (https://www.dynatrace.com/)
+- Sentry io (https://sentry.io/welcome/)
+
+## Future work - Integrate with ElectricMagnetic lock 
+
+Most of the EM lock in the market uses 12v AC likely need to enhance the PCB board
+
+https://shopee.sg/Hot-DC-DC-Converter-Output-Power-Adapter-24V-12V-To-5V-USB-Step-Down-Module-i.10885840.691201434?gclid=Cj0KCQjwnKHlBRDLARIsAMtMHDFC6E65QBD9bycE3Slw0D0tBNxFKR-Vn5mH1KITMRHCil_hmbI2bzYaAmgOEALw_wcB
