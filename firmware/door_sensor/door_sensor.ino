@@ -15,7 +15,7 @@
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char blynk_token[33] = "166fff24ab4f4a52a31a936369d0a1cc";
+char blynk_token[33] = "b40605f4f5d5484bbe7b9a3cb78f1976";
 
 //flag for saving data
 bool shouldSaveConfig = false;
@@ -68,7 +68,7 @@ void doorSensorWidget()
     return;
   }
 
-  
+  /*
   if(state == HIGH){
     Serial.println("Door Closed");
     Serial.print("Percentage: ");
@@ -89,9 +89,9 @@ void doorSensorWidget()
     Blynk.virtualWrite(V3, battery.getLevel());
     Blynk.virtualWrite(V4, FW_VERSION);
     delay(30);
-  }
+  }*/
   
-  /*
+  
    if(state == HIGH){
     Serial.println("Door Open");
     Serial.print("Percentage: ");
@@ -112,7 +112,7 @@ void doorSensorWidget()
     Serial.println("ESP8266 in sleep mode");
     Blynk.virtualWrite(V4, FW_VERSION);
     ESP.deepSleep(10e6, WAKE_RF_DEFAULT);
-  }*/
+  }
 }
 
 void checkForUpdates() {
