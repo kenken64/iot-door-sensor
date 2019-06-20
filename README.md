@@ -243,11 +243,43 @@ cd server/
 pm2 start server.js --name server --max-memory-restart 1G --restart-delay 10000 --node-args="--expose-gc --max-old-space-size=4096"
 ```
 
-## Start Worker for the engine
+## Start Door Sensor Worker Engine to poll door's state
 Worker consumes the job from the delegator to check the door sensors and send out notification via SMS/WhatsApp/Email.
 
-Each worker is configured with its own designated door sensor. Refer to the server/worker-config.json
+Each worker is configured with its own designated door sensor auth key. Refer to the server/worker-config.json
 
+```
+[
+    {
+        "workerName": "worker1",
+        "doors": ["b40605f4f5d5484bbe7b9a3cb78f1976",
+                "962d1f57311e47c7bb71697b8051def0",
+                "980f92ef13db430594a89315d86dd77b"
+                
+                
+        ]
+    },
+    {
+        "workerName": "worker2",
+        "doors": [ "185333bfb0d14a2a9365fdc3bd27966a",
+                "953b351b1ba4428bb781c40bec29a100",
+                "194eab22d2bd49c0a580c01d7d19ce44"
+        ]
+    },
+    {
+        "workerName": "worker3",
+        "doors": [ "166fff24ab4f4a52a31a936369d0a1cc",
+                "2dde80b00cf342c1b6977e91dd9b6009"
+        ]
+    },
+    {
+        "workerName": "worker4",
+        "doors": [ "c56c9a1ab4b1415998c06173786454f2",
+                "2f0b7bd399a54a839e976a09bee2466a"
+        ]
+    }
+]
+```
 
 ```
 cd server/
@@ -264,7 +296,7 @@ Go to your Google App Store/Apple store search for Blynk, install it
 Register an account with Blynk
 
 Create a new project, choose device as ESP8266 WIFI send the auth key to your email address
-Restful API for Blynk
+
 
 <img src="docs/blynk2.jpg" width="400px" height="600px">
 
@@ -276,7 +308,9 @@ Restful API for Blynk
 
 <img src="docs/blynk6.jpg" width="400px" height="600px">
 
+## Restful API for Blynk
 
+Below is the link to test out the API using your REST client
 https://blynkapi.docs.apiary.io/#
 
 <img src="docs/blynk1.png" width="400px" height="600px">
