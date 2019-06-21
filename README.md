@@ -363,7 +363,9 @@ char blynk_token[33] = "166fff24ab4f4a52a31a936369d0a1cc";
 ## Once everything is setup and up running on the cloud
 
 
-Last time is power up the door sensor using a micro usb cable, at first if there isn't any wifi setting being setup it will act as an access point "AutoAPDoorSensor" configure the device to connect to your own wifi router via htttp://192.168.244.1
+Last thing to do is to power up the door sensor using a micro usb cable, at first if there isn't any wifi setting being configure. the device  will act as an wireless access point with the SSID stated as "AutoAPDoorSensor" Access the portal via the following web address htttp://192.168.244.1
+
+Configure the door sensor device to connect to your own wifi router with credential. Do not change the blynk auth key.
 
 <img src="docs/ap_wifi.jpg" width="400px" height="600px">
 
