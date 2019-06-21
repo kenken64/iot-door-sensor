@@ -298,15 +298,15 @@ Register an account with Blynk
 Create a new project, choose device as ESP8266 WIFI send the auth key to your email address
 
 
-<img src="docs/blynk2.jpg" width="400px" height="600px">
+<img src="docs/Blynk2.jpg" width="400px" height="600px">
 
-<img src="docs/blynk3.jpg" width="400px" height="600px">
+<img src="docs/Blynk3.jpg" width="400px" height="600px">
 
-<img src="docs/blynk4.jpg" width="400px" height="600px">
+<img src="docs/Blynk4.jpg" width="400px" height="600px">
 
-<img src="docs/blynk5.jpg" width="400px" height="600px">
+<img src="docs/Blynk5.jpg" width="400px" height="600px">
 
-<img src="docs/blynk6.jpg" width="400px" height="600px">
+<img src="docs/Blynk6.jpg" width="400px" height="600px">
 
 ## Restful API for Blynk
 
@@ -359,6 +359,13 @@ char blynk_token[33] = "166fff24ab4f4a52a31a936369d0a1cc";
 
 ![compile sync](docs/arduino_2.jpg)
 
+
+## Once everything is setup and up running on the cloud
+
+
+Last time is power up the door sensor using a micro usb cable, at first if there isn't any wifi setting being setup it will act as an access point "AutoAPDoorSensor" configure the device to connect to your own wifi router via htttp://192.168.244.1
+
+<img src="docs/ap_wifi.jpg" width="400px" height="600px">
 
 ## Check the health of all processes
 ```
