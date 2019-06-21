@@ -174,6 +174,12 @@ https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubunt
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
+## Logon to the newly created cloud server and pull down the github source codes using the below linux command
+
+```
+cd ~
+git clone https://github.com/kenken64/iot-door-sensor.git
+```
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
@@ -218,7 +224,13 @@ It is must to have Google account in order to create a firebase account for this
 
 ## Install and start redis server
 
-1. sudo apt-get install redis
+1. Install redis server
+
+```
+sudo apt-get update
+sudo apt-get install redis
+```
+
 2. Start Redis server
 
 ```
@@ -239,8 +251,9 @@ redis-cli FLUSHALL
 How to start the sms and email backend server that poll the devices.
 
 ```
-cd server/
-pm2 start server.js --name server --max-memory-restart 1G --restart-delay 10000 --node-args="--expose-gc --max-old-space-size=4096"
+$ cd server/
+$ npm i 
+$ pm2 start server.js --name server --max-memory-restart 1G --restart-delay 10000 --node-args="--expose-gc --max-old-space-size=4096"
 ```
 
 ## Start Door Sensor Worker Engine to poll door's state
@@ -282,11 +295,11 @@ Each worker is configured with its own designated door sensor auth key. Refer to
 ```
 
 ```
-cd server/
-pm2 start worker.js --name worker --max-memory-restart 500M -- --workername=worker1 --node-args="--expose-gc
-pm2 start worker.js --name worker2 --max-memory-restart 500M -- --workername=worker2 --node-args="--expose-gc
-pm2 start worker.js --name worker3 --max-memory-restart 500M -- --workername=worker3 --node-args="--expose-gc
-pm2 start worker.js --name worker4 --max-memory-restart 500M -- --workername=worker4 --node-args="--expose-gc
+$ cd server/
+$ pm2 start worker.js --name worker --max-memory-restart 500M -- --workername=worker1 --node-args="--expose-gc
+$ pm2 start worker.js --name worker2 --max-memory-restart 500M -- --workername=worker2 --node-args="--expose-gc
+$ pm2 start worker.js --name worker3 --max-memory-restart 500M -- --workername=worker3 --node-args="--expose-gc
+$ pm2 start worker.js --name worker4 --max-memory-restart 500M -- --workername=worker4 --node-args="--expose-gc
 ```
 
 ## Blynk Configuration
