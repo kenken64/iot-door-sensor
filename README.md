@@ -382,6 +382,12 @@ Configure the door sensor device to connect to your own wifi router with credent
 
 <img src="docs/ap_wifi.jpg" width="400px" height="600px">
 
+<img src="docs/ap_wifi3.jpg" width="400px" height="600px">
+
+<img src="docs/ap_wifi2.jpg" width="400px" height="600px">
+
+
+
 ## Check the health of all processes
 ```
 pm2 list
