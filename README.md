@@ -1,6 +1,10 @@
-# Door/Window/Luggage Sensor - Internet of Things
+# Door/Window Sensor - Internet of Things
 
-## Tindie Store - https://bit.ly/2L2vBSy 
+## Tindie Store - Order the device here https://bit.ly/2L2vBSy 
+
+### If you would like to see further enhancement of this whole iot platform kindly donate to my BTC account
+
+<img src="docs/btc.png" width="300px" height="300px">
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/pYRvByaGBP0/0.jpg)](https://www.youtube.com/watch?v=pYRvByaGBP0)
 
