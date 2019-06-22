@@ -263,7 +263,7 @@ $ pm2 start server.js --name server --max-memory-restart 1G --restart-delay 1000
 ## Start Door Sensor Worker Engine to poll door's state
 Worker consumes the job from the delegator to check the door sensors and send out notification via SMS/WhatsApp/Email.
 
-Each worker is configured with its own designated door sensor auth key. Refer to the server/worker-config.json
+Each worker is configured with its own designated door sensor's blynk auth key. Refer to the server/worker-config.json
 
 ```
 [
