@@ -269,30 +269,30 @@ Each worker is configured with its own designated door sensor auth key. Refer to
 [
     {
         "workerName": "worker1",
-        "doors": ["b40605f4f5d5484bbe7b9a3cb78f1976",
-                "962d1f57311e47c7bb71697b8051def0",
-                "980f92ef13db430594a89315d86dd77b"
+        "doors": ["b40605f4f5d5484bbe7b9a3cb78f1376",
+                "962d1f57311e47c7bb71697b8051de30",
+                "980f92ef13db430594a89315d86dd37b"
                 
                 
         ]
     },
     {
         "workerName": "worker2",
-        "doors": [ "185333bfb0d14a2a9365fdc3bd27966a",
-                "953b351b1ba4428bb781c40bec29a100",
-                "194eab22d2bd49c0a580c01d7d19ce44"
+        "doors": [ "185333bfb0d14a2a9365fdc3bd37966a",
+                "953b351b1ba4428bb781c40bec29a300",
+                "194eab22d2bd49c0a580c01d7d19ce34"
         ]
     },
     {
         "workerName": "worker3",
-        "doors": [ "166fff24ab4f4a52a31a936369d0a1cc",
-                "2dde80b00cf342c1b6977e91dd9b6009"
+        "doors": [ "166fff24ab4f4a52a31a936369d3a1cc",
+                "2dde80b00cf342c1b6977e91dd9b6039"
         ]
     },
     {
         "workerName": "worker4",
-        "doors": [ "c56c9a1ab4b1415998c06173786454f2",
-                "2f0b7bd399a54a839e976a09bee2466a"
+        "doors": [ "c56c9a1ab4b1415998c06173786354f2",
+                "2f0b7bd399a54a839e976a09bee2463a"
         ]
     }
 ]
