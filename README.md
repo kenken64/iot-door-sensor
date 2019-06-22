@@ -336,7 +336,7 @@ https://blynkapi.docs.apiary.io/#
 
 
 
-## Install firmware to the ESP8266
+## Install firmware to the ESP8266/ESP32
 
 1. Plug the ESP8266 to your computer
 2. Launch Arduino IDE , open up the Arduino sketch from the directory /firmware/door_sensor/door_sensor.ino
