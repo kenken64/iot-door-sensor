@@ -1,3 +1,4 @@
+declare var require: any;
 import {
   Component,
   ViewChild,
@@ -5,9 +6,12 @@ import {
   AfterViewInit,
   OnInit
 } from "@angular/core";
-import { chart, SolidGaugeChart } from "highcharts";
-import * as Highcharts from "highcharts";
-import * as solidGauge from "highcharts/modules/solid-gauge.src";
+import * as Highcharts from 'highcharts';
+const HighchartsMore = require("highcharts/highcharts-more.src");
+HighchartsMore(Highcharts);
+const HC_solid_gauge = require("highcharts/modules/solid-gauge.src");
+HC_solid_gauge(Highcharts);
+import * as Exporting from 'highcharts/modules/exporting';
 import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
@@ -16,10 +20,9 @@ import { ActivatedRoute, Router } from "@angular/router";
   styleUrls: ["./battery.component.css"]
 })
 export class BatteryComponent implements OnInit, AfterViewInit {
-  @ViewChild("chartTarget")
+  @ViewChild("chartTarget", { static: true })
   chartTarget: ElementRef;
   options: any;
-  chart: Highcharts.ChartObject;
   vbatteryValue: any;
   doorName: string;
 
@@ -32,7 +35,7 @@ export class BatteryComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.initOptions();
-    this.chart = chart(this.chartTarget.nativeElement, this.options as any);
+    Highcharts.chart(this.chartTarget.nativeElement, this.options as any);
   }
 
   initOptions() {

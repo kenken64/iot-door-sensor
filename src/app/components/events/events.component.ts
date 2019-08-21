@@ -30,7 +30,7 @@ export class BottomSheetFilterStatusSheet {
   styleUrls: ["./events.component.css"]
 })
 export class EventsComponent implements OnInit , OnDestroy{
-  @ViewChild(InfiniteScrollDirective) infiniteScroll: InfiniteScrollDirective;
+  @ViewChild(InfiniteScrollDirective, { static: true }) infiniteScroll: InfiniteScrollDirective;
   events: any;
   allevents: any;
   batch = 200; // size of each query

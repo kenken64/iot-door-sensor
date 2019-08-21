@@ -23,7 +23,7 @@ import { map, take } from "rxjs/operators";
 })
 export class GuardComponent implements OnInit, OnDestroy {
   guards: any;
-  @ViewChild("guardz")
+  @ViewChild("guardz", { static: true })
   guardz: QueryList<ElementRef>;
   selectedGuard: Guard[] = [];
   doorName: String = "";
