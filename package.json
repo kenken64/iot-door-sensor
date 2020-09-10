@@ -13,7 +13,7 @@
   "dependencies": {
     "@angular-devkit/schematics": "^10.1.0",
     "@angular/animations": "~8.2.2",
-    "@angular/cdk": "^7.3.0",
+    "@angular/cdk": "^7.3.7",
     "@angular/common": "~8.2.2",
     "@angular/compiler": "~8.2.2",
     "@angular/core": "^8.2.2",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.802.2",
-    "@angular/cli": "~8.2.2",
+    "@angular/cli": "^8.2.2",
     "@angular/compiler-cli": "^8.2.2",
     "@angular/language-service": "~8.2.2",
     "@types/jasmine": "~3.3.8",
